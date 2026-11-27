@@ -1,0 +1,15 @@
+PRUEFBERICHT  Gridfinity-Behaelter (50-mm-Raster, Profil aus build_prototyp_v2.py)
+Fuss: oben 49.10, nach Fase 44.80, unten 43.20 mm (Tasche 49.60 / 45.30 / 43.70), Hoehe 4.75 + 0.20
+Behaelter_1x1: 49.5 x 49.5 x 44.75 mm, gueltig=True, ein Koerper=True, Volumen 21170 mm3 (ca. 26 g PLA massiv)
+  auf der Matte (Feld 1|1): Ueberschneidung mit Deckel 0.000 mm3 (Soll 0), steht auf dem Taschenboden: True, Koerper 0.20 ueber dem Rand
+  Abstand Tag-Unterseite - Reader-Platinenoberseite darunter: 2.20 mm (Tag buendig mit Fussunterseite; Deckelboden + Druckplatte + Luft)
+Behaelter_2x1: 99.5 x 49.5 x 44.75 mm, gueltig=True, ein Koerper=True, Volumen 38340 mm3 (ca. 48 g PLA massiv)
+  auf der Matte (Feld 1|1): Ueberschneidung mit Deckel 0.000 mm3 (Soll 0), steht auf dem Taschenboden: True, Koerper 0.20 ueber dem Rand
+  Abstand Tag-Unterseite - Reader-Platinenoberseite darunter: 2.20 mm (Tag buendig mit Fussunterseite; Deckelboden + Druckplatte + Luft)
+Behaelter_2x2: 99.5 x 99.5 x 44.75 mm, gueltig=True, ein Koerper=True, Volumen 68077 mm3 (ca. 84 g PLA massiv)
+  auf der Matte (Feld 1|1): Ueberschneidung mit Deckel 0.000 mm3 (Soll 0), steht auf dem Taschenboden: True, Koerper 0.20 ueber dem Rand
+  Abstand Tag-Unterseite - Reader-Platinenoberseite darunter: 2.20 mm (Tag buendig mit Fussunterseite; Deckelboden + Druckplatte + Luft)
+Tag-Mulde: Durchmesser 29.6, Tiefe 1.2 mm (PLATZHALTER), unter jedem Fuss -> Tag unter das Feld kleben, das gelesen werden soll; Lesefläche (nicht die Metallseite) nach unten
+Rest Fussboden um die Mulde: 6.8 mm je Seite; Muldendecke = Bruecke 29.6 mm beim Druck
+Druck: aufrecht auf den Fuessen, keine Stuetzen (Fasen 45 Grad, Muldendecke als Bruecke)
+--- offene PLATZHALTER (1): TAG_T

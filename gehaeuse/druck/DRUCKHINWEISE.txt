@@ -1,0 +1,37 @@
+GridScale - Die intelligente Wiegematte - Gehaeuse-Prototyp V2, Druckpaket vom 24.11.2026 (Stand b: Traeger +1 mm, Passzapfen Deckel-Traeger)
+Material: PLA. Alle Teile sind bereits in Drucklage gedreht. Keine Stuetzen noetig.
+
+Datei                 Groesse (mm)              Drucklage                              Hinweis
+V2_Unterteil.stl      148,5 x 148,5 x 23,1      Boden auf dem Bett                     unveraendert
+V2_Traeger.stl        148,5 x 148,5 x 16,8      umgedreht (Trennebene auf dem Bett)    9,5 mm hoch (vorher 8,5); 8 Bohrungen mit Quetschrippen
+V2_Deckel.stl         148,5 x 148,5 x 7,75      steht auf Druckplatten/Leisten/Zapfen  8 Passzapfen D3,0 x 2,4; Bruecken bis ca. 9,6 mm, Stuetzen aus lassen
+Behaelter_1x1.stl     49,5 x 49,5 x 44,75       aufrecht auf dem Fuss                  Muldendecke = Bruecke ca. 30 mm
+
+Empfohlene Einstellungen (Bambu Studio, Standardprofil PLA):
+- Schichthoehe 0,2 mm, Waende 3 Linien (ca. 1,2 mm), Infill 15-20 %
+- Stuetzen: aus
+- Rasthaken, Fuesse und Passzapfen: Waende statt Infill, daher mind. 3 Waende
+- Elefantenfuss-Kompensation an (Standard), sonst klemmen Zapfen und Bohrungen am Bett
+- Deckel und Behaelter passen zusammen auf eine Platte (256 mm Bett: X1, P1, A1). Auf dem A1 mini (180 mm) jedes Teil einzeln.
+
+Testdruck-Coupon (ZUERST drucken, Ausschnitte aus den echten Teilen, Drucklage wie das jeweilige Teil, gleiche Einstellungen):
+Datei                            Groesse (mm)          prueft
+Coupon_A_Traeger_Ecke.stl        52,8 x 52,8 x 14,6    PN532 einlegen (liegt auf 4 Eckauflagen, Pins frei?), 3 Zapfenbohrungen mit Quetschrippen
+Coupon_B_Deckel_Ecke.stl         56,2 x 56,2 x 7,75    (2 mm Stummel der Nachbar-Druckplatten = Bruecken-Stuetze, ragen neben A) auf A druecken: Zapfen-Presssitz, Druckplatte auf Reader (0,2 Luft), Behaelter 1x1 einsetzen
+Coupon_C_Traeger_Freiende.stl    28,0 x 20,0 x 16,8    2x M4x12 DIN 912: Durchgang, Kopf in Senkung 7,4 versenkt (Kopfoberkante buendig)
+Coupon_D_Unterteil_Festende.stl  31,0 x 26,0 x 11,4    2x M4 + Scheibe DIN 125 von unten in die Senkung 9,5; Waegezelle zwischen Verdrehsicherung
+Coupon_E_Unterteil_HX711.stl     38,0 x 31,0 x 14,1    HX711 einrasten (Header-Pins frei?), wieder loesen, Rasthaken heil?
+Coupon_F_Traeger_TCA.stl          9,0 x 34,4 x 16,8    TCA9548A einrasten: 2 Zentrierzapfen D1,8 in die Loecher D2,5, beide Endhaken rasten ein? Zapfen heil?
+Zusammen ca. 31 cm3 (Vollmaterial ~38 g), auf einer Platte ca. 1-1,5 h. Minimal (nur Presssitz + Reader): A + B.
+Rueckmeldung bitte je Punkt: passt / zu fest / zu locker (+ ggf. Mass mit Messschieber).
+
+Passzapfen Deckel -> Traeger (neu):
+- Presssitz ueber 3 Quetschrippen je Bohrung (Nennmass 0, Klemmung entsteht durch Druckschwund).
+- Vor dem grossen Druck den Sitz am Testdruck-Coupon pruefen. Zu fest: Rippen mit Cutter leicht anschaben. Zu locker: Rueckmeldung, dann wird CRUSH_W/COVER_PIN_HOLE angepasst.
+- Montage: Reader einlegen, Deckel ausrichten und gleichmaessig flach aufdruecken. Abnehmen: gleichmaessig nach oben abziehen, nicht an einer Ecke hebeln.
+
+Stand 26.11.: M4-Senkungen (Traeger Freiende, Unterteil Festende) mit 2 Opferschichten - Loch oben auf 0,4 mm quadratisch 4,6, M4 passt ohne Nacharbeit.
+
+Nach dem Druck:
+- RFID-Tag (NTAG213 Metal Label) in die Mulde unter dem Behaelter kleben, Seite ohne Metall nach unten.
+- Schrauben fuer die Montage: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4.

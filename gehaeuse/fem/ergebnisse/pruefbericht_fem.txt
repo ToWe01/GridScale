@@ -1,0 +1,49 @@
+PRUEFBERICHT FEM  V2 Traeger + Deckel (linear-elastisch, CalculiX, Tetraeder 2. Ordnung)
+Material PLA: E = 2500 MPa (Annahme, Ergebnis ~ 1/E), nu = 0.35, Festigkeit 40 MPa (Annahme)
+Annahmen: Traeger vollmateriell (100 % Fuellung), Auflage auf den Zellen-Freienden starr eingespannt (Zellen selbst starr),
+          Deckel liegt auf der Traeger-Oberseite auf (dort fest), Lasten als Flaechenlast auf die Felder.
+Durchbiegung der Zellen selbst ist NICHT enthalten (siehe Messung Punkt 3); sie kommt bei den Spalten zum Unterteil hinzu.
+--- (1) Traeger: Netz 90108 Knoten / 47137 Elemente, Auflageflaechen 2, Lastflaechen je Feld 1/1/1/1/1/1/1/1/1
+LF1 5 kg auf Feld 1|1 (Ecke vorne links)   [Lastsumme im Solver 49.04 N, Soll 49.05 N]
+   max. Verschiebung 4.446 mm, max. Absenkung 4.432 mm
+   Absenkung an den Anschlaegen (Platte ueber Sockel, Spalt 0.50): 2.333 / 0.445 / -0.069 / 0.084 mm -> Rest -1.83 mm <-- KRITISCH
+   Freistich ueber den Zellen (Spalt 0.80): max. Absenkung 1.299 -> Rest -0.50 mm <-- KRITISCH
+   Schuerzen-Unterkante (Fuge 1.20 zur Schulter): 4.401 -> Rest -3.20 mm; Plattenrand ueber Kragen (1.20): 4.418 -> Rest -3.22 mm
+   Vergleichsspannung von Mises: 99,5-%-Wert 10.46 MPa, Maximum 24.06 MPa (Spitzen an Einspannkanten = numerisch ueberhoeht) -> Sicherheit 3.8
+LF2 5 kg auf Feld 3|3 (Ecke hinten rechts)   [Lastsumme im Solver 49.04 N, Soll 49.05 N]
+   max. Verschiebung 4.570 mm, max. Absenkung 4.555 mm
+   Absenkung an den Anschlaegen (Platte ueber Sockel, Spalt 0.50): 0.081 / -0.077 / 0.459 / 2.394 mm -> Rest -1.89 mm <-- KRITISCH
+   Freistich ueber den Zellen (Spalt 0.80): max. Absenkung 1.339 -> Rest -0.54 mm <-- KRITISCH
+   Schuerzen-Unterkante (Fuge 1.20 zur Schulter): 4.522 -> Rest -3.32 mm; Plattenrand ueber Kragen (1.20): 4.539 -> Rest -3.34 mm
+   Vergleichsspannung von Mises: 99,5-%-Wert 10.16 MPa, Maximum 27.90 MPa (Spitzen an Einspannkanten = numerisch ueberhoeht) -> Sicherheit 3.9
+LF3 5 kg auf Feld 2|2 (Mitte)   [Lastsumme im Solver 48.23 N, Soll 49.05 N]
+   max. Verschiebung 0.268 mm, max. Absenkung 0.268 mm
+   Absenkung an den Anschlaegen (Platte ueber Sockel, Spalt 0.50): 0.157 / 0.024 / 0.015 / 0.126 mm -> Rest 0.34 mm ok
+   Freistich ueber den Zellen (Spalt 0.80): max. Absenkung 0.123 -> Rest 0.68 mm ok
+   Schuerzen-Unterkante (Fuge 1.20 zur Schulter): 0.266 -> Rest 0.93 mm; Plattenrand ueber Kragen (1.20): 0.267 -> Rest 0.93 mm
+   Vergleichsspannung von Mises: 99,5-%-Wert 2.04 MPa, Maximum 4.33 MPa (Spitzen an Einspannkanten = numerisch ueberhoeht) -> Sicherheit 19.6
+LF4 10 kg gleichmaessig auf 9 Feldern   [Lastsumme im Solver 97.06 N, Soll 98.10 N]
+   max. Verschiebung 1.721 mm, max. Absenkung 1.716 mm
+   Absenkung an den Anschlaegen (Platte ueber Sockel, Spalt 0.50): 0.971 / 0.250 / 0.242 / 0.924 mm -> Rest -0.47 mm <-- KRITISCH
+   Freistich ueber den Zellen (Spalt 0.80): max. Absenkung 0.552 -> Rest 0.25 mm ok
+   Schuerzen-Unterkante (Fuge 1.20 zur Schulter): 1.705 -> Rest -0.51 mm; Plattenrand ueber Kragen (1.20): 1.711 -> Rest -0.51 mm
+   Vergleichsspannung von Mises: 99,5-%-Wert 5.60 MPa, Maximum 12.88 MPa (Spitzen an Einspannkanten = numerisch ueberhoeht) -> Sicherheit 7.1
+--- (2) Deckel: Netz 100523 Knoten / 51472 Elemente, Auflageflaechen 19, Feldboden 1|1 1 Flaeche(n), Unterseite Druckplatte z = 27.20
+LD1 5 kg Behaelter auf Feld 1|1   [Lastsumme im Solver 49.05 N, Soll 49.05 N]
+   Absenkung Feldboden 0.043 mm, Unterseite Druckplatte 0.042 mm; Luft zum Reader 0.20 -> Rest 0.16 mm ok (Reader bleibt lastfrei)
+   von Mises 99,5-%-Wert 1.27 MPa, Maximum 3.79 MPa -> Sicherheit 31.4
+LD2 5 kg Behaelter auf Feld 2|2   [Lastsumme im Solver 49.05 N, Soll 49.05 N]
+   Absenkung Feldboden 0.042 mm, Unterseite Druckplatte 0.041 mm; Luft zum Reader 0.20 -> Rest 0.16 mm ok (Reader bleibt lastfrei)
+   von Mises 99,5-%-Wert 1.24 MPa, Maximum 4.11 MPa -> Sicherheit 32.2
+--- (3) Verbund Traeger+Deckel fest verbunden (obere Grenze; real liegt der Deckel lose auf -> Wirklichkeit zwischen (1) und (3))
+    Netz 184744 Knoten / 98106 Elemente, Auflageflaechen 2, Bodenflaechen je Feld 1/1/1/1/1/1/1/1/1
+LV1 5 kg Behaelter auf Feld 1|1 (Ecke)   [Lastsumme im Solver 49.05 N, Soll 49.05 N]
+   max. Absenkung 2.119 mm; an den Anschlaegen 1.069 / 0.171 / -0.066 / 0.021 mm -> Rest -0.57 mm <-- KRITISCH
+   Freistich ueber Zellen Rest 0.19 mm, Schuerze Rest -0.90 mm, von Mises 99,5-%-Wert 5.43 MPa -> Sicherheit 7.4
+LV3 5 kg Behaelter auf Feld 2|2 (Mitte)   [Lastsumme im Solver 49.05 N, Soll 49.05 N]
+   max. Absenkung 0.153 mm; an den Anschlaegen 0.022 / -0.002 / -0.002 / 0.020 mm -> Rest 0.48 mm ok
+   Freistich ueber Zellen Rest 0.78 mm, Schuerze Rest 1.16 mm, von Mises 99,5-%-Wert 2.40 MPa -> Sicherheit 16.6
+LV4 10 kg gleichmaessig auf 9 Feldern   [Lastsumme im Solver 98.10 N, Soll 98.10 N]
+   max. Absenkung 0.669 mm; an den Anschlaegen 0.353 / 0.074 / 0.076 / 0.363 mm -> Rest 0.14 mm ok
+   Freistich ueber Zellen Rest 0.59 mm, Schuerze Rest 0.54 mm, von Mises 99,5-%-Wert 2.28 MPa -> Sicherheit 17.5
+--- Annahmen (Status 'Annahme'): E_PLA, NU_PLA, R_PLA, M_FELD, M_VOLL, MESH_MAX, MESH_MIN

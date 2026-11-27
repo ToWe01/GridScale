@@ -1,0 +1,14 @@
+PRUEFBERICHT COUPON  (Ausschnitte aus Prototyp_15x15_Deckel_V2.FCStd, Stand 2026-11-26 11:14)
+Coupon_A_Traeger_Ecke        aus Traeger   x   0.0- 53.5 y   0.0- 53.5  umgedreht  ->  52.8 x  52.8 x 14.60 mm,  9398 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: PN532-Tasche 11 mit Eckauflagen und Pin-Aussparungen, 3 Passzapfen-Bohrungen mit Quetschrippen (50|8) (8|50) (50|50), Randstufe
+Coupon_B_Deckel_Ecke         aus Deckel    x   0.0- 57.0 y   0.0- 57.0  wie Modell  ->  56.2 x  56.2 x  7.75 mm,  9069 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: Gegenstueck zu A: 3 Passzapfen, Druckplatte ueber Reader 11, Randleisten, Gridfinity-Feld 1x1 (Behaelter-Sitz). Fenster bis 57 statt 53,5: nimmt 2 mm der Nachbar-Druckplatten (ab 55) mit, damit der Deckelboden wie im echten Teil als Bruecke (ca. 10 mm) gedruckt wird und nicht frei auskragt; die Stummel stehen neben Coupon A, keine Kollision
+Coupon_C_Traeger_Freiende    aus Traeger   x  88.0-116.0 y  39.0- 59.0  umgedreht  ->  28.0 x  20.0 x 16.80 mm,  2692 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: M4-Durchgang 4,6 + Kopfsenkung 7,4 von oben am Zellen-Freiende (Restwand 0,8 zur Readertasche)
+Coupon_F_Traeger_TCA         aus Traeger   x  39.0- 61.0 y  57.8- 92.2  umgedreht  ->   9.0 x  34.4 x 16.80 mm,  2726 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: TCA9548A an der Plattenunterseite: 2 Stuetzen D4,0 mit Zentrierzapfen D1,8 (Loch D2,5) und 2 Rasthaken an den Enden
+Coupon_D_Unterteil_Festende  aus Unterteil x  33.0- 64.0 y  37.0- 63.0  wie Modell  ->  31.0 x  26.0 x 11.40 mm,  3073 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: Sockel Festende mit Verdrehsicherung, M4-Loecher mit Senkung fuer Kopf + Scheibe von unten
+Coupon_E_Unterteil_HX711     aus Unterteil x   5.0- 43.0 y   8.5- 39.5  wie Modell  ->  38.0 x  31.0 x 14.10 mm,  3547 mm3, Koerper 1, gueltig True, STL geschlossen True
+    prueft: HX711-Stuetzen mit Zentrierzapfen und 2 Rasthaken (Einrasten, Luft zur Stiftleiste)
+Summe 30504 mm3 = ca. 38 g PLA als Vollmaterial (mit 3 Waenden/15 % Infill weniger)

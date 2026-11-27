@@ -1,0 +1,32 @@
+PRUEFBERICHT  Variante einteilig  (Z_UP=20.10, Gesamthoehe=33.95 mm)
+Formen gueltig: Unterteil=True Oberteil=True
+Volumen: Unterteil=80035 mm3, Oberteil=91677 mm3
+Ueberschneidung Unter/Oberteil: 0.000 mm3 (erwartet 0)
+Referenzteile mit Kollision: 0 (erwartet 0)
+--- Spalte (mm) ---
+Ueberlastspalt Sockel-Platte: min 0.50 (Soll 0.50)
+Zapfen-Bohrung: min 0.50 (Soll 0.50 radial), Eingriff 3.00 mm
+Zelle-Verdrehsicherung: min 0.30 (Soll 0.30)
+Luft freier Zellenteil - Unterteil, alle Richtungen: min 4.35 (Soll >= 2,0; unten zum Boden 5.00)
+Luft Zelle - Plattenunterseite ausserhalb Auflage: min 0.80 (Soll 0.80)
+Auflage Platte auf Zellen-Freiende: Abstand 0.00 (Soll 0 = Kontakt)
+--- Bewegungscheck Platte bis Anschlag (Kippen um Freiende-Achse, Absenken, Verschieben) ---
+Bewegungsfaelle: 7, max. Ueberschneidung 0.000 mm3 (Soll 0)
+Max. Eckabsenkung bis Anschlag: 0.78 mm, Schattenfuge 1.20 mm
+Gravur Unterseite: 'SMART KITCHEN MAT  15x15  R3' 90x4 mm, 0.4 tief
+--- Schrauben ---
+Festende 4x M4 DIN 912 + 4x Scheibe DIN 125 von unten: Klemmlaenge PLA 2.4 mm, Kopf 0.2 mm versenkt, Laenge max 15.4 mm (Spitze unter Zellenoberkante) -> M4x12
+Freiende 4x M4x12 DIN 912 von oben: Klemmlaenge PLA 5.1 mm, Einschraubtiefe Zelle 6.9 mm, Spitze 5.8 mm ueber Zellenunterkante
+Kopfoberkante Freiende 0.00 mm unter Gridfinity-Taschenboden (Soll >= 0)
+Gesamt: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4 (nur Festende)
+--- Platinen (Pins nach unten) ---
+Luft Pinreihen - Unterteil, alle Richtungen: min 0.50 (Soll >= 0,4; Pinspitze zum Boden 0.50)
+Luft hoechstes Bauteil - Plattenunterseite: min 3.80 mm
+Luft Platinen - Waegezellen: min 5.95 mm
+Luft Boards - Stuetzen/Fuehrungen: min 0.20 mm (0,20 = ESP32-Stirnwand unter Antennen-/USB-Ueberstand, gewollt)
+Board-Halterung: HX711 4x, TCA9548A 2x gedruckter Zapfen (anschmelzen); ESP32 Auflagen + Fuehrungen + 1 Kabelbinder
+--- Wandstaerken (rechnerisch) ---
+Steg zwischen PN532-Taschen: x 6.70, y 9.00 mm
+Restwand Stiftloch zur Tasche: 1.35 mm
+Restwand Kopfsenkung Freiende zur Tasche: 0.80 mm auf 2.4 mm Hoehe (AUSNAHME < 1,2: Steg y nur 9.0)
+--- offene PLATZHALTER (3): USB_SCREW_D, CONN_W, CONN_H

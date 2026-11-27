@@ -1,0 +1,52 @@
+PRUEFBERICHT  Variante deckel  (Z_UP=20.10, Gesamthoehe=33.95 mm)
+Traeger/Deckel gueltig: True/True, Volumen 67915/26995 mm3, Ueberschneidung 0.000 mm3 (Soll 0)
+Trennebene z=28.60: Traeger 8.50 mm, Deckel 5.35 mm (Boden 0.60); Haut ueber PN532 1.00 + 0.60 = 1.60 mm
+Zentrierzapfen Deckel: min Abstand zum Traeger 0.10 mm (Soll 0.10 radial)
+Schraubenkoepfe Freiende vom Deckel verdeckt: True (Kopfoberkante 0.00 unter Trennebene)
+Formen gueltig: Unterteil=True Oberteil (Traeger+Deckel)=True
+Volumen: Unterteil=80288 mm3, Oberteil=94910 mm3
+Ueberschneidung Unter/Oberteil: 0.000 mm3 (erwartet 0)
+  KOLLISION REF_USB_Stecker_ESP32: Unterteil 2.46, Oberteil 0.00 mm3
+Referenzteile mit Kollision: 1 (erwartet 0)
+--- Spalte (mm) ---
+Ueberlastspalt Sockel-Platte: min 0.50 (Soll 0.50)
+Zapfen-Bohrung: min 0.50 (Soll 0.50 radial), Eingriff 3.00 mm
+Zelle-Verdrehsicherung: min 0.30 (Soll 0.30)
+Luft freier Zellenteil - Unterteil, alle Richtungen: min 4.35 (Soll >= 2,0; unten zum Boden 5.00)
+Luft Zelle - Plattenunterseite ausserhalb Auflage: min 0.80 (Soll 0.80)
+Auflage Platte auf Zellen-Freiende: Abstand 0.00 (Soll 0 = Kontakt)
+--- Bewegungscheck Platte bis Anschlag (Kippen um Freiende-Achse, Absenken, Verschieben) ---
+Bewegungsfaelle: 7, max. Ueberschneidung 0.000 mm3 (Soll 0)
+Max. Eckabsenkung bis Anschlag: 0.78 mm, Fuge Schuerze-Schulter / Kragen-Platte 1.20 mm
+Staubschutz Schuerze: Ueberdeckung 1.8 mm; Luft waagerecht Schuerze-Kragen 0.60 (Soll 0.60), senkrecht Schuerze-Schulter 1.20 (Soll 1.20), Kragen-Platte 1.20 (Soll 1.20)
+Verbinderfenster rechts: geschlossen (Wand durchgehend); offen bleibt nur der USB-C-Ausschnitt fuer die Einbaubuchse
+Delock-Buchse: Flansch innen, Wand am Kragen 2.0 mm, Abstand Buchse-Schuerze 2.25 mm (nichts ragt aussen vor), Stirnflaeche 0.2 mm hinter Aussenwand
+Stecker am ESP32 (Umspritzung 39 mm) gegen Einbaubuchse: Ueberschneidung 194 mm3, Abstand 0.00 mm  <-- KONFLIKT, Lage Buchse/ESP32 klaeren
+Gravur Unterseite: 'SMART KITCHEN MAT  15x15  R3' 90x4 mm, 0.4 tief
+--- Schrauben ---
+Festende 4x M4 DIN 912 + 4x Scheibe DIN 125 von unten: Klemmlaenge PLA 2.4 mm, Kopf 0.2 mm versenkt, Laenge max 15.4 mm (Spitze unter Zellenoberkante) -> M4x12
+Freiende 4x M4x12 DIN 912 von oben: Klemmlaenge PLA 4.5 mm, Einschraubtiefe Zelle 7.5 mm, Spitze 5.2 mm ueber Zellenunterkante
+Gesamt: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4 (nur Festende)
+--- Platinen (Pins nach unten) ---
+Luft Pinreihen - Unterteil, alle Richtungen: min 0.50 (Soll >= 0,4; Pinspitze zum Boden 0.50)
+Luft hoechstes Bauteil - Plattenunterseite: min 3.80 mm
+Luft Platinen - Waegezellen: min 5.95 mm
+Luft Boards - Stuetzen/Fuehrungen: min 0.10 mm (gewollt: 0,10 = Rasthaken-Nase ueber ESP32, 0,20 = Stirnwand unter Antennen-/USB-Ueberstand)
+Board-Halterung: alle Boards mit gedruckten Rasthaken (11 Stueck, kein Normteil); HX711/TCA9548A zusaetzlich lose Zentrierzapfen, ESP32 Auflagen + Fuehrungen
+  Rasthaken ESP32_C6 Langseite:    Abstand Board 0.10, Luft zu Nachbarteilen 1.00, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken ESP32_C6 Langseite:    Abstand Board 0.10, Luft zu Nachbarteilen 1.00, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken ESP32_C6 Antenne:      Abstand Board 0.10, Luft zu Nachbarteilen 4.39, Arm 11.5 mm, Dehnung 0.95 % (<= 2 %)
+  Rasthaken HX711_A Langseite:     Abstand Board 0.10, Luft zu Nachbarteilen 7.98, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken HX711_A Langseite:     Abstand Board 0.10, Luft zu Nachbarteilen 7.98, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken HX711_B Langseite:     Abstand Board 0.10, Luft zu Nachbarteilen 7.98, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken HX711_B Langseite:     Abstand Board 0.10, Luft zu Nachbarteilen 7.98, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken TCA9548A_A Ende:       Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken TCA9548A_A Ende:       Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken TCA9548A_B Ende:       Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+  Rasthaken TCA9548A_B Ende:       Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
+Zentrierzapfen HX711/TCA: radial 0.40 / 0.35 mm (Soll >= 0,3, Druck wird dicker)
+--- Wandstaerken (rechnerisch) ---
+Steg zwischen PN532-Taschen: x 6.70, y 9.00 mm
+Restwand Stiftloch zur Tasche: 1.35 mm
+Restwand Kopfsenkung Freiende zur Tasche: 0.80 mm auf 3.0 mm Hoehe (AUSNAHME < 1,2: Steg y nur 9.0)
+--- offene PLATZHALTER (3): USB_SCREW_D, CONN_W, CONN_H

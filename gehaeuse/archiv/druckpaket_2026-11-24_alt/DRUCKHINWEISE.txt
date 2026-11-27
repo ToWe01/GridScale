@@ -1,0 +1,18 @@
+Smart Kitchen Mat - Gehaeuse-Prototyp V2, Druckpaket vom 24.11.2026
+Material: PLA. Alle Teile sind bereits in Drucklage gedreht. Keine Stuetzen noetig.
+
+Datei                 Groesse (mm)              Drucklage                         Hinweis
+V2_Unterteil.stl      148,5 x 148,5 x 23,1      Boden auf dem Bett                -
+V2_Traeger.stl        148,5 x 148,5 x 15,8      umgedreht (so exportiert)         Reader werden spaeter von oben eingelegt
+V2_Deckel.stl         148,5 x 148,5 x 6,75      steht auf Druckplatten/Leisten    Bruecken bis ca. 9,6 mm, Stuetzen aus lassen
+Behaelter_1x1.stl     49,5 x 49,5 x 44,75       aufrecht auf dem Fuss             Muldendecke = Bruecke ca. 30 mm
+
+Empfohlene Einstellungen (Bambu Studio, Standardprofil PLA):
+- Schichthoehe 0,2 mm, Waende 3 Linien (ca. 1,2 mm), Infill 15-20 %
+- Stuetzen: aus
+- Rasthaken und Fuesse: Waende statt Infill, daher mind. 3 Waende
+- Deckel und Behaelter passen zusammen auf eine Platte (256 mm Bett: X1, P1, A1). Auf dem A1 mini (180 mm) jedes Teil einzeln.
+
+Nach dem Druck:
+- RFID-Tag (NTAG213 Metal Label) in die Mulde unter dem Behaelter kleben, Seite ohne Metall nach unten.
+- Schrauben fuer die Montage: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4.

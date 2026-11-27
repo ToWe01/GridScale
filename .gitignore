@@ -1,0 +1,24 @@
+# System / Python
+.DS_Store
+__pycache__/
+*.pyc
+
+# FreeCAD-Sicherungen
+*.FCBak
+*.FCStd1
+
+# Office-Sperrdateien
+~$*
+
+# FEM-Rohdaten (Netze, CalculiX-Laeufe; mehrere 100 MB)
+gehaeuse/fem/ergebnisse/*/
+
+# Fremdes Repository mit eigener Lizenz, nur lokale Referenz
+referenz/handout_proto/
+
+# Kurs-Bestellliste (alle Gruppen, Budget, Namen) - nur lokal
+doku/bestellung/
+
+# Fremde Datenblaetter und Herstellerzeichnungen (Urheberrecht der Hersteller), Bezugsquellen in referenz/README.md
+referenz/externe_modelle/
+referenz/unterlagen/

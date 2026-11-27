@@ -1,0 +1,247 @@
+# Verdrahtungsplan Smart Kitchen Mat, Prototyp 15x15 V2 (WireViz-Format, Version 0.4)
+# Erzeugt aus build_prototyp_v2.py (Leitungs-Platzhalter, Stand 24.11.2026). Rendern:  wireviz verdrahtung_v2.yml
+#
+# STATUS: Entwurf aus Sicht Gehaeuse. Verlauf, Buendel und Laengen kommen aus dem 3D-Modell.
+#   Elektrische Festlegungen sind ANNAHME und muessen von der Elektronik bestaetigt werden:
+#   - Versorgungsspannung: hier EINE Spannung "VCC" (3V3 vom ESP32). Modell reserviert 3 Adern je Strang
+#     (NP_WIRES = PLATZHALTER, 5V + 3V3 + GND). Bei zwei Spannungen je Strang eine Ader ergaenzen.
+#   - GPIO-Nummern am ESP32: PLATZHALTER (GPIO_SDA usw.).
+#   - TCA-Kanalzuordnung und Adressen (TCA_A 0x70, TCA_B 0x71 ueber A0 an VIN): Vorschlag.
+#   - Alle PN532 haben Adresse 0x24, deshalb eigenes SDA/SCL-Paar je Reader vom TCA-Kanal.
+#
+# LAENGEN: Modelllaenge + 2 x 3 mm Steigleitung (Band -> Pin, im Modell nicht enthalten), dann + 30 % Zugabe,
+#   auf 5 mm aufgerundet. Modelllaenge steht jeweils in den notes. Litze LiYv 0,25 mm2 (Annahme, LITZE_D 1,3).
+#   Bei Daten-Paaren, die sich ein Buendel teilen, ist die Laenge je Reader geschaetzt (Buendellaengen addiert).
+#
+# Farben (Vorschlag): VCC RD, GND BK, SDA BU, SCL YE, DAT WH, CLK GN
+
+metadata:
+  title: Smart Kitchen Mat - Prototyp 15x15 V2 - Verdrahtung (Entwurf)
+
+options:
+  color_mode: full
+
+templates:
+  - &pn532
+    type: PN532 NFC-Modul (Elechouse V3)
+    subtype: I2C-Leiste 4-polig, kurze Seite, Pins nach unten
+    pinlabels: [GND, VCC, SDA, SCL]
+    notes: DIP-Schalter auf I2C. SPI-Leiste bleibt unbeschaltet.
+  - &litze2
+    wirecount: 2
+    gauge: 0.25 mm2
+    show_equiv: false
+
+connectors:
+  ESP32:
+    type: ESP32-C6-DevKitC-1
+    subtype: Unterteil (fest)
+    pinlabels: [3V3, GND, 5V, GPIO_SDA, GPIO_SCL, GPIO_HXA_DAT, GPIO_HXA_CLK, GPIO_HXB_DAT, GPIO_HXB_CLK]
+    notes: GPIO-Nummern PLATZHALTER (Elektronik). Versorgung ueber USB-C-Kabel von der Einbaubuchse Delock 87824 (Wickelkammer, Kaufteil, nicht dargestellt).
+
+  HX711_A:
+    type: SparkFun HX711 Load Cell Amp
+    subtype: Unterteil (fest), Waegezelle 1
+    pinlabels: [GND, DAT, CLK, VCC, VDD, E+, E-, A-, A+, B-, B+]
+    loops: [[4, 5]]   # VCC-VDD (loops nur mit Pinnummern)
+    notes: VDD (Logikspannung) mit VCC bruecken (Annahme, bei 3V3-Betrieb). Kanal B unbenutzt.
+  HX711_B:
+    type: SparkFun HX711 Load Cell Amp
+    subtype: Unterteil (fest), Waegezelle 2
+    pinlabels: [GND, DAT, CLK, VCC, VDD, E+, E-, A-, A+, B-, B+]
+    loops: [[4, 5]]   # VCC-VDD (loops nur mit Pinnummern)
+    notes: VDD (Logikspannung) mit VCC bruecken (Annahme, bei 3V3-Betrieb). Kanal B unbenutzt.
+
+  ZELLE_1:
+    type: Waegezelle Adafruit 4541
+    subtype: Festende Unterteil
+    pinlabels: [RED, BLK, WHT, GRN]
+  ZELLE_2:
+    type: Waegezelle Adafruit 4541
+    subtype: Festende Unterteil
+    pinlabels: [RED, BLK, WHT, GRN]
+
+  VERTEILER:
+    type: Loetverteiler Streifenraster 22,86 x 15,24
+    subtype: Traeger (Platte), 6 Streifen x 8 Loecher
+    pinlabels: [VCC, GND, SDA, SCL]
+    notes: Je Potential ein Streifen. Belegt VCC/GND - Zuleitung, TCA_A, 3 Reader-Straenge (5 von 8). SDA/SCL - Zuleitung, TCA_A (2 von 8). 2 Streifen Reserve (z. B. 5V).
+
+  TCA_A:
+    type: Adafruit TCA9548A
+    subtype: Traeger (Platte), Adresse 0x70 (A0-A2 offen)
+    pinlabels: [VIN, GND, SCL, SDA, RST, A0, A1, A2, SD0, SC0, SD1, SC1, SD2, SC2, SD3, SC3, SD4, SC4, SD5, SC5, SD6, SC6, SD7, SC7]
+    notes: Kanaele 0-5 = Reader 11, 21, 12, 22, 13, 23 (Vorschlag). 6-7 frei.
+  TCA_B:
+    type: Adafruit TCA9548A
+    subtype: Traeger (Platte), Adresse 0x71
+    pinlabels: [VIN, GND, SCL, SDA, RST, A0, A1, A2, SD0, SC0, SD1, SC1, SD2, SC2, SD3, SC3, SD4, SC4, SD5, SC5, SD6, SC6, SD7, SC7]
+    loops: [[1, 6]]   # VIN-A0
+    notes: A0 an VIN → Adresse 0x71 (Annahme). Kanaele 0-2 = Reader 31, 32, 33 (Vorschlag). 3-7 frei.
+
+  PN532_11: {<<: *pn532, subtype: "Feld 1|1, I2C-Seite +x"}
+  PN532_21: {<<: *pn532, subtype: "Feld 2|1, I2C-Seite -x"}
+  PN532_31: {<<: *pn532, subtype: "Feld 3|1, I2C-Seite -x"}
+  PN532_12: {<<: *pn532, subtype: "Feld 1|2, I2C-Seite +x"}
+  PN532_22: {<<: *pn532, subtype: "Feld 2|2, I2C-Seite -x"}
+  PN532_32: {<<: *pn532, subtype: "Feld 3|2, I2C-Seite -x"}
+  PN532_13: {<<: *pn532, subtype: "Feld 1|3, I2C-Seite +x"}
+  PN532_23: {<<: *pn532, subtype: "Feld 2|3, I2C-Seite -x"}
+  PN532_33: {<<: *pn532, subtype: "Feld 3|3, I2C-Seite -x"}
+
+cables:
+  # ---------- Unterteil (fest) ----------
+  W_HXA:
+    wirecount: 4
+    gauge: 0.25 mm2
+    length: 0.180
+    colors: [BK, WH, GN, RD]
+    notes: HX711_A → ESP32, Modell 16 + 114 mm (Buendel mit W_HXB, Kabelgabeln bei x=10)
+  W_HXB:
+    wirecount: 4
+    gauge: 0.25 mm2
+    length: 0.245
+    colors: [BK, WH, GN, RD]
+    notes: HX711_B → ESP32, Modell 68 + 114 mm
+  W_ZELLE_1:
+    wirecount: 4
+    colors: [RD, BK, WH, GN]
+    notes: Zellkabel, fest an der Zelle. Mit Schlaufe am Festende fuehren. Im Modell nicht enthalten.
+  W_ZELLE_2:
+    wirecount: 4
+    colors: [RD, BK, WH, GN]
+    notes: Zellkabel, fest an der Zelle. Mit Schlaufe am Festende fuehren. Im Modell nicht enthalten.
+
+  # ---------- Uebergang Unterteil -> Platte (ueber den Waegespalt) ----------
+  W_SCHLAUFE:
+    wirecount: 4
+    gauge: 0.25 mm2
+    length: 0.110
+    colors: [RD, BK, BU, YE]
+    notes: ESP32 → Kabelgabel (20|64) → Schlaufe → Verteiler. Modell 48 + 29 mm (inkl. 15 mm Schlaufe). Locker lassen, kein Kraftnebenschluss.
+
+  # ---------- Platte: Bus zu den TCAs ----------
+  W_VT_TCAA:
+    wirecount: 4
+    gauge: 0.25 mm2
+    length: 0.050
+    colors: [RD, BK, BU, YE]
+    notes: Verteiler → TCA_A, Modell 32 mm
+  W_TCAA_TCAB:
+    wirecount: 4
+    gauge: 0.25 mm2
+    length: 0.060
+    colors: [RD, BK, BU, YE]
+    notes: TCA_A → TCA_B, an TCA_A durchgeschleift, unter Reader 22. Modell 40 mm
+
+  # ---------- Platte: Versorgung der Reader (Reihen durchgeschleift) ----------
+  W_P_VT_11:  {<<: *litze2, length: 0.055, colors: [RD, BK], notes: "Strang Reihe 1, Modell 91 mm gesamt, Anteil ca. 33 mm"}
+  W_P_11_21:  {<<: *litze2, length: 0.020, colors: [RD, BK], notes: "ueber Steg A, ca. 8 mm"}
+  W_P_21_31:  {<<: *litze2, length: 0.075, colors: [RD, BK], notes: "ca. 50 mm"}
+  W_P_VT_12:  {<<: *litze2, length: 0.075, colors: [RD, BK], notes: "Strang Reihe 2, Modell 107 mm gesamt, Anteil ca. 49 mm, Band ueber TCA_A/B"}
+  W_P_12_22:  {<<: *litze2, length: 0.020, colors: [RD, BK], notes: "ca. 8 mm"}
+  W_P_22_32:  {<<: *litze2, length: 0.075, colors: [RD, BK], notes: "ca. 50 mm"}
+  W_P_VT_13:  {<<: *litze2, length: 0.105, colors: [RD, BK], notes: "Strang Reihe 3, Modell 130 mm gesamt, Anteil ca. 72 mm (zweigt im Modell am Band Reihe 2 ab)"}
+  W_P_13_23:  {<<: *litze2, length: 0.020, colors: [RD, BK], notes: "ca. 8 mm"}
+  W_P_23_33:  {<<: *litze2, length: 0.075, colors: [RD, BK], notes: "ca. 50 mm"}
+
+  # ---------- Platte: Daten je Reader (SDA + SCL vom TCA-Kanal) ----------
+  W_D11: {<<: *litze2, length: 0.145, colors: [BU, YE], notes: "Buendel 11+21 links um Zelle 1 (73 mm) + Loetpunkt links (21 mm) + ca. 8 mm"}
+  W_D21: {<<: *litze2, length: 0.130, colors: [BU, YE], notes: "Buendel 11+21 links um Zelle 1 (73 mm) + Loetpunkt links (21 mm)"}
+  W_D12: {<<: *litze2, length: 0.040, colors: [BU, YE], notes: "Loetpunkt links, Modell 21 mm"}
+  W_D22: {<<: *litze2, length: 0.035, colors: [BU, YE], notes: "Loetpunkt rechts, Modell 20 mm"}
+  W_D13: {<<: *litze2, length: 0.100, colors: [BU, YE], notes: "Buendel 13+23 links um Zelle 2, Modell 62 mm + ca. 8 mm"}
+  W_D23: {<<: *litze2, length: 0.090, colors: [BU, YE], notes: "Buendel 13+23 links um Zelle 2, Modell 62 mm"}
+  W_D31: {<<: *litze2, length: 0.120, colors: [BU, YE], notes: "rechts um Zelle 1 (65 mm) + Loetpunkt rechts (21 mm)"}
+  W_D32: {<<: *litze2, length: 0.040, colors: [BU, YE], notes: "Loetpunkt rechts, Modell 21 mm"}
+  W_D33: {<<: *litze2, length: 0.110, colors: [BU, YE], notes: "rechts um Zelle 2, Modell 75 mm"}
+
+connections:
+  # Waegezellen -> HX711 (Farbcode laut Bestueckungsdruck SparkFun: RED/E+, BLK/E-, WHT/A-, GRN/A+)
+  - - ZELLE_1: [RED, BLK, WHT, GRN]
+    - W_ZELLE_1: [1-4]
+    - HX711_A: [E+, E-, A-, A+]
+  - - ZELLE_2: [RED, BLK, WHT, GRN]
+    - W_ZELLE_2: [1-4]
+    - HX711_B: [E+, E-, A-, A+]
+
+  # HX711 -> ESP32
+  - - HX711_A: [GND, DAT, CLK, VCC]
+    - W_HXA: [1-4]
+    - ESP32: [GND, GPIO_HXA_DAT, GPIO_HXA_CLK, 3V3]
+  - - HX711_B: [GND, DAT, CLK, VCC]
+    - W_HXB: [1-4]
+    - ESP32: [GND, GPIO_HXB_DAT, GPIO_HXB_CLK, 3V3]
+
+  # ESP32 -> Verteiler (ueber den Waegespalt)
+  - - ESP32: [3V3, GND, GPIO_SDA, GPIO_SCL]
+    - W_SCHLAUFE: [1-4]
+    - VERTEILER: [VCC, GND, SDA, SCL]
+
+  # Bus zu den TCAs
+  - - VERTEILER: [VCC, GND, SDA, SCL]
+    - W_VT_TCAA: [1-4]
+    - TCA_A: [VIN, GND, SDA, SCL]
+  - - TCA_A: [VIN, GND, SDA, SCL]
+    - W_TCAA_TCAB: [1-4]
+    - TCA_B: [VIN, GND, SDA, SCL]
+
+  # Versorgung Reihe 1: Verteiler -> 11 -> 21 -> 31
+  - - VERTEILER: [VCC, GND]
+    - W_P_VT_11: [1-2]
+    - PN532_11: [VCC, GND]
+  - - PN532_11: [VCC, GND]
+    - W_P_11_21: [1-2]
+    - PN532_21: [VCC, GND]
+  - - PN532_21: [VCC, GND]
+    - W_P_21_31: [1-2]
+    - PN532_31: [VCC, GND]
+  # Versorgung Reihe 2: Verteiler -> 12 -> 22 -> 32
+  - - VERTEILER: [VCC, GND]
+    - W_P_VT_12: [1-2]
+    - PN532_12: [VCC, GND]
+  - - PN532_12: [VCC, GND]
+    - W_P_12_22: [1-2]
+    - PN532_22: [VCC, GND]
+  - - PN532_22: [VCC, GND]
+    - W_P_22_32: [1-2]
+    - PN532_32: [VCC, GND]
+  # Versorgung Reihe 3: Verteiler -> 13 -> 23 -> 33
+  - - VERTEILER: [VCC, GND]
+    - W_P_VT_13: [1-2]
+    - PN532_13: [VCC, GND]
+  - - PN532_13: [VCC, GND]
+    - W_P_13_23: [1-2]
+    - PN532_23: [VCC, GND]
+  - - PN532_23: [VCC, GND]
+    - W_P_23_33: [1-2]
+    - PN532_33: [VCC, GND]
+
+  # Daten: je Reader ein Kanal
+  - - TCA_A: [SD0, SC0]
+    - W_D11: [1-2]
+    - PN532_11: [SDA, SCL]
+  - - TCA_A: [SD1, SC1]
+    - W_D21: [1-2]
+    - PN532_21: [SDA, SCL]
+  - - TCA_A: [SD2, SC2]
+    - W_D12: [1-2]
+    - PN532_12: [SDA, SCL]
+  - - TCA_A: [SD3, SC3]
+    - W_D22: [1-2]
+    - PN532_22: [SDA, SCL]
+  - - TCA_A: [SD4, SC4]
+    - W_D13: [1-2]
+    - PN532_13: [SDA, SCL]
+  - - TCA_A: [SD5, SC5]
+    - W_D23: [1-2]
+    - PN532_23: [SDA, SCL]
+  - - TCA_B: [SD0, SC0]
+    - W_D31: [1-2]
+    - PN532_31: [SDA, SCL]
+  - - TCA_B: [SD1, SC1]
+    - W_D32: [1-2]
+    - PN532_32: [SDA, SCL]
+  - - TCA_B: [SD2, SC2]
+    - W_D33: [1-2]
+    - PN532_33: [SDA, SCL]
