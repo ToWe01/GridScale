@@ -29,7 +29,7 @@ Zweiteiliger 150×150-mm-Prototyp in PLA: Oberteil (Gridfinity-Raster 50 mm, 9 P
 - **Maße nur im Skript ändern**, in der Liste `PARAMS` (Name, Wert, Status, Quelle). Status: `bestaetigt`, `Norm`, `Annahme`, `PLATZHALTER`. Nie Werte im FreeCAD-Modell von Hand ändern, das Skript baut alles neu.
 - **Nach jeder Änderung** das Skript laufen lassen und den Prüfbericht lesen: gültige Körper, keine Kollisionen, Spalte gleich Sollwerten. Nicht nur "lief ohne Fehler" melden.
 - Nicht raten, wenn ein Maß aus einer Datei oder vom Nutzer kommen kann. Geschätzte Werte als `Annahme`/`PLATZHALTER` kennzeichnen.
-- Alle Boards haben **angelötete Header-Pins, die bleiben**. Später werden Kabel an die Pins gelötet, es wird nichts ausgelötet. Rahmen und Taschen müssen die Pins freilassen.
+- Alle Boards haben **angelötete Header-Pins, die bleiben**. Später werden Kabel an die Pins gelötet, es wird nichts ausgelötet. Rahmen und Taschen müssen die Pins freilassen. Einzige Ausnahme (Nutzer 27.11.): An Reader 22 und 23 wird die ungenutzte SPI-Leiste abgekniffen (`PN_SPI_CUT`).
 - Konstruktion für **FDM-Druck in PLA**: Wand mindestens 1,2 mm, Löcher drucken ca. 0,1–0,2 mm kleiner, M3/M4 als Schneidschrauben direkt ins PLA, Passungen 0,3–0,5 mm. Überhänge vermeiden.
 - Wägemechanik nicht durch Kraftnebenschlüsse verfälschen: Luft um die Zelle, Kabel mit Schlaufe, Überlast- und Kippanschläge mit Spalt.
 
@@ -40,14 +40,14 @@ FreeCAD läuft auf dem Mac des Nutzers und wird über die **MCP Bridge for FreeC
 exec(compile(open("/Users/tomke/Documents/Hochschule/Master/3.Semester/SmartSystems2/Projekt_Matte/gehaeuse/skripte/build_prototyp_v2.py", encoding="utf-8").read(), "build_prototyp_v2.py", "exec"))
 ```
 
-**V2 ist die Hauptversion** (Deckel-Variante: Träger + Gridfinity-Deckel): `gehaeuse/skripte/build_prototyp_v2.py` → `gehaeuse/modell/Prototyp_15x15_Deckel_V2.FCStd`, `gehaeuse/pruefberichte/pruefbericht_deckel_v2.txt`. TCA an der Platte, USB vorne, Wickelkammer. Details in `gehaeuse/UEBERGABE.md` Abschnitt 4b. Das Skript löscht alle Objekte in seinem Dokument, baut neu auf, speichert die FCStd und schreibt den Prüfbericht. Ausgabepfade `outdir_modell`/`outdir_bericht` hängen an der Projektwurzel.
+**V2 ist die Hauptversion** (Deckel-Variante: Träger + Gridfinity-Deckel): `gehaeuse/skripte/build_prototyp_v2.py` → `gehaeuse/modell/Prototyp_15x15_Deckel_V2.FCStd`, `gehaeuse/pruefberichte/pruefbericht_deckel_v2.txt`. TCA an der Platte, USB vorne, Power-Hub vorne rechts (seit 27.11., Wickelkammer entfallen). Details in `gehaeuse/UEBERGABE.md` Abschnitte 4b, 4e, 4f, 4g (Montagelöcher Hub/Lötverteiler). Das Skript löscht alle Objekte in seinem Dokument, baut neu auf, speichert die FCStd und schreibt den Prüfbericht. Ausgabepfade `outdir_modell`/`outdir_bericht` hängen an der Projektwurzel.
 
 **V1** liegt in `gehaeuse/archiv/V1/` (`VARIANT = "einteilig"` oder `"deckel"`). Nur noch zum Nachschlagen, Pfade dort nicht nachgezogen.
 
 Läuft Claude Code direkt auf dem Mac, geht es auch ohne Bridge: aus der Projektwurzel `/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd -c "import FreeCAD as App; exec(compile(open('gehaeuse/skripte/build_prototyp_v2.py', encoding='utf-8').read(), 'build_prototyp_v2.py', 'exec'))"` (getestet, ca. 2,5 min). Ohne GUI fehlen in der FCStd die Farben, für den Nutzer daher am Ende einmal über die Bridge bauen. Ansichten: über die Bridge per Screenshot; die alten matplotlib-Ansichten (`gehaeuse/archiv/V1/render_ansichten.py`) gelten nur für V1. Produktbilder: `Blender -b -P gehaeuse/render/render_produkt.py -- gehaeuse/render/eingabe_stl <ausgabe> [samples] [hell|schwarz]`.
 
 ## Offene Punkte (Kurzfassung, Details in `gehaeuse/UEBERGABE.md`)
-1. PN532: In V2 umgedreht und nach Weg 3 eingebaut: von oben in eine durchgehende Tasche gelegt, liegt auf 4 Eckauflagen, Deckel-Druckplatte hält ihn, keine Reader-Rasthaken mehr. Reader-Modell mit echten Maßen (I²C- und SPI-Leiste, DIP-Schalter). Antenne 3,8 mm unter dem Behälterboden. Pinüberstand 1 mm bestätigt. Offen: Lesereichweite testen.
-2. Kabelführung: Platzhalter-Bänder in V2 unter der Platte, an den Zellen links/rechts vorbei. Spannungen (`NP_WIRES`) offen.
-3. USB-C-Buchse nachmessen, Modulverbinder festlegen (`USB_SCREW_D`, `CONN_W`, `CONN_H`).
-4. Testdruck-Coupon: `gehaeuse/skripte/build_coupon.py` (STLs `Coupon_*` in `gehaeuse/druck/`). Erste Runde gedruckt (26.11.), offen: Wägezelle mit Silikon-Kabelaustritt ausmessen und in den Sockel einarbeiten.
+1. PN532: In V2 umgedreht und nach Weg 3 eingebaut: von oben in eine durchgehende Tasche gelegt, liegt auf 4 Eckauflagen, Deckel-Druckplatte hält ihn, keine Reader-Rasthaken mehr. Reader-Modell mit echten Maßen (I²C- und SPI-Leiste, DIP-Schalter). Antenne 3,8 mm unter dem Behälterboden. Pinüberstand 1 mm bestätigt. SPI-Leiste an 22/23 abgekniffen (lag über dem Silikon der Zellen). Offen: Lesereichweite testen.
+2. Kabelführung: Bänder in V2 unter der Platte, an den Zellen links/rechts vorbei. Stromkonzept der Elektronik (27.11.) eingebaut: Wickelkammer weg, Power-Hub vorne rechts mit JP_NFC im Bodenfenster, `NP_WIRES` = 2, Schlaufe 5 Adern. ESP32-Jumper unter der UART-Buchse (links), Band Daten 13+23 dahinter verlegt; Delock-Stecker in UART.
+3. USB-C-Buchse vermessen (27.11., M3-Senkschrauben). Offen: Modulverbinder festlegen (`CONN_W`, `CONN_H`).
+4. Testdruck-Coupon: `gehaeuse/skripte/build_coupon.py` (STLs `Coupon_*` in `gehaeuse/druck/`). Erste Runde gedruckt (26.11.). Messwerte Wägezelle (Silikon, Kabel) und Delock (M3-Senkschrauben) am 27.11. eingebaut, Zellen gedreht (`CELL_FLIP`, Pfeil nach oben). Kein Neudruck nötig. ESP32-Jumper (15,12 Gesamthöhe) eingebaut.

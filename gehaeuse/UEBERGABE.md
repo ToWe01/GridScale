@@ -209,7 +209,7 @@ V1 (`build_prototyp.py`, `Prototyp_15x15_Deckel.FCStd`) bleibt unverändert und 
 - **Testdruck-Coupon (2026-11-25):** `gehaeuse/skripte/build_coupon.py` schneidet 5 Ausschnitte aus den echten Teilen der V2-FCStd (A Träger-Ecke mit PN532-Tasche und 3 Zapfenbohrungen, B passende Deckel-Ecke mit Zapfen und Gridfinity-Feld, C Freiende-Senkung M4, D Festende-Sockel M4 + Scheibe, E HX711-Rasthaken, F TCA9548A mit Zentrierzapfen D1,8 und Endhaken). Er folgt damit automatisch jedem Modellstand. Ausgabe: `Coupon_*.stl` im Druckpaket und in `stl/`, Bericht `gehaeuse/pruefberichte/pruefbericht_coupon.txt`. Die USB-Wand ist nicht enthalten, weil die Buchse noch nicht nachgemessen ist.
 - **Coupon-Rückmeldung (2026-11-26):** A+B passen (Presssitz, Reader-Tasche, Gridfinity), E passt, F Zapfenlage passt (Haken bewusst nicht gedruckt). C: Senkungsboden unsauber, 0,8-mm-Wand gedruckt. D: Kabelaustritt mit Silikon an der Wägezelle stößt an die Verdrehsicherung, Silikon auch oben auf der Messzone (Freistich oben nur 0,8 mm) → **Maße der Zelle mit Kleber vom Nutzer offen**.
 - **Umgesetzt 26.11.:** Opferschichten (`SACR_LAYER` 0,2) an Freiend- und Festend-Senkungen (Schicht 1 Schlitz, Schicht 2 Quadrat = saubere Brücken). Kabelwege Daten 11+21 (x 33,3) und 13+23 (Versatz bei y 109) neu geführt: Luft 1,8 statt 0,9 mm zu Zelle 1, Zelle 2 und ESP32-Modul. Kabelkanäle im Träger verworfen: Engstellen liegen seitlich unter Readertaschen, darüber die Reader-Pins, kein Trägermaterial. Offen: Strang Reihe 3 nur 1,2 mm über USB-Buchse ESP32 (Lösung: ESP32 tiefer, mit nächster Unterteil-Änderung). Bild `gehaeuse/ansichten/kabelwege_v2.png`. STLs und Coupons neu exportiert.
-- **Einzeladern-Ansicht (2026-11-26):** `gehaeuse/verdrahtung/kabelwege_einzeladern.py` → `gehaeuse/ansichten/kabelwege_einzeladern.png`, liest `gehaeuse/pruefberichte/kabelwege_v2.json` (schreibt das Build-Skript: Bandverläufe, Pinlagen). Annahme Pinfolge I2C-Leiste PN532 (−y→+y): SCL, SDA, VCC, GND.
+- **Einzeladern-Ansicht (2026-11-26):** `gehaeuse/verdrahtung/kabelwege_einzeladern.py` → `gehaeuse/ansichten/kabelwege_einzeladern.png`, liest `gehaeuse/pruefberichte/kabelwege_v2.json` (schreibt das Build-Skript: Bandverläufe, Pinlagen). Pinfolge I2C-Leiste PN532 (Foto IMG_1762, bestätigt 27.11.): GND, VCC, SDA, SCL, GND am nächsten zur SPI-Leiste. Spalte 1 (SPI +y): GND bei +y; Spalten 2/3 (SPI −y): GND bei −y. Das Build-Modell ist davon nicht betroffen (Bänder enden in der Readermitte), nur die Einzeladern-Ansicht.
 - **Befund TCA9548A-Pinbelegung (Eagle .brd):** JP3 = VCC, GND, SDA, SCL, RST, A0, A1, A2, Kanal 0 SDA/SCL, Kanal 1 SDA/SCL; JP1 = Kanäle 2–7. Je Langseite eine 12-pol. Leiste. Im Modell kommen an TCA_A links Bus + 5 Reader-Paare an, rechts 1 Paar + Bus nach TCA_B → passt nicht zur Belegung (links wären nur 2 Kanäle). Vorschlag: TCA_A um 180° drehen (JP1 mit Kanal 2–7 nach links für 11, 12, 13, 21, 23; JP3 nach rechts für Bus ein/aus, Reader 22 auf Kanal 0). TCA_B passt (Bus links = JP3, Reader 31–33 rechts = JP1).
 - **Umgesetzt 26.11. (TCA_A gedreht):** Belegung jetzt TCA_A links JP1 = Reader 11, 12, 13, 21, 23 (Kanäle 2–7), rechts JP3 = Bus ein/aus + Reader 22 auf Kanal 0. Der Bus vom Lötverteiler läuft über eine Querkerbe in Steg A (`GROOVES`, `GROOVE_W` 5,8 × `GROOVE_D` 2,4 mm, Annahme, bei y 67,6, reicht je 2 mm in die Taschen) zur rechten Leiste von TCA_A, dann wie bisher weiter zu TCA_B. Prüfbericht: Körper gültig, 0 Kollisionen, 7 Bewegungsfälle 0 mm³; engste Stellen des Bus 0,26 mm zur Leiste TCA_A, 0,67 mm zu den Pins PN532 12/22. Kanalbelegung muss das Elektronik-Team bestätigen. FEM mit Kerbe neu gerechnet (26.11.): Absenkung am Anschlag steigt um 2–5 % (A Ecke 1,79→1,87, B Ecke 1,39→1,46, C Ecke 0,85→0,88, C verteilt 0,28→0,29 mm), Bewertung unverändert. Alter Stand in `fem/studie_traeger_plus1_vor_kerbe_2026-11-25.txt`. Sicherung vorher: `archiv/build_prototyp_v2_vor_tca_drehung_2026-11-26.py`. STLs (Träger) und Coupons A, C, F neu exportiert, Einzeladern-Bild neu.
 - **Offen:** Den Presssitz am Testdruck-Coupon prüfen (`CRUSH_W`, `COVER_PIN_HOLE`). Die STLs liegen seit 26.11. in `gehaeuse/druck/` (vorher doppelt in `druckpaket_2026-11-24b/` und `stl/`). Das alte Paket liegt unter `archiv/druckpaket_2026-11-24_alt`. Die FCStd wurde am 24.11. um 20:01 über die Bridge mit Farben gebaut, der Prüfbericht ist unverändert.
@@ -219,10 +219,62 @@ V1 (`build_prototyp.py`, `Prototyp_15x15_Deckel.FCStd`) bleibt unverändert und 
   - C vollflächig verbunden (obere Grenze): Ecke 0,85 mm (2,9 kg), verteilt 0,28 mm (ok)
   - Die Wirklichkeit liegt zwischen B und C. Die Zapfen bringen gegenüber lose 22–30 %. Für 5 kg pro Eckfeld reicht das nicht, größere Hebel: Träger unten schließen (Kastenquerschnitt), Rippen/Auflage ändern oder die Last pro Feld als Anforderung festlegen.
 
+## 4e. Messwerte Wägezelle und Delock eingebaut (2026-11-27)
+- **Silikon und Kabel an der Wägezelle (Nutzer):**
+  - **Oben und unten:** 1,5 mm (gemessen 15,12 − 12,7 = 2,42 → 1,21 je Seite, mit 1,5 gerechnet), auf 26,64–45,68 mm ab Festende, je Ende +1,0 Toleranz.
+  - **Seitlich:** 1,9 mm (+0,3) auf der Kabelseite, vom Festende bis zum Silikonende. Das Kabel tritt hinten am Festende aus.
+  - **Im Modell:** Sperrzonen `REF_Zelle{1,2}_Silikon_Kabel` und `REF_Zelle{1,2}_Kabelaustritt`, die im Bewegungscheck als fest zählen.
+  - **Freistich im Träger:** über dem Silikon 2,3 mm tief, über dem seitlichen Kabelband 0,8 mm. Luft Silikon–Träger 0,80 mm.
+- **Zellen gedreht (`CELL_FLIP` = 1, Annahme):** beide Zellen um die Längsachse gedreht, Pfeil nach oben.
+  - **Grund:** Die Kabelseite liegt so außen. Sonst stößt sie an die Eckauflagen und Pins der mittleren Reader-Reihe.
+  - **Folge für die Elektronik:** Das Messsignal kehrt das Vorzeichen um. In der Software ausgleichen oder die Adern A+ und A− tauschen.
+- **Verdrehsicherung:** nur noch auf der kabelfreien Seite.
+- **Kabelaustritt:** Hinter dem Festende von Zelle 2 sind bis zur Wand der Wickelkammer (x = 115) nur 2,5 mm frei. Daher `CABLE_EXIT_L` = 2,0, das Kabel muss direkt hinter der Zelle abknicken.
+- **SPI-Leiste an Reader 22 und 23 abkneifen (`PN_SPI_CUT`, Nutzer 27.11.):**
+  - **Problem:** Die abgewinkelten SPI-Pins lagen 1,46 mm über den äußeren 2,5 mm der Zelle, genau über dem Silikon. Die Luft war 0,25 mm, unter Überlast gab es Berührung.
+  - **Warum das geht:** SPI wird nicht genutzt, die Reader laufen über I²C.
+  - **Ausführung:** Pins am Knick abkneifen, der Kunststoff fällt mit ab. Die senkrechten Stummel bleiben, sie haben 2,42 mm Luft.
+  - **Verworfen:** Reader höher setzen. Das hätte eine neue Reader-Tasche und damit einen neuen Coupon bedeutet.
+- **Delock 87824 (Nutzer):**
+  - Flansch 7,51 dick, Kragen 20,88 × 12,0, 1,9 vor dem Flansch, Gehäuse 6,33 × 6,35, Knickschutz Ø7,11 × 5,86.
+  - Befestigung: 2× M3-Senkschraube ISO 10642 M3×10 von außen in die Mutter im Flansch, Senkung Ø6,9 außen in der Wand. Restwand unter der Senkung 0,35 mm, das ist zulässig, weil der Kegel trägt.
+  - Der Anschlagsockel B ist wegen des dicken Flanschs von y = 12 auf 13,9 gewandert.
+- **Tag-Mulde** im Behälter: 1,2 mm bestätigt, der Testdruck passt.
+- **Coupons:** Neu erzeugt haben sich nur A (0,8-mm-Freistich, für die Passprobe egal) und D (Verdrehsicherung auf der Kabelseite entfällt; am gedruckten Coupon einfach abschneiden). Ein Neudruck ist nicht nötig.
+- **Offen ESP32:** gemessen 15,12 hoch statt 13,4 im Modell. Grund ist ein abgewinkelter Jumper oben auf der Platine. Lage, Höhe und Überstand fehlen noch.
+
+## 4f. Stromkonzept der Elektronik eingebaut (2026-11-27)
+Quelle: `elektronik/VERDRAHTUNG_UND_STROMVERSORGUNG.md` und `schaltplan_gridscale.html` (Commit ee8bd84).
+- **Wickelkammer entfällt:** Das Delock-Kabel wird auf ca. 21 cm gekürzt (`CABLE_LEN` 250). Inselring, Führungswände und Niederhalter sind entfernt, `COIL_*` gestrichen.
+  - **Kabelwege im Modell:** Buchse → Spleiß hinter dem Hub 18 mm, Hub → ESP32-Stecker 112 mm, am Boden entlang bei x ≈ 139 nach hinten, dann bei y = 116 zum Stecker.
+  - **Gesamtlänge:** 207 mm mit Buchse und Stecker, Rest 43 mm als Spleißzugabe.
+- **Kabelaustritt** hinter dem Festende wieder 8 mm (`CABLE_EXIT_L`), die Wand bei x = 115 ist weg.
+- **Power-Hub** (Streifenraster 6 × 8 = 15,24 × 22,86, `HUB_*`), vorne rechts bei x 127,5–142,7, y 13,5–36,4:
+  - **Einbaulage:** Bestückung nach unten, Kupfer oben. Er liegt auf 2 Leisten vorn und hinten mit Schaumklebeband, die Unterseite ist auf z = 10,8.
+  - **`JP_NFC`:** zeigt nach unten in ein Bodenfenster (8,1 × 5,5 mm). Zum Flashen das Modul anheben und den Jumper von unten ziehen, ohne das Gehäuse zu öffnen.
+  - **Elko:** D8 × 12, liegt unter dem Hub zwischen den Leisten.
+  - **Luft:** Hub zu Platte, Reader und Bändern 7,1 mm, zu Delock-Buchse und Kabel 2,75 mm.
+- **Belegung im Modell (Abweichung vom Elektronik-Plan, gleiche Netze):**
+  - **Am Hub** liegen nur VBUS_IN, 5V_NFC und GND.
+  - **Am ESP32** bleiben 3V3, SDA, SCL und die Versorgung der HX711. So werden die Wege kürzer, und es läuft kein 5er-Bündel quer durchs Unterteil.
+  - **5V_NFC** läuft als einzelne Litze vom Hub bei y = 75 unter den TCAs hindurch zur Gabel (20|64). Luft zu den TCA-Pins 1,6 mm.
+  - **Mit der Elektronik abstimmen.**
+- **Schlaufe** mit 5 Adern (5V_NFC, 3V3, GND, SDA, SCL), die Gabel ist auf 3,8 mm geweitet. `NP_WIRES` = 2 ist bestätigt.
+- **Coupons** sind unverändert. Das Unterteil hat 79 479 mm³ (vorher 85 595).
+- **ESP32-Jumper (Nutzer 27.11.):** Er sitzt unter der UART-Buchse. Die UART-Buchse liegt links, wenn die Bauteile oben sind und die Buchsen zum Betrachter zeigen (`ESP_JMP_SIDE` = 2).
+  - **Folge für die Bänder:** Das Band „Daten 13 + 23 → TCA_A“ läuft jetzt bei y = 121,3 hinter dem Jumper. Die Luft ist 0,80 mm, der Bewegungscheck zeigt 0 mm³.
+  - **Stecker:** Der Delock-Stecker steckt im Modell in der UART-Buchse. Dafür muss die Software nichts umstellen, das noch mit dem Software-Team abstimmen.
+
+## 4g. Montagelöcher in den Lochrasterplatinen (2026-11-27)
+Nutzer 27.11.: Hub und Lötverteiler bekommen Montagelöcher. Ein vorhandenes Rasterloch auf Streifen 3, das zweite von jedem Ende (3,81 mm vom Rand), wird auf 2,5 mm aufgebohrt (`HUB_HOLE_K`, wie `TCA_HOLE`). Das trennt nur Streifen 3, die Nachbarstreifen bleiben 0,3 mm frei.
+- **Power-Hub:** 15,24 × 30,48 (12 Raster, `HUB_L`), damit alle 6 Streifen 8 nutzbare Löcher behalten. Er liegt jetzt auf 2 Domen Ø 4 mit Zentrierzapfen (Lochabstand 22,86) statt auf Leisten mit Schaumklebeband. Gehalten wird er von 2 Rasthaken diagonal an den Langseiten im Endbereich (Arm 10,1, Dehnung 1,24 %). An den kurzen Enden laufen hinten die Delock-Adern über die Kante. Diese Adern liegen jetzt 7,5 mm vor der Hinterkante auf der Platine. `JP_NFC` und das Bodenfenster sind um 2 Raster nach hinten gerückt, der Hub reicht jetzt bis y 44,0.
+- **Lötverteiler:** Er bleibt bei 22,86 × 15,24 (`VT_L`), denn länger geht nicht: Links liegt die Unterteilwand, rechts das Band Daten 0 am Rasthaken. Die Löcher liegen auf dem Reserve-Streifen 3, Abstand 15,24. Ein Abstandsbund Ø 3,4 (`VT_STANDOFF_D`) von der Platte legt die 2,4 mm fest, ein Zapfen zentriert, die Rasthaken bleiben. Streifen 3 behält 5 Löcher.
+- **Prüfbericht:** 0 Kollisionen, Bewegungscheck 0 mm³. Coupon F (TCA) gilt für Zapfen und Haken mit.
+
 ## 5. Parameter und Status
 Alle Maße stehen in `PARAMS` am Anfang von `build_prototyp.py` mit Status (`bestaetigt` / `Annahme` / `PLATZHALTER` / `Norm`) und Quelle. Dieselbe Liste wird als Tabelle `Parameter` ins FreeCAD-Dokument geschrieben. **Neue Maße immer dort ändern, nie im Modell von Hand.**
 
-Offene Platzhalter (Stand letzter Lauf): `USB_SCREW_D` (2,5 mm geraten), `CONN_W`, `CONN_H` (Verbinder noch nicht festgelegt).
+Offene Platzhalter (Stand 27.11.): `CONN_W`, `CONN_H` (Verbinder noch nicht festgelegt).
 Als "Annahme" nachmessen oder im Testdruck prüfen: `M4_PILOT` 3,4, `M4_HEAD_CB` 8,5, `STOP_GAP` 0,5 (hängt an der Durchbiegung der Zelle), PN532-Maße 42,7×40,4, Passungen (0,3–0,5 mm), USB-Ausschnitt.
 
 ## 6. Prüfbericht (letzter Lauf)

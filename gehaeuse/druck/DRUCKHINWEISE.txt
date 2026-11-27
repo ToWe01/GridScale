@@ -7,8 +7,10 @@ V2_Traeger.stl        148,5 x 148,5 x 16,8      umgedreht (Trennebene auf dem Be
 V2_Deckel.stl         148,5 x 148,5 x 7,75      steht auf Druckplatten/Leisten/Zapfen  8 Passzapfen D3,0 x 2,4; Bruecken bis ca. 9,6 mm, Stuetzen aus lassen
 Behaelter_1x1.stl     49,5 x 49,5 x 44,75       aufrecht auf dem Fuss                  Muldendecke = Bruecke ca. 30 mm
 
-Empfohlene Einstellungen (Bambu Studio, Standardprofil PLA):
-- Schichthoehe 0,2 mm, Waende 3 Linien (ca. 1,2 mm), Infill 15-20 %
+Empfohlene Einstellungen (PrusaSlicer bzw. Bambu Studio, Standardprofil PLA):
+- Schichthoehe 0,2 mm, Waende 3 Linien (ca. 1,2 mm), Infill 15-20 % (Unterteil, Behaelter, Coupons)
+- Traeger und Deckel (27.11.): steifer drucken, sie tragen die Last zu den Waegezellen. Waende 5-6, obere/untere Schichten je 6, Infill 40-50 % Gyroid.
+  Grund: FEM rechnet mit Vollmaterial; bei 15 % Infill biegt sich die Platte staerker und liegt bei Last auf einem Eckfeld frueher auf dem Ueberlastanschlag auf (FEM: ca. 1,6 kg).
 - Stuetzen: aus
 - Rasthaken, Fuesse und Passzapfen: Waende statt Infill, daher mind. 3 Waende
 - Elefantenfuss-Kompensation an (Standard), sonst klemmen Zapfen und Bohrungen am Bett
@@ -30,8 +32,25 @@ Passzapfen Deckel -> Traeger (neu):
 - Vor dem grossen Druck den Sitz am Testdruck-Coupon pruefen. Zu fest: Rippen mit Cutter leicht anschaben. Zu locker: Rueckmeldung, dann wird CRUSH_W/COVER_PIN_HOLE angepasst.
 - Montage: Reader einlegen, Deckel ausrichten und gleichmaessig flach aufdruecken. Abnehmen: gleichmaessig nach oben abziehen, nicht an einer Ecke hebeln.
 
+Stand 27.11. (Messwerte Waegezelle/Delock eingebaut, STLs neu exportiert):
+- Unterteil: Verdrehsicherung nur auf der kabelfreien Seite, Anschlagsockel B bei y=13,9, USB-Wand mit 2 Senkungen D6,9 fuer M3 ISO 10642.
+- Traeger: tieferer Freistich ueber dem Silikon (2,3 mm) und 0,8 mm ueber dem Kabelband der Zellen.
+- Montage: Waegezellen mit Pfeil nach OBEN einbauen (Kabelseite aussen). An Reader 22 und 23 die SPI-Leiste am Knick abkneifen.
+- Coupons: nur A und D haben sich geaendert, kein Neudruck noetig (bei D die Verdrehsicherungs-Wand auf der Kabelseite abschneiden).
+- Zusaetzliche Schrauben: 2x M3x10 ISO 10642 (Senkkopf), die Muttern sitzen in der Delock-Buchse.
+
+Stand 27.11. c (Montageloecher Lochrasterplatinen):
+- Power-Hub: Streifenraster 15,24 x 30,48 (6 Streifen x 12 Raster). Auf Streifen 3 das 2. Loch von jedem Ende auf 2,5 mm aufbohren (Abstand der Loecher 22,86). Statt Leisten + Schaumklebeband jetzt 2 Dome mit Zapfen und 2 Rasthaken diagonal an den Langseiten; Platine von oben aufdruecken, Kupfer oben.
+- Loetverteiler: bleibt 15,24 x 22,86 (6 x 9 Raster), laenger passt nicht. Auf Streifen 3 (Reserve) das 2. Loch von jedem Ende auf 2,5 mm aufbohren (Abstand 15,24). Abstandsbund + Zapfen an der Traegerunterseite, Rasthaken wie bisher.
+- Montageloecher nicht verloeten; der aufgebohrte Streifen 3 ist dort unterbrochen, sonst nichts.
+
+Stand 27.11. b (Stromkonzept Elektronik):
+- Unterteil: Wickelkammer entfaellt; vorne rechts 2 Auflageleisten fuer den Power-Hub und ein Bodenfenster 8,1 x 5,5 fuer den Jumper JP_NFC (Bruecke beim Druck: keine, Fenster geht durch).
+- Montage Hub: Bestueckung nach unten, JP_NFC muss mittig im Bodenfenster sitzen (Leisten/Schaumklebeband ersetzt durch Dome, siehe Stand 27.11. c).
+- Delock-Kabel auf ca. 21 cm kuerzen (Buchsenseite ca. 2 cm + Zugabe bis zum Hub, Steckerseite ca. 11 cm + Zugabe).
+
 Stand 26.11.: M4-Senkungen (Traeger Freiende, Unterteil Festende) mit 2 Opferschichten - Loch oben auf 0,4 mm quadratisch 4,6, M4 passt ohne Nacharbeit.
 
 Nach dem Druck:
 - RFID-Tag (NTAG213 Metal Label) in die Mulde unter dem Behaelter kleben, Seite ohne Metall nach unten.
-- Schrauben fuer die Montage: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4.
+- Schrauben fuer die Montage: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4, 2x M3x10 ISO 10642 fuer die USB-Buchse.

@@ -1,5 +1,5 @@
 PRUEFBERICHT  Variante deckel  (Z_UP=20.10, Gesamthoehe=34.95 mm)
-Traeger/Deckel gueltig: True/True, Volumen 55650/63593 mm3, Ueberschneidung 0.000 mm3 (Soll 0)
+Traeger/Deckel gueltig: True/True, Volumen 55124/63593 mm3, Ueberschneidung 0.000 mm3 (Soll 0)
 Trennebene z=29.60: Traeger 9.50 mm, Deckel 5.35 mm (Boden 0.60); ueber den Readern: Deckelboden 0.60 + Druckplatte 2.40 mm
 Passzapfen Deckel->Traeger: 8 Stueck D3.0 x 2.40 (= Druckplattenhoehe), Bohrung D3.6 tief 2.90 mit 3 Quetschrippen, Fase 0.4; Lage: (50.0|8.0) (50.0|142.0) (8.0|50.0) (142.0|50.0) (8.0|100.0) (142.0|100.0) (50.0|50.0) (101.0|100.0)
   Zapfen - Quetschrippe min 0.00 mm (Soll 0,00 = Nennmass, Presssitz durch Druckschwund), Zapfen - Bohrungswand 0.30 radial, Restwand >= 1.2 mm geprueft, Luft unter Zapfen 0,50
@@ -7,7 +7,7 @@ Passzapfen Deckel->Traeger: 8 Stueck D3.0 x 2.40 (= Druckplattenhoehe), Bohrung 
   Zielpunkte ohne Platz fuer Passzapfen: (101|8) (101|142)  <-- pruefen
 Schraubenkoepfe Freiende vom Deckel verdeckt: True (Kopfoberkante 0.00 unter Trennebene)
 Formen gueltig: Unterteil=True Oberteil (Traeger+Deckel)=True
-Volumen: Unterteil=86087 mm3, Oberteil=119243 mm3
+Volumen: Unterteil=79452 mm3, Oberteil=118717 mm3
 Ueberschneidung Unter/Oberteil: 0.000 mm3 (erwartet 0)
 Referenzteile mit Kollision: 0 (erwartet 0)
 --- Spalte (mm) ---
@@ -17,24 +17,27 @@ Zelle-Verdrehsicherung: min 0.30 (Soll 0.30)
 Luft freier Zellenteil - Unterteil, alle Richtungen: min 2.35 (Soll >= 2,0; unten zum Boden 5.00)
 Luft Zelle - Plattenunterseite ausserhalb Auflage: min 0.80 (Soll 0.80)
 Auflage Platte auf Zellen-Freiende: Abstand 0.00 (Soll 0 = Kontakt)
+Silikon/Kabel an der Zelle (Nutzer 27.11.): oben/unten 1.5 mm auf 26.64-45.68 mm ab Festende (+-1.0), seitlich 1.9+0.3 mm auf der Kabelseite ab Festende, Kabelaustritt hinter dem Festende 8 mm
+  Luft Silikon/Kabel - Traeger 0.80 (Soll >= 0.80), - Unterteil 0.00, Kabelaustritt - Unterteil 0.00, - Plattenteile (Boards/Leitungen) 1.61 mm; Verdrehsicherung nur auf der kabelfreien Seite
 --- Bewegungscheck Platte bis Anschlag (Kippen um Freiende-Achse, Absenken, Verschieben) ---
 Bewegungsfaelle: 7 (Platte + Boards/Reader/Leitungen an der Platte), max. Ueberschneidung 0.000 mm3 (Soll 0)
 Max. Eckabsenkung bis Anschlag: 0.78 mm, Fuge Schuerze-Schulter / Kragen-Platte 1.20 mm
 Staubschutz Schuerze: Ueberdeckung 1.8 mm; Luft waagerecht Schuerze-Kragen 0.60 (Soll 0.60), senkrecht Schuerze-Schulter 1.20 (Soll 1.20), Kragen-Platte 1.20 (Soll 1.20)
 Verbinderfenster rechts: geschlossen (Wand durchgehend); offen bleibt nur der USB-C-Ausschnitt fuer die Einbaubuchse
-Delock-Buchse (V2: vordere Wand, x=121.5): Flansch innen, Wand am Kragen 2.0 mm, Abstand Buchse-Schuerze 2.25 mm, Stirnflaeche 0.2 mm hinter Aussenwand, Luft zum Anschlagsockel 1.43 mm
-Stecker am ESP32 (Umspritzung 39 mm) gegen Einbaubuchse: Ueberschneidung 0 mm3, Abstand 79.32 mm  ok
+Delock-Buchse (Masse Nutzer 27.11.): 2x M3-Senkschraube ISO 10642 von aussen durch Wand + Flansch (7.51), Mutter M3 in der Flanschtasche; Senkung D6.9, Restwand unter der Senkung 0.35 mm -> M3x10
+Delock-Buchse (V2: vordere Wand, x=121.5): Flansch innen, Wand am Kragen 2.1 mm, Abstand Buchse-Schuerze 2.25 mm, Stirnflaeche 0.2 mm hinter Aussenwand, Luft zum Anschlagsockel 1.22 mm
+Stecker am ESP32 (Umspritzung 39 mm) gegen Einbaubuchse: Ueberschneidung 0 mm3, Abstand 79.31 mm  ok
 Gravur Unterseite: 'GRIDSCALE  15x15  R3' 63x4 mm, 0.4 tief
 --- Schrauben ---
 Festende 4x M4 DIN 912 + 4x Scheibe DIN 125 von unten: Klemmlaenge PLA 2.4 mm, Kopf 0.2 mm versenkt, Laenge max 15.4 mm (Spitze unter Zellenoberkante) -> M4x12
 Freiende 4x M4x12 DIN 912 von oben: Klemmlaenge PLA 5.5 mm, Einschraubtiefe Zelle 6.5 mm, Spitze 6.2 mm ueber Zellenunterkante
-Gesamt: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4 (nur Festende)
+Gesamt: 8x M4x12 DIN 912, 4x Scheibe DIN 125 M4 (nur Festende); USB-Buchse 2x M3x10 ISO 10642 (Senkkopf) + 2x Mutter M3 DIN 934
 --- Platinen (Pins nach unten) ---
 Luft Pinreihen - Unterteil, alle Richtungen: min 0.50 (Soll >= 0,4; Pinspitze zum Boden 0.50)
-Luft hoechstes Bauteil (Boards unten) - Plattenunterseite: min 5.34 mm
-Luft Platinen - Waegezellen: min 1.12 mm
+Luft hoechstes Bauteil (Boards unten) - Plattenunterseite: min 2.08 mm
+Luft Platinen - Waegezellen: min 3.41 mm
 Luft Boards - Stuetzen/Fuehrungen: min 0.10 mm (gewollt: 0,10 = Rasthaken-Nase, 0,20 = Stirnwand unter Antennen-/USB-Ueberstand)
-Board-Halterung: alle Boards mit gedruckten Rasthaken (13 Stueck, kein Normteil); HX711/TCA9548A zusaetzlich lose Zentrierzapfen, ESP32 Auflagen + Fuehrungen
+Board-Halterung: alle Boards mit gedruckten Rasthaken (15 Stueck, kein Normteil); HX711/TCA9548A/Loetverteiler/Power-Hub zusaetzlich lose Zentrierzapfen, ESP32 Auflagen + Fuehrungen
   Rasthaken ESP32_C6 Langseite:    unten  Abstand Board 0.10, Luft zu Nachbarteilen 1.00, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
   Rasthaken ESP32_C6 Langseite:    unten  Abstand Board 0.10, Luft zu Nachbarteilen 1.00, Arm 10.7 mm, Dehnung 1.10 % (<= 2 %)
   Rasthaken ESP32_C6 Antenne:      unten  Abstand Board 0.10, Luft zu Nachbarteilen 4.39, Arm 11.5 mm, Dehnung 0.95 % (<= 2 %)
@@ -46,54 +49,62 @@ Board-Halterung: alle Boards mit gedruckten Rasthaken (13 Stueck, kein Normteil)
   Rasthaken TCA9548A_A Ende:       platte Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 11.3 mm, Dehnung 0.99 % (<= 2 %)
   Rasthaken TCA9548A_B Ende:       platte Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 11.3 mm, Dehnung 0.99 % (<= 2 %)
   Rasthaken TCA9548A_B Ende:       platte Abstand Board 0.10, Luft zu Nachbarteilen 0.74, Arm 11.3 mm, Dehnung 0.99 % (<= 2 %)
-  Rasthaken Loetverteiler Ende:    platte Abstand Board 0.10, Luft zu Nachbarteilen 21.86, Arm 9.1 mm, Dehnung 1.52 % (<= 2 %)
-  Rasthaken Loetverteiler Ende:    platte Abstand Board 0.10, Luft zu Nachbarteilen 18.61, Arm 9.1 mm, Dehnung 1.52 % (<= 2 %)
+  Rasthaken Loetverteiler Ende:    platte Abstand Board 0.10, Luft zu Nachbarteilen 2.31, Arm 9.1 mm, Dehnung 1.52 % (<= 2 %)
+  Rasthaken Loetverteiler Ende:    platte Abstand Board 0.10, Luft zu Nachbarteilen 2.31, Arm 9.1 mm, Dehnung 1.52 % (<= 2 %)
+  Rasthaken Power-Hub Langseite:   unten  Abstand Board 0.10, Luft zu Nachbarteilen 51.45, Arm 10.1 mm, Dehnung 1.24 % (<= 2 %)
+  Rasthaken Power-Hub Langseite:   unten  Abstand Board 0.10, Luft zu Nachbarteilen 35.90, Arm 10.1 mm, Dehnung 1.24 % (<= 2 %)
 --- V2 Verdrahtung ---
-TCA9548A + Loetverteiler an der Traegerunterseite: Platine 4.6 mm unter der Platte, Pinspitzen 3.0 mm ueber dem Boden; Luft Plattenboards - Unterteil 1.61 mm, - Zellen 1.12 mm, - Boards unten 4.84 mm; Luft Halter zur Platine 0.10 mm
-Adern ueber den Waegespalt (Unterteil -> Platte): 4 (Versorgung, GND, SDA, SCL; bei 5V+3V3 5 Adern) als lockere Schlaufe von der Kabelgabel (20|64) zum Loetverteiler
+TCA9548A + Loetverteiler an der Traegerunterseite: Platine 4.6 mm unter der Platte, Pinspitzen 3.0 mm ueber dem Boden; Luft Plattenboards - Unterteil 1.61 mm, - Zellen 3.41 mm, - Boards unten 3.23 mm; Luft Halter zur Platine 0.10 mm
+Adern ueber den Waegespalt (Unterteil -> Platte): 5 (Elektronik 27.11.: 5V_NFC, 3V3, GND, SDA, SCL) als lockere Schlaufe von der Kabelgabel (20|64) zum Loetverteiler
 Loetverteiler (Streifenraster 22.86 x 15.24, 6 Streifen x 8 Loecher, Kupfer unten): Platine 2.4 mm unter der Platte, Unterkante Loetstellen 12.2 mm ueber dem Boden, Luft zum Unterteil 2.02 mm, zu Zellen 8.07 mm
   Belegung je Potential-Streifen: Zuleitung + TCA_A + TCA_B + 4 Straenge (11-21, 12-22, 13-23, 32-31/33) = 7 von 8 Loechern; SDA/SCL-Streifen: Zuleitung + TCA_A + TCA_B
+  Montage Loetverteiler: 2 Loecher D2.5 auf Streifen 3 (Reserve, 3.81 vom Ende, Abstand 15.24), Abstandsbund D3.4 von der Platte (legt 2.4 mm fest) + Zentrierzapfen + 2 Rasthaken; Streifen 3 behaelt 5 Loecher zwischen den Montageloechern
   Kanal-SDA/SCL der Reader laufen NICHT ueber den Verteiler (alle PN532 Adresse 0x24), sondern einzeln vom TCA-Kanal
   Kabelnut Bus Verteiler -> TCA_A:      5.8 x 2.4 mm, Luft zu Bohrungen 27.20 mm, Platz fuer ca. 4 Litzen
 --- V2 PN532 umgedreht (Antenne/Bestueckung/Stiftleiste nach unten) ---
 Weg 3: Tasche durch den Traeger (von oben einlegen), Platine auf 4 Eckauflagen 2.7 x 2.7 in 5.30 mm ueber der Plattenunterseite; Stiftleisten-Unterkante 1.04 ueber der Plattenunterseite; Pins ragen 1.00 mm ueber die Kante (Aussparung 1.3)
 Deckel-Druckplatte: Luft zur Platinenrueckseite 0.20 (Soll 0.20), zu Loetbeinen 0.68, zur Taschenwand 0.30; Reader - Eckauflage 0.00 (Soll 0 = Auflage), Reader - Traeger sonst min 0.30
-Stiftleiste - Traeger min 0.30 mm (Loetbeine im Freistich), - Unterteil/Zellen/Boards unten min 1.12 mm; Bestueckung - Unterteil/Boards unten min 3.11 mm
-  Reader 11 (I2C +x, SPI +y): Leisten/Pins - Zellen/Unterteil/Boards 5.79 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.02 mm; Ueberschneidung mit Zellen 0.0 mm3
+Stiftleiste - Traeger min 0.30 mm (Loetbeine im Freistich), - Unterteil/Zellen/Boards unten min 2.42 mm; Bestueckung - Unterteil/Boards unten min 3.11 mm
+  Reader 11 (I2C +x, SPI +y): Leisten/Pins - Zellen/Unterteil/Boards 5.77 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.02 mm; Ueberschneidung mit Zellen 0.0 mm3
   Reader 12 (I2C +x, SPI +y): Leisten/Pins - Zellen/Unterteil/Boards 5.79 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.54 mm; Ueberschneidung mit Zellen 0.0 mm3
   Reader 13 (I2C +x, SPI +y): Leisten/Pins - Zellen/Unterteil/Boards 2.66 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.02 mm; Ueberschneidung mit Zellen 0.0 mm3
   Reader 21 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 2.66 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.11 mm; Ueberschneidung mit Zellen 0.0 mm3
-  Reader 22 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 1.12 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.54 mm; Ueberschneidung mit Zellen 0.0 mm3
-  Reader 23 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 1.12 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.11 mm; Ueberschneidung mit Zellen 0.0 mm3
+  Reader 22 (I2C -x, SPI -y abgekniffen): Leisten/Pins - Zellen/Unterteil/Boards 4.13 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.15 mm; Ueberschneidung mit Zellen 0.0 mm3
+  Reader 23 (I2C -x, SPI -y abgekniffen): Leisten/Pins - Zellen/Unterteil/Boards 2.42 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.11 mm; Ueberschneidung mit Zellen 0.0 mm3
   Reader 31 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 2.66 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.11 mm; Ueberschneidung mit Zellen 0.0 mm3
-  Reader 32 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 3.54 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.54 mm; Ueberschneidung mit Zellen 0.0 mm3
+  Reader 32 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 5.79 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 4.54 mm; Ueberschneidung mit Zellen 0.0 mm3
   Reader 33 (I2C -x, SPI -y): Leisten/Pins - Zellen/Unterteil/Boards 3.57 mm, - Traeger 0.30 mm; Bestueckung/DIP - unten 3.11 mm; Ueberschneidung mit Zellen 0.0 mm3
 Reader mit Konflikt (Luft < 0,5 nach unten oder < 0,1 zum Traeger): keine
 Abstand Antenne (Platinenunterseite) - Behaelterboden Gridfinity: 4.8 mm (vorher Oberseite 1,6 mm unter dem Boden); Reader-Mitten max 1.20 mm aus der Feldmitte
---- V2 Leitungen (Platzhalter, Abgang Reader = Pins in der Taschen-Aussparung, Steigleitung ca. 3 mm vom Band zum Pin nicht modelliert, 3 Versorgungsadern je Strang) ---
+--- V2 Leitungen (Platzhalter, Abgang Reader = Pins in der Taschen-Aussparung, Steigleitung ca. 3 mm vom Band zum Pin nicht modelliert, 2 Versorgungsadern je Strang) ---
   I2C-Kante je Reader (-x/+x): 11:+x, 12:+x, 13:+x, 21:-x, 22:-x, 23:-x, 31:-x, 32:-x, 33:-x
   Platte    Daten 11 + 21 -> TCA_A (links um Zelle 1)         4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.80 mm
   Platte    Daten 12 + 11/21 -> TCA_A (Loetpunkt links)       6 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.29 mm
   Platte    Daten 22 -> TCA_A (Loetpunkt rechts)              2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.96 mm
-  Platte    Daten 13 + 23 -> TCA_A (links um Zelle 2)         4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.80 mm
-  Platte    Daten 31 -> TCA_B (rechts um Zelle 1)             2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.90 mm
-  Platte    Daten 32 + 31 -> TCA_B (Loetpunkt rechts)         4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.52 mm
+  Platte    Daten 13 + 23 -> TCA_A (links um Zelle 2)         4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 0.80 mm
+  Platte    Daten 31 -> TCA_B (rechts um Zelle 1)             2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.65 mm
+  Platte    Daten 32 + 31 -> TCA_B (Loetpunkt rechts)         4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.69 mm
   Platte    Daten 33 -> TCA_B (rechts um Zelle 2)             2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 0.70 mm
-  Platte    Strang Reihe 1: Verteiler -> 11 -> 21 -> 31       3 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 3.11 mm
-  Platte    Strang Reihe 2/3: Verteiler -> 12 -> 22 -> 32 (ueber TCA_A/B)  3 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.64 mm
-  Platte    Strang Reihe 3: -> 13 -> 23 -> 33                 3 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.20 mm
+  Platte    Strang Reihe 1: Verteiler -> 11 -> 21 -> 31       2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 2.95 mm
+  Platte    Strang Reihe 2/3: Verteiler -> 12 -> 22 -> 32 (ueber TCA_A/B)  2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.71 mm
+  Platte    Strang Reihe 3: -> 13 -> 23 -> 33                 2 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 1.20 mm
   Platte    Verteiler -> TCA_A (Versorgung + Bus)             4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 3.78 mm
-  Platte    TCA_A -> TCA_B (Versorgung + Bus, unter Reader 22)  4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 6.47 mm
-  Unterteil HX711_B -> Sammelpunkt                            4 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 10.66 mm
+  Platte    TCA_A -> TCA_B (Versorgung + Bus, unter Reader 22)  4 Litzen, Luft zu Unterteil/Zellen/Boards/Leitungen unten 5.54 mm
+  Unterteil HX711_B -> Sammelpunkt                            4 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 10.75 mm
   Unterteil HX711_A -> Sammelpunkt                            4 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 10.21 mm
-  Unterteil HX711_A+B -> ESP32 (Gabeln x10)                   8 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 7.50 mm
+  Unterteil HX711_A+B -> ESP32 (Gabeln x10)                   8 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 7.60 mm
   Unterteil ESP32 -> Gabel (Versorgung + Bus)                 4 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 7.54 mm
-  Schlaufe  Schlaufe Gabel -> Verteiler (ueber den Waegespalt)  4 Litzen, Luft zu Zellen 15.93, zu Boards unten 19.58 mm (beruehrt bewusst Gabel und Verteiler)
+  Unterteil Hub -> Gabel (5V_NFC, unter den TCAs)             1 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 1.60 mm
+  Unterteil Delock-Adern am Hub (VBUS/GND auf Streifen, D+/D- Spleiss)  4 Litzen, Luft zu Platte/Reader/Boards/Leitungen oben 5.44 mm
+  Schlaufe  Schlaufe Gabel -> Verteiler (ueber den Waegespalt)  5 Litzen, Luft zu Zellen 15.74, zu Boards unten 19.46 mm (beruehrt bewusst Gabel und Verteiler)
   Band ueber den TCAs: Luft zu TCA-Platine/Pins 0.60 mm
   Litzenbedarf (Summe Adern x Laenge, ohne Zellkabel): ca. 4.1 m, mit 30 % Zugabe 5.3 m
   Nicht modelliert: Zellkabel Waegezelle -> HX711 (am Festende mit Schlaufe fuehren)
-Wickelkammer: Wickelradius 11.6 mm (2.7 x AD), Umfang 243 mm, Kabel im Wickel 906 mm -> 3.73 Windungen bei 3 Lagen Platz  <-- ZU LANG um ca. 178 mm
-Wickelkammer Luft: Fuehrungswand - freies Ende Zelle 1 2.50 mm, Wickel - Platte 3.30 mm, Wickel - Reader 7.30 mm
+Delock-Kabel gekuerzt (Elektronik 27.11.): Buchse 31 + Kabel im Gehaeuse 130 (Buchse -> Hub 26, Hub -> Stecker 104) + Stecker 46 = 206 mm (Ziel ca. 250, Rest = Spleisszugabe 44 mm)
+Power-Hub 15.24 x 30.48 (6 Streifen x 8 Loecher) bei x 127.5-142.7, y 13.5-44.0, Unterseite z=10.8 (Bestueckung unten), Oberseite z=12.4; auf 2 Domen D4.0 mit Zentrierzapfen in 2 Montageloechern D2.5 (Abstand 22.86) + 2 Rasthaken diagonal an den Langseiten (Endbereich)
+  Luft Hub - Unterteil 0.00, - Delock-Buchse/Kabel 2.75, - Zellen 15.00, - Platte/Reader/Bandleitungen 7.08 mm (Oberseite: dort werden Adern angeloetet, Soll >= 2)
+  JP_NFC zeigt nach unten: Kappenspitze z=2.3 (Boden 0..2.4), Bodenfenster 8.1 x 5.5 mm -> Modul anheben, Jumper von unten ziehen; Elko D8 liegend, Luft zum Boden 0.20
+  Hub-Belegung im Modell: Streifen 1 VBUS_IN, 2 5V_NFC (-> Schlaufe), 3 GND; 3V3/SDA/SCL und HX711-Versorgung direkt am ESP32 (gleiche Netze wie Elektronik-Plan, kuerzere Wege)
 Zentrierzapfen HX711/TCA: radial 0.40 / 0.35 mm (Soll >= 0,3, Druck wird dicker)
 --- Wandstaerken (rechnerisch) ---
 Reader-Spalten x = 23.90 / 76.20 / 126.10 (Raster 25/75/125): Rand links 1.50, Steg A 9.00, Steg B 6.60, Rand rechts 1.50 mm; Steg y 9.00 mm
@@ -101,4 +112,4 @@ Restwand Stiftloch zur Tasche: 1.30 mm (Steg B)
 Restwand Kopfsenkung Freiende zur Readertasche: 0.80 mm auf 4.0 mm Hoehe (AUSNAHME < 1,2: Steg y nur 9.0)
 Deckel-Randleiste vorne/hinten 1.2 x 2.40 mm (Luft 0.2); Restwand Traeger-Stufe zur Readertasche/Pin-Aussparung: min 1.35 mm (Soll >= 1,2)
 Restwand Readertaschen untereinander/zur Aussenwand (inkl. Pin-Aussparungen): min 1.50 mm
---- offene PLATZHALTER (4): USB_SCREW_D, CONN_W, CONN_H, NP_WIRES
+--- offene PLATZHALTER (2): CONN_W, CONN_H

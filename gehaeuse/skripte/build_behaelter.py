@@ -28,7 +28,7 @@ PARAMS = [
     ("BIN_FLOOR", 1.2, "Annahme", "Boden innen ueber den Fuessen"),
     ("BIN_R", 4.0, "Annahme", "Eckradius aussen (Gridfinity 3,75 bei 42 -> ca. 4)"),
     ("TAG_D", 29.6, "Annahme", "Mulde fuer RFID-Tag SAG 440880538-0107201 (NTAG213 Metal Label): DigiKey nennt D 25,00, Bezeichnung 'D29' -> 29 + 0,6 Luft"),
-    ("TAG_T", 1.2, "PLATZHALTER", "Muldentiefe = Tag-Dicke + Kleber; Dicke vom Hersteller nicht angegeben -> nachmessen"),
+    ("TAG_T", 1.2, "bestaetigt", "Muldentiefe = Tag-Dicke + Kleber; Nutzer 27.11.: Testdruck 1x1-Behaelter passt"),
 ]
 P = {n: v for (n, v, s, q) in PARAMS}
 SIZES = [(1, 1), (2, 1), (2, 2)]
@@ -101,7 +101,7 @@ for (nx, ny) in SIZES:
         if reader:
             line("  Abstand Tag-Unterseite - Reader-Platinenoberseite darunter: %.2f mm (Tag buendig mit Fussunterseite; Deckelboden + Druckplatte + Luft)" % min(Z_FLOOR - r.BoundBox.ZMax for r in reader if r.BoundBox.XMin < 50 and r.BoundBox.YMin < 50))
     Mesh.export([o], os.path.join(GEH, "druck", name + ".stl"))
-line("Tag-Mulde: Durchmesser %.1f, Tiefe %.1f mm (PLATZHALTER), unter jedem Fuss -> Tag unter das Feld kleben, das gelesen werden soll; Lesefläche (nicht die Metallseite) nach unten" % (P['TAG_D'], P['TAG_T']))
+line("Tag-Mulde: Durchmesser %.1f, Tiefe %.1f mm (bestaetigt, Testdruck), unter jedem Fuss -> Tag unter das Feld kleben, das gelesen werden soll; Lesefläche (nicht die Metallseite) nach unten" % (P['TAG_D'], P['TAG_T']))
 line("Rest Fussboden um die Mulde: %.1f mm je Seite; Muldendecke = Bruecke %.1f mm beim Druck" % ((b2 - P['TAG_D'])/2, P['TAG_D']))
 line("Druck: aufrecht auf den Fuessen, keine Stuetzen (Fasen 45 Grad, Muldendecke als Bruecke)")
 ph = [n for (n, v, s, q) in PARAMS if s == "PLATZHALTER"]

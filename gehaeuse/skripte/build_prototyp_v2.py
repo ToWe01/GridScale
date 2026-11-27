@@ -73,6 +73,16 @@ PARAMS = [
     ("ANTIROT_T", 1.5, "Annahme", "Verdrehsicherung Wanddicke, wie Handout"),
     ("ANTIROT_CLR", 0.3, "Annahme", "Spiel zur Zelle (PLA druckt enger)"),
     ("ANTIROT_H", 4.0, "Annahme", "Hoehe ueber Zellenunterkante"),
+    ("SIL_X0", 26.64, "bestaetigt", "Nutzer 27.11.: Silikon oben/unten auf der Messzone ab 26,64 mm vom Festende"),
+    ("SIL_X1", 45.68, "bestaetigt", "Nutzer 27.11.: Silikon endet 29,32 mm vor dem Freiende (75 - 29,32)"),
+    ("SIL_T", 1.5, "bestaetigt", "Nutzer 27.11.: Zelle mit Silikon 15,12 hoch -> 2,42/2 = 1,21 je Seite, Nutzer: mit 1,5 rechnen"),
+    ("SIL_SIDE", 1.9, "bestaetigt", "Nutzer 27.11.: Breite mit Silikon/Kabel 14,6 -> 1,9 seitlich auf der Kabelseite; Kabelbuendel nicht dicker"),
+    ("SIL_SIDE_X0", 31.0, "bestaetigt", "Nutzer 27.11.: seitliches Silikon ab 31 mm vom Festende, davor laeuft nur das Kabel (Sperrzone ab Festende durchgehend)"),
+    ("SIL_TOL", 1.0, "Annahme", "Zuschlag laengs je Ende der Silikon-Sperrzone (Fertigungstoleranz, konservativ)"),
+    ("SIL_SIDE_TOL", 0.3, "Annahme", "Zuschlag seitlich auf Silikon/Kabel (ca. 15 %)"),
+    ("CABLE_SIDE", 1, "bestaetigt", "Nutzer 27.11.: Blick auf das Festende -> Kabel links (1 = links, -1 = rechts); Kabel laeuft seitlich zum Festende und dort hinten raus"),
+    ("CELL_FLIP", 1, "Annahme", "27.11.: Zellen um die Laengsachse gedreht (Pfeil nach oben): Kabelseite nach aussen, weg von Eckauflagen/Pins der mittleren Reader-Reihe (sonst Luft < 0); Messsignal kehrt Vorzeichen (Software/Adern A+/A- tauschen)"),
+    ("CABLE_EXIT_L", 8.0, "Annahme", "Freiraum hinter dem Festende fuer den Kabelaustritt (Biegung zum HX711); 27.11. wieder 8, Wickelkammer entfaellt"),
     ("BRD_CLR", 0.4, "Annahme", "Spiel Board zu Fuehrungswaenden (ESP32)"),
     ("BRD_WALL", 1.2, "Annahme", "Fuehrungswand ESP32 (3 Perimeter)"),
     ("HDR_PLASTIC", 2.5, "Norm", "Stiftleiste RM 2,54: Kunststoffkoerper unter der Platine (Pins nach unten, Nutzer)"),
@@ -93,6 +103,11 @@ PARAMS = [
     ("ESP_MOD_H", 3.2, "Annahme", "Hoehe Modul ESP32-C6-WROOM-1 ueber Platine (Datenblatt-Zeichnung nicht lesbar, Wert eher etwas zu hoch = sichere Seite)"),
     ("ESP_MOD_L", 19.2, "Annahme", "Modullaenge auf der Platine (ohne Ueberstand), aus Zeichnung abgegriffen"),
     ("ESP_USB_H", 3.3, "Annahme", "Hoehe USB-C-Buchsen ueber Platine"),
+    ("ESP_JMP_X", 17.0, "bestaetigt", "Nutzer 27.11.: abgewinkelter Jumper oben, Mitte ca. 17 mm vom USB-Ende (unter der UART-Buchse)"),
+    ("ESP_JMP_L", 10.0, "bestaetigt", "Nutzer 27.11.: Jumper 10 mm tief (laengs der Platine)"),
+    ("ESP_JMP_W", 8.89, "bestaetigt", "Nutzer 27.11.: Jumper reicht ca. 8,89 mm vom Rand nach innen"),
+    ("ESP_JMP_H", 5.02, "Annahme", "aus Gesamthoehe 15,12 (Nutzer) - 8,5 Pins/Kunststoff unten - 1,6 Platine; hoechster Punkt des Boards"),
+    ("ESP_JMP_SIDE", 2, "bestaetigt", "Nutzer 27.11.: UART-Buchse links (Bauteile oben, Buchsen zum Betrachter) = Port 15,0-23,8 am y-Rand 25,4 -> Jumper dort; Delock-Stecker steckt in der UART-Buchse (mit Software abstimmen)"),
     ("ESP_ANT_T", 0.8, "Annahme", "Dicke Antennenueberstand (Modulplatine WROOM-1); Datenblatt-Seitenansicht nennt 0,8 (Zeichnungstext unvollstaendig lesbar) - nachmessen"),
     ("HOOK_T", 1.2, "Annahme", "Rasthaken ESP32: Armdicke (Biegerichtung), Dehnung siehe Pruefbericht"),
     ("HOOK_OVER", 0.5, "Annahme", "Rasthaken: Ueberdeckung der Nase ueber Platinen- bzw. Antennenkante"),
@@ -107,25 +122,28 @@ PARAMS = [
     ("HX_Y", 22.86, "bestaetigt", "SparkFun Eagle .brd, Umriss Layer 20"),
     ("TCA_X", 30.48, "bestaetigt", "Adafruit Eagle .brd, Umriss (Laenge); Produktseite 2717: 30,6 x 17,6 x 2,7 mm (gerundet, passt)"),
     ("TCA_Y", 17.78, "bestaetigt", "Adafruit Eagle .brd, Umriss (Breite)"),
-    ("USB_W", 21.5, "Annahme", "Delock 87824 Einbauoeffnung ca. 21,5 mm (Herstellerseite 'ca.', laengs der Wand)"),
-    ("USB_H", 12.5, "Annahme", "Delock 87824 Einbauoeffnung ca. 12,5 mm (Herstellerseite 'ca.', Hoehe)"),
+    ("USB_W", 21.5, "Annahme", "Ausschnitt fuer den Kragen: 20,88 gemessen + 2 x 0,3 Spiel"),
+    ("USB_H", 12.5, "Annahme", "Ausschnitt fuer den Kragen: 12,00 gemessen + 2 x 0,25 Spiel"),
     ("USB_SCREW_SP", 28.0, "bestaetigt", "Delock 87824 Lochabstand 28 mm (Herstellerseite; passt zur Zeichnung 87824_draw_2.pdf: Flansch 36, Augen D6)"),
     ("USB_FL_L", 36.0, "bestaetigt", "Delock-Zeichnung: Flansch 36 +-0,3 lang (laengs der Wand)"),
     ("USB_FL_W", 12.0, "bestaetigt", "Delock-Zeichnung: Flansch 12 +-0,3 breit (Hoehe)"),
     ("USB_FL_HOLE", 3.2, "bestaetigt", "Delock-Zeichnung: Bohrung D3,20 im Flansch (Durchgang M3), Auge D6,00"),
     ("USB_LEN", 31.0, "bestaetigt", "Delock-Zeichnung: Buchse 31 +-0,3 von Stirnflaeche bis Ende Knickschutz"),
-    ("USB_FL_T", 5.5, "Annahme", "Flanschdicke, aus Zeichnung abgegriffen (nicht bemasst)"),
-    ("USB_BOSS_L", 21.0, "Annahme", "Vorstehender Kragen vorn mit Buchse, steckt im Ausschnitt; aus Zeichnung abgegriffen (~21-23)"),
-    ("USB_BOSS_T", 1.8, "Annahme", "Kragen steht ca. 1,8 vor dem Flansch (abgegriffen) -> Wand an der Buchse so duenn, dass Stirnflaeche buendig"),
-    ("USB_BODY_W", 13.0, "Annahme", "Gehaeuse hinter dem Flansch ca. 13 x 9 (abgegriffen)"),
-    ("USB_BODY_H", 9.0, "Annahme", "Gehaeuse hinter dem Flansch, Hoehe (abgegriffen)"),
-    ("USB_STRAIN_D", 7.0, "Annahme", "Knickschutz ca. D7 x 6 (abgegriffen), Kabel-AD 4,3 (Zeichnung Stueckliste)"),
+    ("USB_FL_T", 7.51, "bestaetigt", "Nutzer 27.11.: Flanschdicke gemessen (vorher 5,5 aus Zeichnung abgegriffen)"),
+    ("USB_BOSS_L", 20.88, "bestaetigt", "Nutzer 27.11.: Kragen vorn mit Buchse, Breite gemessen"),
+    ("USB_BOSS_H", 12.0, "bestaetigt", "Nutzer 27.11.: Kragen Hoehe gemessen (= Flanschhoehe)"),
+    ("USB_BOSS_T", 1.9, "bestaetigt", "Nutzer 27.11.: Kragen steht 1,9 vor dem Flansch -> Wand an der Buchse 2,1, Stirnflaeche 0,2 hinter der Aussenwand"),
+    ("USB_BODY_W", 6.33, "bestaetigt", "Nutzer 27.11.: Gehaeuse hinter dem Flansch, Breite gemessen"),
+    ("USB_BODY_H", 6.35, "bestaetigt", "Nutzer 27.11.: Gehaeuse hinter dem Flansch, Hoehe gemessen"),
+    ("USB_STRAIN_D", 7.11, "bestaetigt", "Nutzer 27.11.: Knickschutz D7,11 gemessen, Kabel-AD 4,3 (Zeichnung Stueckliste)"),
+    ("USB_STRAIN_L", 5.86, "bestaetigt", "Nutzer 27.11.: Knickschutz 5,86 lang gemessen"),
     ("PLUG_L", 39.0, "bestaetigt", "Delock-Zeichnung: Stecker P1 Umspritzung 39 +-0,3, Metall 6,65"),
     ("PLUG_W", 12.2, "bestaetigt", "Delock-Zeichnung: Stecker P1 12,2 +-0,3 breit"),
     ("PLUG_T", 6.5, "bestaetigt", "Delock-Zeichnung: Stecker P1 max. 6,5 dick"),
     ("USB_Z0", 0.2, "Annahme", "Unterkante Ausschnitt ueber Boden (Restwand oben ~1,2 mm, pruefen)"),
     ("USB_WALL_L", 40.0, "Annahme", "Laenge der USB-Wand, damit Schraubenloecher Material haben"),
-    ("USB_SCREW_D", 2.5, "PLATZHALTER", "Schraubenloch Einbaubuchse"),
+    ("USB_SCREW_D", 3.4, "Norm", "M3-Durchgang in der Wand (Flansch: 3,27 Durchgang, vorn Senkung 5,86, hinten Sechskanttasche, Nutzer 27.11.); M3-Senkschraube von aussen, Mutter in der Flanschtasche"),
+    ("USB_CSK_D", 6.9, "Norm", "Senkung 90 Grad aussen in der Wand fuer ISO 10642 M3 (Kopf max. 6,72)"),
     ("WALL", 4.0, "Annahme", "Verstaerkung innen an USB- und Verbinderwand"),
     ("SHELL_T", 2.0, "Annahme", "Umlaufende Aussenwand Unterteil (5 Perimeter), geschlossenes Gehaeuse"),
     ("CORNER_R", 4.0, "Annahme", "Eckradius senkrechte Aussenkanten beider Teile (Aussenmass 148,5 bleibt)"),
@@ -148,13 +166,22 @@ PARAMS = [
     ("LITZE_D", 1.3, "Annahme", "V2: Aussendurchmesser LiYv 0,25 mm2 (typ. 1,2-1,4) - nachmessen"),
     ("USB_X", 121.5, "Annahme", "V2: Einbaubuchse in der vorderen Wand (y=0) bei x=121,5; frei von Anschlagsockel (100|10) und HX711_B"),
     ("CABLE_D", 4.3, "bestaetigt", "Delock-Zeichnung (Stueckliste): Kabel-AD 4,3"),
-    ("CABLE_LEN", 1000.0, "bestaetigt", "Delock-Zeichnung: 1000 +-30"),
-    ("COIL_LAYERS", 3, "Annahme", "V2: Lagen uebereinander in der Wickelkammer (3 x 4,3 = 12,9 mm, darueber Luft zu Platte/Readern)"),
+    ("CABLE_LEN", 250.0, "bestaetigt", "Elektronik 27.11.: Delock-Kabel in der Mitte auf ca. 20-25 cm gekuerzt (D+/D- durchverloetet, VBUS/GND ueber den Hub) -> Wickelkammer entfaellt"),
+    ("HUB_L", 30.48, "bestaetigt", "Elektronik 27.11.: 6 Streifen x 8 Loecher nutzbar; Nutzer 27.11.: mit 2 Montageloechern -> 12 Raster lang (je Ende 2 Raster fuer das Loch)"),
+    ("HUB_W", 15.24, "bestaetigt", "Elektronik 27.11.: 6 Streifen RM 2,54 (VBUS_IN, 5V_NFC, GND, 3V3, SDA, SCL)"),
+    ("HUB_X0", 127.5, "Annahme", "27.11. Lage Hub: vorne rechts neben der Delock-Buchse (kurze Wege Buchse/Steckerkabel, frei seit Wegfall der Wickelkammer); Streifen laengs y"),
+    ("HUB_Y0", 13.5, "Annahme", "Hub-Vorderkante ~3 mm hinter dem Delock-Flansch (endet bei y 10,4)"),
+    ("HUB_POST", 8.4, "Annahme", "Hub-Unterseite ueber Boden: Bestueckung nach UNTEN (Kupfer oben), darunter Elko liegend D8 + 0,2 Luft je Seite; JP_NFC zeigt nach unten ins Bodenfenster"),
+    ("HUB_HOLE_K", 1, "bestaetigt", "Nutzer 27.11.: Montageloch = vorhandenes Rasterloch in Spalte 2 von jedem Ende (3,81 vom Rand) auf Streifen 3, auf 2,5 aufbohren (wie TCA_HOLE); gilt fuer Hub und Loetverteiler; trennt nur Streifen 3"),
+    ("JP_H", 8.5, "Norm", "JP_NFC 2-pol. Stiftleiste RM 2,54: Kunststoff 2,5 + Steckpin 6,0 (Jumper-Kappe 5,1 x 2,5 deckt die Pins)"),
+    ("JP_WIN_CLR", 1.5, "Annahme", "Bodenfenster unter JP_NFC: je Seite 1,5 Luft um die Kappe (Pinzette/Fingernagel), Modul anheben -> Jumper ziehen ohne Oeffnen"),
+    ("ELKO_D", 8.0, "Annahme", "optionaler Puffer-Elko 220-470 uF/10 V (Elektronik): D8 x 12, liegend unter dem Hub"),
+    ("ELKO_L", 12.0, "Annahme", "Elko-Laenge (D8 x 11,5 typ.)"),
     ("PN_HOOK_W", 5.0, "Annahme", "V2 PN532-Sicherung: Rasthaken-Breite, je 2 Haken pro Reader an gegenueberliegenden Kanten"),
     ("PN_HOOK_OVER", 0.4, "Annahme", "V2 PN532: Nase greift 0,4 unter die Platinenkante (kleiner als sonst, damit der kurze Arm <= 2 % Dehnung bleibt)"),
     ("PN_HOOK_ROOT", 8.0, "Annahme", "V2 PN532: Armwurzel 8,0 ueber Plattenunterseite, Freistich endet 0,5 unter der Trennebene"),
     ("PN_HOOK_ON_Y", 0, "Annahme", "V2 PN532: 0 = Haken an den kurzen Kanten +-x (x-Stege), aus der Mitte versetzt, weil dort die I2C-Leiste sitzt (Elechouse V3). +-y geht fuer Spalte 2 nicht (Nase traefe die Waegezellen)"),
-    ("NP_WIRES", 3, "PLATZHALTER", "V2 Leitungen: Versorgungsadern je durchgeschleiftem Strang (3 = 5V + 3V3 + GND; Spannungsfrage offen, 2 reicht bei einer Spannung)"),
+    ("NP_WIRES", 2, "bestaetigt", "Elektronik 27.11.: 2 Adern (5V_NFC, GND) je durchgeschleiftem Reader-Strang"),
     ("PN_I2C_IN", 6.0, "Annahme", "V2 PN532: I2C-Stiftreihe (GND/VCC/SDA/SCL) ca. 6 mm innen von einer kurzen Kante (40,4), mittig; abgegriffen aus Elechouse User Guide V3 S. 2 (bemasstes Foto)"),
     ("PN_FLIP", 1, "bestaetigt", "V2 Nutzer 23.11.: Reader umgedreht eingebaut, Antenne/Bestueckung + abgewinkelte I2C-Leiste nach unten -> Pins liegen unter der Platte, keine Aussparung"),
     ("PN_Z0", 5.3, "Annahme", "V2 Weg 3 (Nutzer 24.11.): Reader-Platinenunterseite 5,3 ueber Plattenunterseite -> Stiftleiste (4,26) endet 1,04 ueber der Plattenunterseite, ganz im Traeger; Loetbeine 1,4 bleiben unter der Trennebene (5,3 + 1,6 + 1,4 + 0,2 = 8,5)"),
@@ -175,6 +202,7 @@ PARAMS = [
     ("PN_HDR_H", 4.26, "bestaetigt", "Nutzer: Platinenunterseite bis hoechster Punkt Stiftleiste 5,78 - Platine 1,52 = 4,26 (Leistenkoerper ab Platine)"),
     ("PN_PIN_Z", 3.52, "bestaetigt", "Nutzer: abgewinkelte Pins 3,2..3,84 ueber der Platine -> Pinmitte 3,52"),
     ("PN_PIN_OVER", 1.0, "bestaetigt", "Nutzer 24.11.: Pins ragen ca. 1 mm ueber die Platinenkante (I2C und SPI), nach Rueckfrage bestaetigt"),
+    ("PN_SPI_CUT", "22,23", "bestaetigt", "Nutzer 27.11.: SPI wird nicht genutzt (I2C ueber TCA9548A); an diesen Readern SPI-Leiste am Knick abkneifen, Kunststoff entfernen, nur senkrechte Stummel bleiben (lagen sonst ueber Silikon der Zelle)"),
     ("PN_SPI_IN", 6.0, "bestaetigt", "Nutzer: SPI-Loetreihe ca. 6 mm von der langen Kante"),
     ("PN_SPI_A", 13.11, "bestaetigt", "Nutzer: SPI-Leiste (8-pol., lange Kante, abgewinkelt) endet 13,11 vor der kurzen Kante mit der I2C-Leiste"),
     ("PN_SPI_B", 8.63, "bestaetigt", "Nutzer: SPI-Leiste endet 8,63 vor der anderen kurzen Kante"),
@@ -184,11 +212,11 @@ PARAMS = [
     ("PN_DIP_Y0", 7.0, "Annahme", "Foto IMG_1762: DIP-Schalter 7..12,5 aus der Kantenmitte, auf der Seite gegenueber der SPI-Leiste"),
     ("PN_DIP_Y1", 12.5, "Annahme", "Foto IMG_1762, s. PN_DIP_Y0"),
     ("PN_HOOK_DY", 12.0, "Annahme", "V2 PN532: Rasthaken 12 mm aus Kantenmitte versetzt -> frei von I2C-Stiftleiste (ca. -6..+4,5 um Mitte) und Eckbohrungen (ca. 6,5 von den Ecken)"),
-    ("VT_L", 22.86, "Annahme", "V2 Loetverteiler: Streifenraster 2,54, 9 Raster lang (8 Loecher je Streifen nutzbar), selbst zuschneiden"),
-    ("VT_W", 15.24, "Annahme", "V2 Loetverteiler: 6 Streifen = 3 Potentiale (5V/3V3/GND, Belegung offen) + SDA + SCL + 1 Reserve"),
+    ("VT_L", 22.86, "Annahme", "V2 Loetverteiler: Streifenraster 9 Raster lang, selbst zuschneiden; 27.11. b: laenger geht nicht (links Unterteilwand, rechts Band Daten 0 / Rasthaken) -> Montageloecher auf dem Reserve-Streifen 3"),
+    ("VT_STANDOFF_D", 3.4, "Annahme", "Abstandsbund Loetverteiler (Platte -> Platine 2,4): schlanker als TCA 4,0, damit das naechste nutzbare Loch (2,54 daneben) frei bleibt"),
+    ("VT_W", 15.24, "Annahme", "V2 Loetverteiler: 6 Streifen = 3 Potentiale (5V/3V3/GND) + SDA + SCL + 1 Reserve; Reserve = Streifen 3 (traegt die Montageloecher, 5 Loecher frei)"),
     ("VT_SOLDER", 1.5, "Annahme", "V2 Loetverteiler: Hoehe Loetstellen/Litzenabgaenge unter der Platine (Kupferseite nach unten)"),
     ("TCA_HOOK_ROOT", 5.0, "Annahme", "V2: Rasthaken TCA beginnt 5 mm tief in einer Freistichtasche im Steg -> Arm ca. 9 mm, Dehnung < 2 %"),
-    ("COIL_WALL_X", 115.0, "Annahme", "V2: Fuehrungswand Wickelkammer, >= 2,5 mm Luft zum freien Ende Waegezelle 1"),
 ]
 P = {k: v for k, v, _, _ in PARAMS}
 FLOOR = P['FLOOR']; PED = P['PED']; CH = P['CELL_H']
@@ -286,11 +314,28 @@ inner = inner.fuse(Part.makeLoft([outline(P['SHELL_T'], Z_TR), outline(C_IN, Z_S
 inner = inner.fuse(footprint(C_IN, Z_SHOULDER - 0.01, Z_WALL - Z_SHOULDER + 1))
 lower = shell.cut(inner).removeSplitter()   # geschlossene Wanne: Boden + umlaufende Wand + Kragen
 antirot = []
+def cable_s(c):   # y-Seite des Zellkabels: Blick aufs Festende, Kabel links (CABLE_SIDE=1)
+    return P['CABLE_SIDE'] * (1 if c['fixed_left'] else -1) * (-1 if P['CELL_FLIP'] else 1)   # gedreht eingebaut -> Seite gespiegelt
+def fix_x(c, d):  # x-Lage im Abstand d vom Festende der Zelle
+    return cx0 + d if c['fixed_left'] else cx0 + P['CELL_L'] - d
+def sil_zones(c):   # Sperrzonen Silikon (oben, unten, seitlich) + Kabel seitlich + Kabelaustritt hinter dem Festende
+    xa_, xb_ = sorted((fix_x(c, P['SIL_X0'] - P['SIL_TOL']), fix_x(c, P['SIL_X1'] + P['SIL_TOL'])))
+    w_ = P['CELL_W']; s_ = cable_s(c); side_ = P['SIL_SIDE'] + P['SIL_SIDE_TOL']
+    top_ = box(xa_, c['y'] - w_/2, Z_UP, xb_ - xa_, w_, P['SIL_T'])
+    bot_ = box(xa_, c['y'] - w_/2, Z_CELL - P['SIL_T'], xb_ - xa_, w_, P['SIL_T'])
+    xs0_, xs1_ = sorted((fix_x(c, 0.0), fix_x(c, P['SIL_X1'] + P['SIL_TOL'])))
+    ys_ = c['y'] + s_ * w_/2 - (side_ if s_ < 0 else 0)
+    side_z = box(xs0_, ys_, Z_CELL, xs1_ - xs0_, side_, CH)
+    xe0_, xe1_ = sorted((fix_x(c, 0.0), fix_x(c, -P['CABLE_EXIT_L'])))
+    ye0_, ye1_ = sorted((c['y'] + s_ * (w_/2 - 3.0), c['y'] + s_ * (w_/2 + side_)))
+    exit_ = box(xe0_, ye0_, FLOOR + 0.5, xe1_ - xe0_, ye1_ - ye0_, Z_CELL + CH/2 - FLOOR - 0.5)
+    return top_.fuse([bot_, side_z]).removeSplitter(), exit_
 for c in cells:
     px = cx0 if c['fixed_left'] else cx0 + P['CELL_L'] - P['PED_L']
     lower = lower.fuse(box(px, c['y'] - P['CELL_W']/2 - 1.0, FLOOR, P['PED_L'], P['CELL_W'] + 2.0, PED))
     # Verdrehsicherung: zwei Waende beidseitig der Zelle am Festende
     for s in (-1, 1):
+        if s == cable_s(c): continue   # 27.11.: Kabelseite frei (Kabel + Silikon laufen dort zum Festende)
         y0 = c['y'] + s * (P['CELL_W']/2 + P['ANTIROT_CLR']) - (P['ANTIROT_T'] if s < 0 else 0)
         w = box(px, y0, FLOOR, P['PED_L'], P['ANTIROT_T'], PED + P['ANTIROT_H'])
         antirot.append(w); lower = lower.fuse(w)
@@ -305,7 +350,8 @@ for c in cells:
         lower = lower.cut(box(hx - d_/2, c['y'] - P['M4_HEAD_CB']/2, z0_ - 0.01, d_, P['M4_HEAD_CB'], t_ + 0.01))
         lower = lower.cut(box(hx - d_/2, c['y'] - d_/2, z0_ + t_ - 0.01, d_, d_, t_ + 0.01))
 # Anschlagsockel mit Stiftaufnahme (Ueberlast + seitliche Fuehrung)
-stops = [(X_SA, 10), (X_SB, 12), (X_SA, 140), (X_SB, 140)]   # (X_SB|12): Abstand zum Flansch der USB-Buchse   # V2: Steg-Mitten der verschobenen Reader
+Y_SB = max(12.0, OFF + P['USB_BOSS_T'] + 0.2 + P['USB_FL_T'] + 0.5 + P['POST_D']/2)   # 27.11.: Flansch 7,51 dick -> Sockel B weiter nach hinten, 0,5 Luft
+stops = [(X_SA, 10), (X_SB, Y_SB), (X_SA, 140), (X_SB, 140)]   # (X_SB|Y_SB): Abstand zum Flansch der USB-Buchse   # V2: Steg-Mitten der verschobenen Reader
 posts = []; nubs = []
 Z_POST = Z_UP - P['STOP_GAP']
 for (sx, sy) in stops:
@@ -329,7 +375,8 @@ BOARD_TYPES = {
     "TCA9548A": dict(bx=P['TCA_X'], by=P['TCA_Y'],
                   holes=[(x, 8.89, P['TCA_HOLE'], P['TCA_STANDOFF_D'], P['TCA_NUB_D']) for x in (2.54, 27.94)],
                   hdr=[(0, 0, P['TCA_X'], PITCH), (0, P['TCA_Y'] - PITCH, P['TCA_X'], PITCH)]),
-    "VERTEILER": dict(bx=P['VT_L'], by=P['VT_W'], holes=[], hdr=[], gap=P['VT_GAP']),   # Streifenraster, Streifen laengs x, Kupfer unten
+    "VERTEILER": dict(bx=P['VT_L'], by=P['VT_W'], gap=P['VT_GAP'], hdr=[],
+                  holes=[(x, (2 + 0.5)*PITCH, P['TCA_HOLE'], P['VT_STANDOFF_D'], P['TCA_NUB_D']) for x in ((P['HUB_HOLE_K'] + 0.5)*PITCH, P['VT_L'] - (P['HUB_HOLE_K'] + 0.5)*PITCH)]),   # Streifenraster, Streifen laengs x, Kupfer unten
 }
 # V2: (Name, Typ, Mitte x, Mitte y, Drehung Grad, Montage). "platte" = haengt unter dem Traeger (bewegt sich mit der Wiegeplatte)
 boards = [("ESP32_C6", "ESP32", 39.8, 123.0, 180, "unten"), ("HX711_A", "HX711", 24, 24, 0, "unten"), ("HX711_B", "HX711", 76, 24, 0, "unten"),
@@ -419,47 +466,39 @@ Y_FL = OFF + P['USB_BOSS_T'] + 0.2
 lower = lower.cut(box(UX - P['USB_FL_L']/2 - 0.3, Y_FL, zc - P['USB_FL_W']/2 - 0.3, P['USB_FL_L'] + 0.6, P['WALL'] + 1, P['USB_FL_W'] + 0.6))
 for sx_ in (-1, 1):
     lower = lower.cut(cyl(UX + sx_*P['USB_SCREW_SP']/2, OFF - 1, zc, P['USB_SCREW_D'], P['WALL'] + 2, V(0, 1, 0)))
+    csk_h = (P['USB_CSK_D'] - P['USB_SCREW_D']) / 2   # 90-Grad-Senkung von aussen (ISO 10642 M3)
+    lower = lower.cut(Part.makeCone(P['USB_CSK_D']/2 + 0.5, P['USB_SCREW_D']/2, csk_h + 0.5, V(UX + sx_*P['USB_SCREW_SP']/2, OFF - 0.5, zc), V(0, 1, 0)))
 xr = OFF + P['PLATE'] - P['WALL']
 lower = lower.fuse(box(xr, 75-14, FLOOR, P['WALL'], 28, wall_h))
-# --- V2 Wickelkammer fuer das 1-m-Delock-Kabel im rechten Randstreifen (dort keine Waegezelle) ---
-def stadium(cx_, y0_, y1_, r_, z0_, h_):
-    return cyl(cx_, y0_, z0_, 2*r_, h_).fuse(cyl(cx_, y1_, z0_, 2*r_, h_)).fuse(box(cx_ - r_, y0_, z0_, 2*r_, y1_ - y0_, h_)).removeSplitter()
+# --- 27.11. Power-Hub (Elektronik): Streifenraster vorne rechts, Bestueckung nach unten, JP_NFC durch Bodenfenster von unten erreichbar ---
 CD = P['CABLE_D']
-CX_IN = P['COIL_WALL_X'] + 1.2 + 1.05 + CD/2                  # Kabelmitte innere Gerade
-CX_OUT = OFF + P['PLATE'] - P['WALL'] - 0.5 - CD/2             # Kabelmitte aeussere Gerade (vor der rechten Verstaerkung)
-COIL_R = (CX_OUT - CX_IN)/2; COIL_CX = (CX_IN + CX_OUT)/2
-Z_COIL0 = FLOOR + 0.3; Z_COIL1 = Z_COIL0 + P['COIL_LAYERS'] * CD
 USB_END_Y = Y_FL + P['USB_LEN'] - P['USB_BOSS_T']              # Ende Knickschutz der Einbaubuchse
-COIL_Y0 = USB_END_Y + 0.5 + COIL_R + CD/2                      # Mitte unterer Bogen (ueber der Buchse)
-COIL_Y1 = OFF + P['PLATE'] - C_IN - 0.5 - CD/2 - COIL_R        # Mitte oberer Bogen (vor dem Kragen)
-r_isl = COIL_R - CD/2 - 0.4
-island = stadium(COIL_CX, COIL_Y0, COIL_Y1, r_isl, FLOOR - 0.1, Z_COIL1 - FLOOR + 0.1).cut(stadium(COIL_CX, COIL_Y0, COIL_Y1, r_isl - 1.6, FLOOR, Z_COIL1))
-PLUG_Y = None   # wird bei den Referenzteilen gesetzt; Luecke in der Fuehrungswand fuer das Kabel vom ESP32-Stecker:
 esp_ = [b for b in boards if b[0] == "ESP32_C6"][0]; _eo = org("ESP32", esp_[2], esp_[3])
 PLUG_Y = 2*esp_[3] - (_eo[1] + (15.0 + 23.8)/2)                # Port (15,0-23,8) nach 180-Grad-Drehung
-coil_feats = [island]
-for (ya, yb) in ((USB_END_Y + 4.0, PLUG_Y - CD/2 - 1.5), (PLUG_Y + CD/2 + 1.5, COIL_Y1 + COIL_R)):
-    coil_feats.append(box(P['COIL_WALL_X'], ya, FLOOR - 0.1, 1.2, yb - ya, Z_COIL1 - FLOOR + 0.1))
-def tri_tab(xf, yc_, dirx, za, L_=6.0, out=1.5):
-    """Niederhalter: Dreieck mit 45-Grad-Unterseite (druckbar), an Flaeche x=xf, ragt in Richtung dirx ueber das Kabel."""
-    f_ = Part.Face(Part.makePolygon([V(xf, yc_ - L_/2, za), V(xf + dirx*out, yc_ - L_/2, za + out), V(xf, yc_ - L_/2, za + out + 0.3), V(xf, yc_ - L_/2, za)]))   # V2: flacher, Platz fuer Litzenband darueber
-    return f_.extrude(V(0, L_, 0))
-ym_ = (COIL_Y0 + COIL_Y1)/2
-for yt in (ym_ - 28, ym_ + 28):
-    for (xf, d_) in ((COIL_CX - r_isl, -1), (COIL_CX + r_isl, 1)):
-        coil_feats.append(tri_tab(xf - d_*0.1, yt, d_, Z_COIL1 + 0.2))
-        # Wandstueck unter dem Niederhalter bis zu dessen Oberkante (vorher schwebte er 0,2 ueber der Kernwand)
-        coil_feats.append(box(xf - (1.6 if d_ > 0 else 0), yt - 3.0, Z_COIL1 - 0.1, 1.6, 6.0, 0.2 + 1.5 + 0.3 + 0.1))
+HX0, HY0, HW, HL = P['HUB_X0'], P['HUB_Y0'], P['HUB_W'], P['HUB_L']
+HUB_ZB = FLOOR + P['HUB_POST']; HUB_ZT = HUB_ZB + P['BRD_T']
+JP_X0, JP_Y0 = HX0 + 0.0, HY0 + 3*PITCH                        # JP_NFC auf Streifen 1+2 (VBUS_IN -> 5V_NFC), 2. nutzbare Lochreihe
+HUB_HOLES = [(HX0 + 2.5*PITCH, HY0 + yh_) for yh_ in ((P['HUB_HOLE_K'] + 0.5)*PITCH, HL - (P['HUB_HOLE_K'] + 0.5)*PITCH)]   # Streifen 3 (GND)
+coil_feats = []
+for (xh_, yh_) in HUB_HOLES:                                   # 27.11. b: Dome + Zentrierzapfen statt Leisten/Schaumklebeband
+    coil_feats.append(cyl(xh_, yh_, FLOOR - 0.1, P['TCA_STANDOFF_D'], HUB_ZB - FLOOR + 0.1).fuse(cyl(xh_, yh_, HUB_ZB - 0.1, P['TCA_NUB_D'], P['BRD_T'] + P['NUB_STAKE'] + 0.1)))
+hw_ = P['TCA_HOOK_W']
+for (ex_, yc_, nv_) in ((HX0 + HW, HY0 + PITCH, V(-1, 0, 0)), (HX0, HY0 + HL - PITCH, V(1, 0, 0))):   # Rasthaken an den Langseiten im toten Endbereich, diagonal
+    hk_, Lh_ = snap_hook(ex_, yc_ - hw_/2, nv_, V(0, 1, 0), hw_, HUB_ZT)                             # (hinten laufen die Delock-Adern ueber die Kante)
+    coil_feats.append(hk_); hooks.append(("Power-Hub Langseite", "Power_Hub", hk_, Lh_, "unten"))
+jw_ = P['JP_WIN_CLR']
+HUB_WIN = box(JP_X0 - jw_, JP_Y0 - jw_, -1, 2*PITCH + 2*jw_, PITCH + 2*jw_, FLOOR + 2)   # Bodenfenster unter JP_NFC
 # Kabelgabeln am Boden: Verbindung ESP32 -> Platte (4 Adern, flexible Schlaufe) und HX711 -> ESP32 (Bodenleitungen links)
 def fork(x_, y_, gap, h_, d_=2.4, along_x=True):
     o_ = (gap + d_)/2
     p1 = (x_ - o_, y_) if along_x else (x_, y_ - o_); p2 = (x_ + o_, y_) if along_x else (x_, y_ + o_)
     return cyl(p1[0], p1[1], FLOOR - 0.1, d_, h_ + 0.1).fuse(cyl(p2[0], p2[1], FLOOR - 0.1, d_, h_ + 0.1))
 LINK_CLIP = (20.0, 64.0)   # V2: Gabel direkt unter dem Loetverteiler, kurze Schlaufe ueber den Waegespalt
-coil_feats.append(fork(LINK_CLIP[0], LINK_CLIP[1], 3.2, 9.0))
+coil_feats.append(fork(LINK_CLIP[0], LINK_CLIP[1], 3.8, 9.0))   # 27.11.: 5 Adern (Elektronik) -> Gabel 3,8
 for yf in (45.0, 80.0):
     coil_feats.append(fork(10.0, yf, 4.6, 7.0, 2.0))   # V2: Buendel HX711 A+B (8 Litzen)
 for q in coil_feats: lower = lower.fuse(q)
+lower = lower.cut(HUB_WIN)
 # Verbinderfenster im Prototyp geschlossen (Verbinder noch nicht festgelegt); Verstaerkung bleibt zum spaeteren Einschneiden
 # Verstaerkungen oberhalb der Schulter auf den Kragen zuruecknehmen (Platz fuer die Schuerze)
 lower = lower.cut(footprint(0, Z_SHOULDER, Z_UP - Z_SHOULDER).cut(footprint(C_OUT, Z_SHOULDER - 1, Z_UP - Z_SHOULDER + 2)))
@@ -505,6 +544,16 @@ def relief_x(c):
 for c in cells:
     rx0, rx1 = relief_x(c)
     upper = upper.cut(box(rx0, c['y'] - P['CELL_W']/2 - 1.0, Z_UP - 0.1, rx1 - rx0, P['CELL_W'] + 2.0, P['CLR_TOP'] + 0.1))
+    # 27.11.: Silikon oben auf der Messzone -> Freistich dort SIL_T tiefer (Luft ueber dem Silikon = CLR_TOP); seitlich bis ueber die Kabelseite
+    xa_, xb_ = sorted((fix_x(c, P['SIL_X0'] - P['SIL_TOL']), fix_x(c, P['SIL_X1'] + P['SIL_TOL'])))
+    xa_ -= P['CLR_TOP']; xb_ += P['CLR_TOP']
+    ext_ = P['SIL_SIDE'] + P['SIL_SIDE_TOL'] + P['CLR_TOP']; s_ = cable_s(c)
+    y0_ = c['y'] - P['CELL_W']/2 - (ext_ if s_ < 0 else 1.0); y1_ = c['y'] + P['CELL_W']/2 + (ext_ if s_ > 0 else 1.0)
+    upper = upper.cut(box(xa_, y0_, Z_UP - 0.1, xb_ - xa_, y1_ - y0_, P['CLR_TOP'] + P['SIL_T'] + 0.1))
+    # seitliches Kabel/Silikon ab Festende reicht bis Z_UP und 2,2 neben die Zelle -> dort ebenfalls Freistich CLR_TOP
+    xs0_, xs1_ = sorted((fix_x(c, 0.0), fix_x(c, P['SIL_X1'] + P['SIL_TOL'])))
+    ys0_ = c['y'] + P['CELL_W']/2 if s_ > 0 else c['y'] - P['CELL_W']/2 - ext_
+    upper = upper.cut(box(xs0_ - P['CLR_TOP'], ys0_, Z_UP - 0.1, xs1_ - xs0_ + 2*P['CLR_TOP'], ext_, P['CLR_TOP'] + 0.1))
     for hx in c['free_xs']:   # M4 DIN 912 von oben durch die Platte ins Zellengewinde, Kopf versenkt im Steg
         z_end = Z_TOP + 0.1 if VARIANT == "einteilig" else Z_SPLIT   # Deckel-Variante: endet an der Trennebene
         upper = upper.cut(cyl(hx, c['y'], Z_UP - 0.1, P['M4_CLR'], z_end - Z_UP + 0.1))
@@ -665,6 +714,11 @@ for k, c in enumerate(cells):
         cell = cell.cut(cyl(hx, c['y'], Z_CELL - 1, P['CELL_SCREW_D'], CH + 2))
     cell_shapes[k] = cell
     add("REF_Waegezelle_%d" % (k+1), cell, COL['ALU'])
+sil_refs = {}
+for k, c in enumerate(cells):   # 27.11.: Silikon + Zellkabel als Sperrzonen (fest am Unterteil, Luft zum Traeger = kein Kraftnebenschluss)
+    sz_, ex_ = sil_zones(c); sil_refs[k] = (sz_, ex_)
+    add("REF_Zelle%d_Silikon_Kabel" % (k+1), sz_, (0.85, 0.85, 0.8))
+    add("REF_Zelle%d_Kabelaustritt" % (k+1), ex_, (0.85, 0.85, 0.8))
 board_refs = {}; pin_refs = []; board_mount = {}
 for (n, t, cx, cy, rot, mount) in boards:
     bt = BOARD_TYPES[t]; ox, oy = org(t, cx, cy); bx, by = bt['bx'], bt['by']
@@ -681,13 +735,18 @@ for (n, t, cx, cy, rot, mount) in boards:
         top = box(pin.BoundBox.XMin, pin.BoundBox.YMin, zbt_, pin.BoundBox.XLength, pin.BoundBox.YLength, P['HDR_PIN_ABOVE'])
         parts += [pin, top]; pins_.append(pin); g_pin += [pin, top]
     if t == "VERTEILER":                                                                          # Loetstellen/Abgaenge unter der Kupferseite
-        parts.append(box(ox + 1.3, oy, zb_ - P['VT_SOLDER'], bx - 2.6, by, P['VT_SOLDER'])); g_cu.append(parts[-1])
+        ls_ = box(ox + 1.3, oy, zb_ - P['VT_SOLDER'], bx - 2.6, by, P['VT_SOLDER'])
+        for (hx_, hy_, hd, sd, nd) in bt['holes']: ls_ = ls_.cut(cyl(ox + hx_, oy + hy_, zb_ - P['VT_SOLDER'] - 1, hd + 1.0, P['VT_SOLDER'] + 2))   # keine Loetstelle am Montageloch
+        parts.append(ls_); g_cu.append(parts[-1])
     if t == "ESP32":
         mw = 18.0
         parts.append(box(ox + bx - P['ESP_MOD_L'], cy - mw/2, zbt_, P['ESP_MOD_L'], mw, P['ESP_MOD_H'])); g_met.append(parts[-1])        # Modul mit Abschirmung
         parts.append(box(ox + bx, cy - mw/2, zbt_, P['ESP_ANT_OVER'], mw, P['ESP_ANT_T'])); g_dk.append(parts[-1])                     # Antennenueberstand
         for (y0, y1) in [(1.0, 9.7), (15.0, 23.8)]:                                                               # 2x USB-C am Ende x=0
             parts.append(box(ox - 0.5, oy + y0, zbt_, 7.9, y1 - y0, P['ESP_USB_H'])); g_met.append(parts[-1])
+        for sd_ in ((1, 2) if P['ESP_JMP_SIDE'] == 0 else (P['ESP_JMP_SIDE'],)):                              # 27.11.: abgewinkelter Jumper oben
+            jy_ = oy if sd_ == 1 else oy + by - P['ESP_JMP_W']
+            parts.append(box(ox + P['ESP_JMP_X'] - P['ESP_JMP_L']/2, jy_, zbt_, P['ESP_JMP_L'], P['ESP_JMP_W'], P['ESP_JMP_H'])); g_pl.append(parts[-1])
     shp = parts[0]
     for q in parts[1:]: shp = shp.fuse(q)
     shp = rot_shape(shp, cx, cy, rot)
@@ -716,15 +775,17 @@ def pn_model(i, j):
     # SPI-Leiste 8-pol. an der langen Kante +s*y, abgewinkelt nach aussen
     sx0_, sx1_, ry_ = pn_spi(i, j); sm_ = (sx0_ + sx1_)/2; sw_ = 8 * PITCH
     ya_, yb_ = sorted((ry_ + s_*P['HDR_R_BEND'], ry_ + s_*(P['HDR_R_BEND'] + P['HDR_R_BODY'])))
-    sbody_ = box(sm_ - sw_/2, ya_, zb_ - hh_, sw_, yb_ - ya_, hh_ + 0.01)
     stip_ = cy_ + s_*(P['PN_W']/2 + P['PN_PIN_OVER'])
-    hdr_ = body_.fuse(sbody_)
+    spi_cut_ = "%d%d" % (i, j) in P['PN_SPI_CUT'].split(",")   # 27.11.: SPI-Leiste abgekniffen -> nur senkrechte Stummel
+    sbody_ = None if spi_cut_ else box(sm_ - sw_/2, ya_, zb_ - hh_, sw_, yb_ - ya_, hh_ + 0.01)
+    hdr_ = body_.fuse(sbody_) if sbody_ else body_.copy()
     for k_ in range(8):
         xk = sm_ + (k_ - 3.5) * PITCH
-        hor = box(xk - 0.32, min(ry_ - 0.32, stip_), zpin - 0.32, 0.64, abs(stip_ - ry_) + 0.32, 0.64)
         ver = box(xk - 0.32, ry_ - 0.32, zpin - 0.32, 0.64, 0.64, zt_ + P['PN_TAIL'] - (zpin - 0.32))
-        hdr_ = hdr_.fuse(hor).fuse(ver)
-    body_ = body_.fuse(sbody_)
+        hdr_ = hdr_.fuse(ver)
+        if not spi_cut_:
+            hdr_ = hdr_.fuse(box(xk - 0.32, min(ry_ - 0.32, stip_), zpin - 0.32, 0.64, abs(stip_ - ry_) + 0.32, 0.64))
+    if sbody_: body_ = body_.fuse(sbody_)
     for k_ in range(4):
         yk = cy_ + (k_ - 1.5) * PITCH
         hor = box(min(rx_ - 0.32, tip_), yk - 0.32, zpin - 0.32, abs(tip_ - rx_) + 0.32, 0.64, 0.64)
@@ -745,23 +806,37 @@ for i in range(3):
         plate_refs.append(board_refs["PN532_%d%d" % (i+1, j+1)])   # Reader bewegen sich mit der Platte -> Bewegungscheck
 # Delock 87824 nach Zeichnung, V2 in der vorderen Wand: Kragen im Ausschnitt, Flansch innen, Gehaeuse, Knickschutz (+y)
 y_f = Y_FL - P['USB_BOSS_T']
-usb = box(UX - P['USB_BOSS_L']/2, y_f, zc - (P['USB_H'] - 0.5)/2, P['USB_BOSS_L'], P['USB_BOSS_T'], P['USB_H'] - 0.5)
+usb = box(UX - P['USB_BOSS_L']/2, y_f, zc - P['USB_BOSS_H']/2, P['USB_BOSS_L'], P['USB_BOSS_T'], P['USB_BOSS_H'])
 usb = usb.fuse(box(UX - P['USB_FL_L']/2, Y_FL, zc - P['USB_FL_W']/2, P['USB_FL_L'], P['USB_FL_T'], P['USB_FL_W']))
-body_l = P['USB_LEN'] - P['USB_BOSS_T'] - P['USB_FL_T'] - 6.0
+body_l = P['USB_LEN'] - P['USB_BOSS_T'] - P['USB_FL_T'] - P['USB_STRAIN_L']
 usb = usb.fuse(box(UX - P['USB_BODY_W']/2, Y_FL + P['USB_FL_T'], zc - P['USB_BODY_H']/2, P['USB_BODY_W'], body_l, P['USB_BODY_H']))
-usb = usb.fuse(cyl(UX, Y_FL + P['USB_FL_T'] + body_l, zc, P['USB_STRAIN_D'], 6.0, V(0, 1, 0)))
+usb = usb.fuse(cyl(UX, Y_FL + P['USB_FL_T'] + body_l, zc, P['USB_STRAIN_D'], P['USB_STRAIN_L'], V(0, 1, 0)))
 add("REF_USB_C_Buchse", usb, (0.12, 0.12, 0.12))
 # Stecker P1 im USB-C des ESP32 (ESP um 180 Grad gedreht: USB-Ende zeigt nach +x zur Wickelkammer)
 x_usb = 2*esp_[2] - _eo[0]; esp_port_z = Z_BT + P['ESP_USB_H']/2
 plug_ref = box(x_usb + 0.5, PLUG_Y - P['PLUG_W']/2, esp_port_z - P['PLUG_T']/2, P['PLUG_L'], P['PLUG_W'], P['PLUG_T'])
 add("REF_USB_Stecker_ESP32", plug_ref, COL['METALL'])
-# Kabel: Stueck Stecker -> Wickel, Stueck Buchse -> Wickel, Wickel (COIL_LAYERS Lagen als Ring)
+# 27.11.: gekuerztes Delock-Kabel in zwei Stuecken (Buchse -> Hub, Hub -> Stecker), Spleiss am Hub; Hub mit JP_NFC und Elko (Referenz)
 x_pe = x_usb + 0.5 + P['PLUG_L']
-cab_plug = cyl(x_pe, PLUG_Y, esp_port_z, CD, CX_IN - x_pe, V(1, 0, 0))
-cab_usb = cyl(UX, USB_END_Y, zc, CD, COIL_Y0 - COIL_R - USB_END_Y, V(0, 1, 0))
-coil_ref = stadium(COIL_CX, COIL_Y0, COIL_Y1, COIL_R + CD/2, Z_COIL0, Z_COIL1 - Z_COIL0).cut(stadium(COIL_CX, COIL_Y0, COIL_Y1, COIL_R - CD/2, Z_COIL0 - 1, Z_COIL1 - Z_COIL0 + 2))
-add("REF_USB_Kabel_Stecker", cab_plug, (0.15, 0.15, 0.15)); add("REF_USB_Kabel_Buchse", cab_usb, (0.15, 0.15, 0.15))
-add("REF_USB_Kabelwickel", coil_ref, (0.15, 0.15, 0.15), 40)
+ZCB = FLOOR + CD/2 + 0.1; YSP = HY0 + HL + 4.0                  # Kabel liegt am Boden; Spleiss hinter dem Hub
+def tube_(pts, d):
+    sh_ = None
+    for a_, b_ in zip(pts, pts[1:]):
+        va, vb = V(*a_), V(*b_); c_ = Part.makeCylinder(d/2, (vb - va).Length, va, vb - va)
+        sh_ = c_ if sh_ is None else sh_.fuse(c_)
+    for p_ in pts[1:-1]: sh_ = sh_.fuse(Part.makeSphere(d/2, V(*p_)))
+    return sh_.removeSplitter()
+CAB_A = [(UX, USB_END_Y, zc), (UX, YSP, ZCB), (HX0 + 3.0, YSP, ZCB)]
+XCB = HX0 + HW - 4.0
+CAB_B = [(XCB, YSP, ZCB), (XCB, PLUG_Y, ZCB), (x_pe + 14.0, PLUG_Y, esp_port_z), (x_pe, PLUG_Y, esp_port_z)]
+cab_usb = tube_(CAB_A, CD); cab_plug = tube_(CAB_B, CD)
+add("REF_USB_Kabel_Buchse", cab_usb, (0.15, 0.15, 0.15)); add("REF_USB_Kabel_Stecker", cab_plug, (0.15, 0.15, 0.15))
+hub_pcb = box(HX0, HY0, HUB_ZB, HW, HL, P['BRD_T'])
+for (xh_, yh_) in HUB_HOLES: hub_pcb = hub_pcb.cut(cyl(xh_, yh_, HUB_ZB - 1, P['TCA_HOLE'], P['BRD_T'] + 2))
+jp_ = box(JP_X0, JP_Y0, HUB_ZB - P['JP_H'], 2*PITCH, PITCH, P['JP_H'])
+el_ = cyl(HX0 + HW/2, HY0 + HL/2 - P['ELKO_L']/2 + 1.5, FLOOR + 0.2 + P['ELKO_D']/2, P['ELKO_D'], P['ELKO_L'], V(0, 1, 0))
+add_parts("REF_Hub", [("", [hub_pcb], COL['PN532']), ("_JP_NFC", [jp_], (0.85, 0.1, 0.1)), ("_Elko", [el_], (0.1, 0.25, 0.6))])
+hub_refs = [hub_pcb, jp_, el_]
 
 # ---------------- Parametertabelle ----------------
 sh = doc.addObject('Spreadsheet::Sheet', 'Parameter')
@@ -848,7 +923,8 @@ xAl = tA.XMin - bd(6)/2 - 0.3; xAr = tA.XMax + bd(2)/2 + 0.3; xBr = tB.XMax + bd
 WC("Daten 11 + 21 -> TCA_A (links um Zelle 1)", 4, [(a21, YD(1)), (XL0, YD(1)), (XL0, 66.7), (xAl, 66.7)], 2)
 WC("Daten 12 + 11/21 -> TCA_A (Loetpunkt links)", 6, [(a12, 73.0), (a12, 66.7), (xAl, 66.7)], 1, drop(xAl, 66.7, 6, tA.XMin + 0.2))
 WC("Daten 22 -> TCA_A (Loetpunkt rechts)", 2, [(a22, 73.0), (a22, 67.4), (xAr, 67.4)], 1, drop(xAr, 67.4, 2, tA.XMax - 0.2))
-WC("Daten 13 + 23 -> TCA_A (links um Zelle 2)", 4, [(a23, YD(3)), (XL3a, YD(3)), (XL3a, Y3J), (XL3b, Y3J), (XL3b, 88.0), (xAl, 88.0)], 2, drop(xAl, 88.0, 4, tA.XMin + 0.2))
+Y3D = max(YD(3), esp_[3] - P['ESP_Y']/2 + P['ESP_JMP_W'] + 0.8 + 1.3)   # 27.11.: Band hinter den ESP32-Jumper (UART-Seite) verlegt, 0,8 Luft
+WC("Daten 13 + 23 -> TCA_A (links um Zelle 2)", 4, [(a23, Y3D), (XL3a, Y3D), (XL3a, Y3J), (XL3b, Y3J), (XL3b, 88.0), (xAl, 88.0)], 2, drop(xAl, 88.0, 4, tA.XMin + 0.2))
 WC("Daten 31 -> TCA_B (rechts um Zelle 1)", 2, [(a31, YD(1)), (XR, YD(1)), (XR, 67.4), (xBr, 67.4)])
 WC("Daten 32 + 31 -> TCA_B (Loetpunkt rechts)", 4, [(a32, 73.0), (a32, 67.4), (xBr, 67.4)], 1, drop(xBr, 67.4, 4, tB.XMax - 0.2))
 WC("Daten 33 -> TCA_B (rechts um Zelle 2)", 2, [(a33, YS(3)), (XR, YS(3)), (XR, 82.6), (xBr, 82.6)], 1, drop(xBr, 82.6, 2, tB.XMax - 0.2))
@@ -888,7 +964,13 @@ pts = [(xJa, YH, ZF(8)), (10, YH, ZF(8)), (10, 104, ZF(8)), (ecx - 12, yE, 6.0)]
 pts = [(ecx - 2, yE, 6.0), (ecx - 2, yE - 6, ZF(4)), (LINK_CLIP[0], LINK_CLIP[1] + 8, ZF(4)), (LINK_CLIP[0], LINK_CLIP[1] + 2.5, 6.5)]
 W(base_wires, "ESP32 -> Gabel (Versorgung + Bus)", 4, tube(pts, bd(4)), plen(pts))
 pts = [(LINK_CLIP[0], LINK_CLIP[1] + 2.5, 6.5), (LINK_CLIP[0], LINK_CLIP[1] - 3, 8.5), (LINK_CLIP[0], 59.5, 12.0), (LINK_CLIP[0], 56, ZVB)]
-W(loop_wires, "Schlaufe Gabel -> Verteiler (ueber den Waegespalt)", 4, tube(pts, bd(4)), plen(pts) + 15)
+W(loop_wires, "Schlaufe Gabel -> Verteiler (ueber den Waegespalt)", 5, tube(pts, bd(5)), plen(pts) + 15)
+xh5_ = HX0 + 1.5*PITCH; zf1_ = ZF(1)
+pts = [(xh5_, HY0 + HL - 3.0, HUB_ZT + 0.7), (xh5_, YSP + 1.0, HUB_ZT + 0.7), (HX0 - 2.5, YSP + 4.0, 9.5), (HX0 - 2.5, YSP + 10.0, zf1_),
+       (HX0 - 2.5, 75.0, zf1_), (34.0, 75.0, zf1_), (LINK_CLIP[0] + 2.0, LINK_CLIP[1] + 4.0, zf1_), (LINK_CLIP[0], LINK_CLIP[1] + 2.5, 6.5)]
+W(base_wires, "Hub -> Gabel (5V_NFC, unter den TCAs)", 1, tube(pts, bd(1)), plen(pts))
+pts = [(HX0 + 3.0, YSP, ZCB), (HX0 + 3.0, HY0 + HL + 1.2, HUB_ZT + 0.7), (HX0 + 3.0, HY0 + HL - 7.5, HUB_ZT + 0.7), (XCB, HY0 + HL - 7.5, HUB_ZT + 0.7), (XCB, HY0 + HL + 1.2, HUB_ZT + 0.7), (XCB, YSP, ZCB)]
+W(base_wires, "Delock-Adern am Hub (VBUS/GND auf Streifen, D+/D- Spleiss)", 4, tube(pts, bd(4)), plen(pts))
 for (nm_, n_, sh_) in plate_wires: add("REF_Litze_P_" + nm_.split(" ")[0] + "_%d" % len([o for o in doc.Objects if o.Name.startswith("REF_Litze")]), sh_, (0.95, 0.75, 0.1))
 for (nm_, n_, sh_) in base_wires: add("REF_Litze_U_%d" % len([o for o in doc.Objects if o.Name.startswith("REF_Litze")]), sh_, (0.2, 0.55, 0.9))
 for (nm_, n_, sh_) in loop_wires: add("REF_Litze_Schlaufe", sh_, (0.85, 0.2, 0.75))
@@ -918,6 +1000,11 @@ for k, c in enumerate(cells):
     gap_rel.append(seg.distToShape(upper)[0]); gap_contact.append(cell_shapes[k].distToShape(upper)[0])
 line("Luft Zelle - Plattenunterseite ausserhalb Auflage: min %.2f (Soll %.2f)" % (min(gap_rel), P['CLR_TOP']))
 line("Auflage Platte auf Zellen-Freiende: Abstand %.2f (Soll 0 = Kontakt)" % max(gap_contact))
+line("Silikon/Kabel an der Zelle (Nutzer 27.11.): oben/unten %.1f mm auf %.2f-%.2f mm ab Festende (+-%.1f), seitlich %.1f+%.1f mm auf der Kabelseite ab Festende, Kabelaustritt hinter dem Festende %.0f mm" % (
+    P['SIL_T'], P['SIL_X0'], P['SIL_X1'], P['SIL_TOL'], P['SIL_SIDE'], P['SIL_SIDE_TOL'], P['CABLE_EXIT_L']))
+line("  Luft Silikon/Kabel - Traeger %.2f (Soll >= %.2f), - Unterteil %.2f, Kabelaustritt - Unterteil %.2f, - Plattenteile (Boards/Leitungen) %.2f mm; Verdrehsicherung nur auf der kabelfreien Seite" % (
+    min(sil_refs[k][0].distToShape(upper)[0] for k in sil_refs), P['CLR_TOP'], min(sil_refs[k][0].distToShape(lower)[0] for k in sil_refs),
+    min(sil_refs[k][1].distToShape(lower)[0] for k in sil_refs), min(sil_refs[k][q].distToShape(pr_)[0] for k in sil_refs for q in (0, 1) for pr_ in plate_refs)))
 line("--- Bewegungscheck Platte bis Anschlag (Kippen um Freiende-Achse, Absenken, Verschieben) ---")
 pa = V(sum(cells[0]['free_xs'])/2, cells[0]['y'], Z_UP); pb = V(sum(cells[1]['free_xs'])/2, cells[1]['y'], Z_UP)
 ax_ = pb - pa
@@ -934,7 +1021,7 @@ moves.append(("Absenken %.2f" % (0.98 * P['STOP_GAP']), lambda sh_: mv_tr(sh_, V
 lat = 0.98 * (P['PIN_HOLE'] - P['PIN_D']) / 2
 for v_ in (V(lat, 0, 0), V(-lat, 0, 0), V(0, lat, 0), V(0, -lat, 0)):
     moves.append(("Verschieben (%.2f|%.2f)" % (v_.x, v_.y), (lambda vv: (lambda sh_: mv_tr(sh_, vv)))(v_)))
-fixed_refs = [w_[2] for w_ in base_wires] + base_refs + [doc.getObject(k).Shape for k in ("REF_USB_C_Buchse", "REF_USB_Stecker_ESP32", "REF_USB_Kabelwickel", "REF_USB_Kabel_Stecker", "REF_USB_Kabel_Buchse")]
+fixed_refs = [w_[2] for w_ in base_wires] + base_refs + hub_refs + [doc.getObject(k).Shape for k in ("REF_USB_C_Buchse", "REF_USB_Stecker_ESP32", "REF_USB_Kabel_Stecker", "REF_USB_Kabel_Buchse")] + [q_ for k_ in sil_refs for q_ in sil_refs[k_]]
 worst = 0.0
 for nm_, T_ in moves:
     vol_ = lower.common(T_(upper)).Volume
@@ -953,6 +1040,8 @@ line("Staubschutz Schuerze: Ueberdeckung %.1f mm; Luft waagerecht Schuerze-Krage
     P['SKIRT_H'] - P['GAP_V'], skirt.distToShape(collar_)[0], P['SKIRT_CLR'], skirt.distToShape(shoulder_)[0], P['GAP_V'], footprint(P['SKIRT_T'] + 0.01, Z_UP, 1).distToShape(collar_)[0], P['GAP_V']))
 line("Verbinderfenster rechts: geschlossen (Wand durchgehend); offen bleibt nur der USB-C-Ausschnitt fuer die Einbaubuchse")
 usb_s = doc.getObject("REF_USB_C_Buchse").Shape
+line("Delock-Buchse (Masse Nutzer 27.11.): 2x M3-Senkschraube ISO 10642 von aussen durch Wand + Flansch (%.2f), Mutter M3 in der Flanschtasche; Senkung D%.1f, Restwand unter der Senkung %.2f mm -> M3x10" % (
+    P['USB_FL_T'], P['USB_CSK_D'], (Y_FL - OFF) - (P['USB_CSK_D'] - P['USB_SCREW_D'])/2))
 line("Delock-Buchse (V2: vordere Wand, x=%.1f): Flansch innen, Wand am Kragen %.1f mm, Abstand Buchse-Schuerze %.2f mm, Stirnflaeche %.1f mm hinter Aussenwand, Luft zum Anschlagsockel %.2f mm" % (UX, Y_FL - OFF, usb_s.distToShape(skirt)[0], y_f - OFF, min(usb_s.distToShape(p_)[0] for p_ in posts)))
 v_pl = usb_s.common(plug_ref).Volume
 line("Stecker am ESP32 (Umspritzung 39 mm) gegen Einbaubuchse: Ueberschneidung %.0f mm3, Abstand %.2f mm  %s" % (v_pl, usb_s.distToShape(plug_ref)[0], "<-- KONFLIKT, Lage Buchse/ESP32 klaeren" if v_pl > 0.01 else "ok"))
@@ -965,20 +1054,20 @@ clamp_f = Z_HEAD_SEAT - Z_UP; eng_f = P['M4_LEN'] - clamp_f; tip_f = Z_HEAD_SEAT
 line("Freiende 4x M4x%d DIN 912 von oben: Klemmlaenge PLA %.1f mm, Einschraubtiefe Zelle %.1f mm, Spitze %.1f mm ueber Zellenunterkante" % (P['M4_LEN'], clamp_f, eng_f, tip_f - Z_CELL))
 if VARIANT == "einteilig":
     line("Kopfoberkante Freiende %.2f mm unter Gridfinity-Taschenboden (Soll >= 0)" % ((Z_TOP - GF_H) - (Z_HEAD_SEAT + 4.0)))
-line("Gesamt: 8x M4x%d DIN 912, 4x Scheibe DIN 125 M4 (nur Festende)" % P['M4_LEN'])
+line("Gesamt: 8x M4x%d DIN 912, 4x Scheibe DIN 125 M4 (nur Festende); USB-Buchse 2x M3x10 ISO 10642 (Senkkopf) + 2x Mutter M3 DIN 934" % P['M4_LEN'])
 line("--- Platinen (Pins nach unten) ---")
 line("Luft Pinreihen - Unterteil, alle Richtungen: min %.2f (Soll >= 0,4; Pinspitze zum Boden %.2f)" % (min(p_.distToShape(lower)[0] for p_ in pin_refs), P['BRD_POST'] - P['HDR_PLASTIC'] - P['HDR_PIN_BELOW']))
 line("Luft hoechstes Bauteil (Boards unten) - Plattenunterseite: min %.2f mm" % min(r_.distToShape(upper)[0] for r_ in base_refs))
 line("Luft Platinen - Waegezellen: min %.2f mm" % min(r_.distToShape(cell_shapes[k])[0] for r_ in board_refs.values() for k in cell_shapes))
 line("Luft Boards - Stuetzen/Fuehrungen: min %.2f mm (gewollt: 0,10 = Rasthaken-Nase, 0,20 = Stirnwand unter Antennen-/USB-Ueberstand)" % min(r_.distToShape(s_)[0] for r_ in base_refs for s_ in board_support if r_.distToShape(s_)[0] > 1e-6))
-line("Board-Halterung: alle Boards mit gedruckten Rasthaken (%d Stueck, kein Normteil); HX711/TCA9548A zusaetzlich lose Zentrierzapfen, ESP32 Auflagen + Fuehrungen" % len(hooks))
+line("Board-Halterung: alle Boards mit gedruckten Rasthaken (%d Stueck, kein Normteil); HX711/TCA9548A/Loetverteiler/Power-Hub zusaetzlich lose Zentrierzapfen, ESP32 Auflagen + Fuehrungen" % len(hooks))
 pn_rows = []
 for (nm_, bn_, hk, Lh, mt_) in hooks:
     dfl = (P['PN_HOOK_OVER'] if bn_.startswith("PN532") else P['HOOK_OVER']) + P['HOOK_CLR']; eps = 1.5 * P['HOOK_T'] * dfl / Lh**2 * 100
     if bn_.startswith("PN532"):
         pn_rows.append((hk.distToShape(board_refs[bn_])[0], min(hk.distToShape(s_)[0] for s_ in plate_support if s_ is not hk), Lh, eps)); continue
     others = min(hk.distToShape(s_)[0] for s_ in (board_support if mt_ == "unten" else plate_support) if s_ is not hk)
-    line("  Rasthaken %-22s %-6s Abstand Board %.2f, Luft zu Nachbarteilen %.2f, Arm %.1f mm, Dehnung %.2f %% (<= 2 %%)" % (nm_ + ":", mt_, hk.distToShape(board_refs[bn_])[0], others, Lh, eps))
+    line("  Rasthaken %-22s %-6s Abstand Board %.2f, Luft zu Nachbarteilen %.2f, Arm %.1f mm, Dehnung %.2f %% (<= 2 %%)" % (nm_ + ":", mt_, hk.distToShape(board_refs.get(bn_, hub_pcb))[0], others, Lh, eps))
 if pn_rows:
     line("  Rasthaken PN532: %d Stueck (2 je Reader, Kanten %s), Abstand Board min %.2f, Luft zu Nachbarteilen min %.2f, Arm %.1f mm, Dehnung max %.2f %% (<= 2 %%), Nase %.1f unter Platinenkante" % (
         len(pn_rows), "+-x Spalte 2, +-y Spalte 1/3", min(r[0] for r in pn_rows), min(r[1] for r in pn_rows), min(r[2] for r in pn_rows), max(r[3] for r in pn_rows), P['PN_HOOK_OVER']))
@@ -988,11 +1077,13 @@ line("--- V2 Verdrahtung ---")
 line("TCA9548A + Loetverteiler an der Traegerunterseite: Platine %.1f mm unter der Platte, Pinspitzen %.1f mm ueber dem Boden; Luft Plattenboards - Unterteil %.2f mm, - Zellen %.2f mm, - Boards unten %.2f mm; Luft Halter zur Platine %.2f mm" % (
     P['TCA_GAP'], Z_PB - P['HDR_PLASTIC'] - P['HDR_PIN_BELOW'] - FLOOR, min(r_.distToShape(lower)[0] for r_ in plate_refs), min(r_.distToShape(cell_shapes[k])[0] for r_ in plate_refs for k in cell_shapes),
     min(r_.distToShape(b_)[0] for r_ in plate_refs for b_ in base_refs), min(r_.distToShape(s_)[0] for r_ in plate_refs for s_ in plate_support if r_.distToShape(s_)[0] > 1e-6)))
-line("Adern ueber den Waegespalt (Unterteil -> Platte): 4 (Versorgung, GND, SDA, SCL; bei 5V+3V3 5 Adern) als lockere Schlaufe von der Kabelgabel (%.0f|%.0f) zum Loetverteiler" % LINK_CLIP)
+line("Adern ueber den Waegespalt (Unterteil -> Platte): 5 (Elektronik 27.11.: 5V_NFC, 3V3, GND, SDA, SCL) als lockere Schlaufe von der Kabelgabel (%.0f|%.0f) zum Loetverteiler" % LINK_CLIP)
 vt_ = board_refs["Loetverteiler"]
 line("Loetverteiler (Streifenraster %.2f x %.2f, %d Streifen x %d Loecher, Kupfer unten): Platine %.1f mm unter der Platte, Unterkante Loetstellen %.1f mm ueber dem Boden, Luft zum Unterteil %.2f mm, zu Zellen %.2f mm" % (
     P['VT_L'], P['VT_W'], round(P['VT_W']/PITCH), round(P['VT_L']/PITCH) - 1, P['VT_GAP'], vt_.BoundBox.ZMin - FLOOR, vt_.distToShape(lower)[0], min(vt_.distToShape(cell_shapes[k])[0] for k in cell_shapes)))
 line("  Belegung je Potential-Streifen: Zuleitung + TCA_A + TCA_B + 4 Straenge (11-21, 12-22, 13-23, 32-31/33) = 7 von 8 Loechern; SDA/SCL-Streifen: Zuleitung + TCA_A + TCA_B")
+line("  Montage Loetverteiler: 2 Loecher D%.1f auf Streifen 3 (Reserve, %.2f vom Ende, Abstand %.2f), Abstandsbund D%.1f von der Platte (legt %.1f mm fest) + Zentrierzapfen + 2 Rasthaken; Streifen 3 behaelt 5 Loecher zwischen den Montageloechern" % (
+    P['TCA_HOLE'], (P['HUB_HOLE_K'] + 0.5)*PITCH, P['VT_L'] - 2*(P['HUB_HOLE_K'] + 0.5)*PITCH, P['VT_STANDOFF_D'], P['VT_GAP']))
 line("  Kanal-SDA/SCL der Reader laufen NICHT ueber den Verteiler (alle PN532 Adresse 0x24), sondern einzeln vom TCA-Kanal")
 for (nm_, gcut) in groove_cuts:
     gr_ = gcut.common(box(-10, -10, Z_UP, 200, 200, 10))
@@ -1022,7 +1113,7 @@ for (i_, j_) in sorted(pn_col):
     vc_ = sum(hd_.common(c__).Volume for c__ in cell_shapes.values()) + sum(pn_brd[(i_, j_)].common(c__).Volume for c__ in cell_shapes.values())
     if dz_ < 0.5 or du_ < 0.1 or dc_ < 0.5: pn_bad_.append((i_, j_))
     line("  Reader %d%d (I2C %s, SPI %s): Leisten/Pins - Zellen/Unterteil/Boards %.2f mm, - Traeger %.2f mm; Bestueckung/DIP - unten %.2f mm; Ueberschneidung mit Zellen %.1f mm3" % (
-        i_, j_, "+x" if PN_I2C_SIDE[(i_, j_)] > 0 else "-x", "+y" if PN_I2C_SIDE[(i_, j_)] > 0 else "-y", dz_, du_, dc_, vc_))
+        i_, j_, "+x" if PN_I2C_SIDE[(i_, j_)] > 0 else "-x", ("+y" if PN_I2C_SIDE[(i_, j_)] > 0 else "-y") + (" abgekniffen" if "%d%d" % (i_, j_) in P['PN_SPI_CUT'].split(",") else ""), dz_, du_, dc_, vc_))
 line("Reader mit Konflikt (Luft < 0,5 nach unten oder < 0,1 zum Traeger): %s" % (", ".join("%d%d" % q for q in pn_bad_) if pn_bad_ else "keine"))
 line("Abstand Antenne (Platinenunterseite) - Behaelterboden Gridfinity: %.1f mm (vorher Oberseite 1,6 mm unter dem Boden); Reader-Mitten max %.2f mm aus der Feldmitte" % (
     (Z_TOP - GF_H) - Z_PNB, max(abs(PN_CX[i_] - (25 + 50*i_)) for i_ in range(3))))
@@ -1045,12 +1136,19 @@ ZONES = []   # V2 umgedreht: Leitungsfreiheit wird je Band oben geprueft
 for (zn_, zb__) in ZONES:
     v_ = zb__.common(lower).Volume + sum(zb__.common(r_).Volume for r_ in base_refs) + sum(zb__.common(cell_shapes[k]).Volume for k in cell_shapes)
     line("  Leitungszone %-55s frei von Unterteil/Boards/Zellen: %s (%.2f mm3)" % (zn_ + ":", v_ < 0.01, v_))
-cab_free = P['CABLE_LEN'] - P['USB_LEN'] - (P['PLUG_L'] + 6.65) - cab_plug.Volume/(math.pi*CD**2/4) - cab_usb.Volume/(math.pi*CD**2/4)
-perim = 2*(COIL_Y1 - COIL_Y0) + 2*math.pi*COIL_R; turns = cab_free / perim
-line("Wickelkammer: Wickelradius %.1f mm (%.1f x AD), Umfang %.0f mm, Kabel im Wickel %.0f mm -> %.2f Windungen bei %d Lagen Platz  %s" % (
-    COIL_R, COIL_R/CD, perim, cab_free, turns, P['COIL_LAYERS'], "ok" if turns <= P['COIL_LAYERS'] else "<-- ZU LANG um ca. %.0f mm" % ((turns - P['COIL_LAYERS'])*perim)))
-line("Wickelkammer Luft: Fuehrungswand - freies Ende Zelle 1 %.2f mm, Wickel - Platte %.2f mm, Wickel - Reader %.2f mm" % (
-    min(q.distToShape(cell_shapes[0])[0] for q in coil_feats[1:3]), coil_ref.distToShape(upper)[0], min(coil_ref.distToShape(pn_brd[(3, j)])[0] for j in (1, 2, 3))))
+cab_in_ = plen(CAB_A) + plen(CAB_B)
+cab_tot_ = P['USB_LEN'] + cab_in_ + P['PLUG_L'] + 6.65
+line("Delock-Kabel gekuerzt (Elektronik 27.11.): Buchse %.0f + Kabel im Gehaeuse %.0f (Buchse -> Hub %.0f, Hub -> Stecker %.0f) + Stecker %.0f = %.0f mm (Ziel ca. %.0f, Rest = Spleisszugabe %.0f mm)" % (
+    P['USB_LEN'], cab_in_, plen(CAB_A), plen(CAB_B), P['PLUG_L'] + 6.65, cab_tot_, P['CABLE_LEN'], P['CABLE_LEN'] - cab_tot_))
+hub_all_ = hub_pcb.fuse(jp_).fuse(el_)
+line("Power-Hub %.2f x %.2f (6 Streifen x 8 Loecher) bei x %.1f-%.1f, y %.1f-%.1f, Unterseite z=%.1f (Bestueckung unten), Oberseite z=%.1f; auf 2 Domen D%.1f mit Zentrierzapfen in 2 Montageloechern D%.1f (Abstand %.2f) + 2 Rasthaken diagonal an den Langseiten (Endbereich)" % (
+    HW, HL, HX0, HX0 + HW, HY0, HY0 + HL, HUB_ZB, HUB_ZT, P['TCA_STANDOFF_D'], P['TCA_HOLE'], HUB_HOLES[1][1] - HUB_HOLES[0][1]))
+line("  Luft Hub - Unterteil %.2f, - Delock-Buchse/Kabel %.2f, - Zellen %.2f, - Platte/Reader/Bandleitungen %.2f mm (Oberseite: dort werden Adern angeloetet, Soll >= 2)" % (
+    hub_all_.distToShape(lower)[0], min(hub_all_.distToShape(usb)[0], hub_all_.distToShape(cab_usb)[0], hub_all_.distToShape(cab_plug)[0]),
+    min(hub_all_.distToShape(cell_shapes[k])[0] for k in cell_shapes), min([hub_all_.distToShape(upper)[0]] + [hub_all_.distToShape(w_[2])[0] for w_ in plate_wires] + [hub_all_.distToShape(r_)[0] for r_ in plate_refs])))
+line("  JP_NFC zeigt nach unten: Kappenspitze z=%.1f (Boden 0..%.1f), Bodenfenster %.1f x %.1f mm -> Modul anheben, Jumper von unten ziehen; Elko D%.0f liegend, Luft zum Boden %.2f" % (
+    HUB_ZB - P['JP_H'], FLOOR, HUB_WIN.BoundBox.XLength, HUB_WIN.BoundBox.YLength, P['ELKO_D'], el_.BoundBox.ZMin - FLOOR))
+line("  Hub-Belegung im Modell: Streifen 1 VBUS_IN, 2 5V_NFC (-> Schlaufe), 3 GND; 3V3/SDA/SCL und HX711-Versorgung direkt am ESP32 (gleiche Netze wie Elektronik-Plan, kuerzere Wege)")
 nub_clr = min(((P['HX_HOLE'] - P['HX_NUB_D'])/2, (P['TCA_HOLE'] - P['TCA_NUB_D'])/2))
 line("Zentrierzapfen HX711/TCA: radial %.2f / %.2f mm (Soll >= 0,3, Druck wird dicker)" % ((P['HX_HOLE'] - P['HX_NUB_D'])/2, (P['TCA_HOLE'] - P['TCA_NUB_D'])/2))
 line("--- Wandstaerken (rechnerisch) ---")

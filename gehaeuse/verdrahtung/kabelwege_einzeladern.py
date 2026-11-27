@@ -2,7 +2,8 @@
 # Einzeladern-Ansicht der Reader-Verdrahtung (Draufsicht). Liest cad/kabelwege_v2.json (schreibt build_prototyp_v2.py)
 # und fuer den Hintergrund die V2-FCStd. Jede Ader wird einzeln entlang ihres Bandes gezeichnet (Band = Buendel im 3D-Modell).
 # Aufruf: freecadcmd -c "exec(open('gehaeuse/verdrahtung/kabelwege_einzeladern.py').read())"  -> gehaeuse/ansichten/kabelwege_einzeladern.png
-# Annahmen: Pinfolge der I2C-Leiste von -y nach +y = SCL, SDA, VCC, GND (Daten-Seite -y wie im Modell) -> am Board pruefen.
+# Pinfolge I2C-Leiste PN532 (Foto IMG_1762, bestaetigt 27.11.): GND, VCC, SDA, SCL, GND am naechsten zur SPI-Leiste.
+# Im Modell liegt die SPI-Leiste bei side=+1 (Spalte 1) auf +y, bei side=-1 (Spalten 2/3) auf -y.
 #           VCC aller Reader an Ader "V+" (5 V oder 3,3 V offen, NP_WIRES), dritte Strang-Ader gestrichelt = Reserve/zweite Spannung.
 import json, os
 import FreeCAD as App
@@ -80,14 +81,17 @@ def line(pts, c, lw=1.3, ls="-", z=5):
     ax.plot([p[0] for p in pts], [p[1] for p in pts], color=c, lw=lw, ls=ls, zorder=z, solid_capstyle="round", solid_joinstyle="round")
 
 # Stiftleisten (I2C, 4 Pins waagrecht) und Pinbeschriftung
-NAMES = ["SCL", "SDA", "VCC", "GND"]
+NAMES = ["SCL", "SDA", "VCC", "GND"]   # Reihenfolge von der SPI-fernen zur SPI-nahen Seite
+def pin(r, sig):   # y-Lage des Pins: GND liegt auf der Seite der SPI-Leiste (+y bei side=+1, -y bei side=-1)
+    q = NAMES.index(sig)
+    return r["pin_y"][q if r["side"] > 0 else 3 - q]
 for k, r in R.items():
     for q, py in enumerate(r["pin_y"]):
         line([(r["row"], py), (r["tip"], py)], "#8a8a8a", lw=2.2, z=4)
     lx = r["tip"] + r["side"] * 0.6
-    if k == "11":
-        for q, py in enumerate(r["pin_y"]):
-            ax.text(r["row"] - 0.5, py, NAMES[q], fontsize=6, ha="right", va="center", color=COL[NAMES[q]], zorder=7)
+    if k in ("11", "21"):
+        for sig in NAMES:
+            ax.text(r["row"] - 0.5 * r["side"], pin(r, sig), sig, fontsize=6, ha="right" if r["side"] > 0 else "left", va="center", color=COL[sig], zorder=7)
 
 # Daten: Band -> Reader in Reihenfolge der Adern im Band
 DATA = [("Daten 11 + 21", ["21", "11"]), ("Daten 12 + 11/21", ["12"]), ("Daten 22", ["22"]), ("Daten 13 + 23", ["23", "13"]),
@@ -102,7 +106,7 @@ for prefix, rds in DATA:
         for w_, sig in enumerate(("SCL", "SDA")):
             slot = 2 * s_ + w_; dd = (slot - (n - 1) / 2) * STEP
             path = offset_poly(rest, dd) if len(rest) > 1 else rest
-            start = (r["apx"], r["pin_y"][0 if sig == "SCL" else 1])
+            start = (r["apx"], pin(r, sig))
             full = [start, (start[0], path[0][1]) if abs(path[0][0] - start[0]) < 2 else (path[0][0], start[1])] + path
             if de: full.append((de[0], path[-1][1]))
             line(full, COL[sig])
@@ -130,7 +134,7 @@ for prefix, rds in SUP:
             dd = (w_ - (n - 1) / 2) * STEP
             yb = offset_poly(pts, dd)[0][1] if abs(pts[0][1] - pts[1][1]) < 1e-6 else None
             yb = [q for q in offset_poly(pts, dd) if True][-1][1]
-            line([(r["apx"] + (0.3 if sig == "GND" else -0.3), r["pin_y"][2 if sig == "VCC" else 3]), (r["apx"] + (0.3 if sig == "GND" else -0.3), yb)], COL[sig], lw=1.2)
+            line([(r["apx"] + (0.3 if sig == "GND" else -0.3), pin(r, sig)), (r["apx"] + (0.3 if sig == "GND" else -0.3), yb)], COL[sig], lw=1.2)
 # Bus Verteiler -> TCA_A -> TCA_B (4 Adern)
 for prefix in ("Verteiler -> TCA_A", "TCA_A -> TCA_B"):
     p = band(prefix); pts = [tuple(q) for q in p["pts"]]
@@ -151,6 +155,6 @@ ax.plot([], [], color="#8a8a8a", lw=3, label="I2C-Stiftleiste Reader (4 Pins, wa
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.09), ncol=2, fontsize=9, frameon=False)
 ax.set_xlim(-2, 152); ax.set_ylim(-2, 152); ax.set_aspect("equal")
 ax.set_title("Reader-Verdrahtung als Einzeladern (Draufsicht, Adern haengen unter dem Traeger)  -  Stand %s\n"
-             "Annahme Pinfolge I2C-Leiste (von -y nach +y): SCL, SDA, VCC, GND - am Board pruefen. Adern seitlich auseinandergezogen, im Modell liegen sie als Buendel." % J["stand"], fontsize=10)
+             "Pinfolge I2C-Leiste nach Foto: GND, VCC, SDA, SCL (GND zur SPI-Leiste). Adern seitlich auseinandergezogen, im Modell liegen sie als Buendel." % J["stand"], fontsize=10)
 fig.tight_layout()
 out = os.path.join(GEH, "ansichten", "kabelwege_einzeladern.png"); fig.savefig(out, dpi=130, bbox_inches="tight"); print("ok", out)
