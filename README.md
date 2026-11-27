@@ -17,8 +17,10 @@ Modulare Wiegematte im Format 150 × 150 mm. Sie erkennt Gewürzbehälter per NF
 
 ```
 gehaeuse/
-  UEBERGABE.md      Stand, Konstruktionsentscheidungen, offene Punkte
-  skripte/          build_prototyp_v2.py (Quelle der Wahrheit), build_behaelter.py, build_coupon.py
+  STAND.md          aktueller Stand, offene Punkte, nächster Schritt
+  entscheidungen.md Entscheidungslog (Datum, Begründung, verworfene Varianten)
+  CLAUDE.md         Arbeitsregeln für Claude Code im Gehäuse
+  skripte/          params.py (alle Maße), build_prototyp_v2.py (Geometrie, Prüfungen), build_behaelter.py, build_coupon.py
   modell/           FreeCAD-Dateien (werden von den Skripten erzeugt)
   pruefberichte/    automatische Prüfberichte, kabelwege_v2.json
   druck/            aktuelles Druckpaket: STLs + DRUCKHINWEISE.txt
@@ -26,12 +28,12 @@ gehaeuse/
   verdrahtung/      Lageplan, Pintabelle, Einzeladern-Ansicht
   ansichten/        Bilder des Modells
   render/           Blender-Produktbilder
-  archiv/           alte Stände (V1, Sicherungen)
+  archiv/           alte Stände (V1, Sicherungen, alte UEBERGABE.md)
 ```
 
 ## Gehäuse bauen
 
-Alle Maße stehen in `gehaeuse/skripte/build_prototyp_v2.py` in der Liste `PARAMS`, jeweils mit Status und Quelle. Das Modell wird nie von Hand geändert: Das Skript baut es jedes Mal komplett neu und schreibt dabei einen Prüfbericht (gültige Körper, Kollisionen, Spaltmaße, Bewegungscheck).
+Alle Maße stehen in `gehaeuse/skripte/params.py` in der Liste `PARAMS`, die `build_prototyp_v2.py` einliest, jeweils mit Status und Quelle. Das Modell wird nie von Hand geändert: Das Skript baut es jedes Mal komplett neu und schreibt dabei einen Prüfbericht (gültige Körper, Kollisionen, Spaltmaße, Bewegungscheck).
 
 Getestet mit FreeCAD 1.1.4. Die Befehle laufen aus der Projektwurzel:
 

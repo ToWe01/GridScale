@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Gridfinity-Behaelter fuer GridScale (50-mm-Raster), mit Mulde fuer das RFID-Tag unter jedem Fuss.
-# Gridfinity-Profil wird aus build_prototyp_v2.py gelesen (gleiche Werte wie die Matte).
+# Gridfinity-Profil wird aus params.py (Parameter von build_prototyp_v2.py) gelesen (gleiche Werte wie die Matte).
 # Ausgabe: gehaeuse/modell/Behaelter.FCStd, gehaeuse/pruefberichte/pruefbericht_behaelter.txt, gehaeuse/druck/Behaelter_<n>x<m>.stl
 import os, re, math, Part, Mesh
 import FreeCAD as App
@@ -9,7 +9,7 @@ from FreeCAD import Vector as V
 # Projektwurzel: Umgebungsvariable MATTE_PROJ, sonst aktuelles Verzeichnis (wenn es die Projektwurzel ist), sonst Standardpfad dieses Macs
 PROJ = os.environ.get("MATTE_PROJ") or (os.getcwd() if os.path.isdir(os.path.join(os.getcwd(), "gehaeuse", "skripte")) else "/Users/tomke/Documents/Hochschule/Master/3.Semester/SmartSystems2/Projekt_Matte")
 GEH = os.path.join(PROJ, "gehaeuse")
-src = open(os.path.join(GEH, "skripte", "build_prototyp_v2.py"), encoding="utf-8").read()
+src = open(os.path.join(GEH, "skripte", "params.py"), encoding="utf-8").read()   # Matten-Parameter (seit 27.11. ausgelagert)
 def mat_param(name):
     return float(re.search(r'\("%s",\s*([0-9.]+)' % name, src).group(1))
 
