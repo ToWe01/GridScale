@@ -23,6 +23,8 @@ Zweiteiliger 150×150-mm-Prototyp in PLA: Oberteil (Träger + Gridfinity-Deckel,
 - **FDM-Druck in PLA:** Wand mindestens 1,2 mm, Löcher drucken ca. 0,1–0,2 mm kleiner, M3/M4 als Schneidschrauben direkt ins PLA, Passungen 0,3–0,5 mm, Überhänge vermeiden.
 - **Wägemechanik** nicht durch Kraftnebenschlüsse verfälschen: Luft um die Zelle, Kabel mit Schlaufe, Überlast- und Kippanschläge mit Spalt.
 - Rechte und Hooks stehen in `.claude/settings.json`: Schreiben gesperrt in `referenz/`, `archiv/`, `gehaeuse/archiv/`, `gehaeuse/modell/` (FCStd nur über das Skript); Lesen gesperrt in den Archiven, `*.FCBak`, FEM-Rohdaten. Hooks prüfen Skripte in `gehaeuse/skripte/` nach jedem Edit und blockieren den Abschluss, wenn der Prüfbericht älter als eine Modelländerung ist.
+- Der Build schreibt zusätzlich `schnittstelle/gehaeuse_elektronik.json` (Lage, Pinleisten, Kabelwege für die Elektronik). Ändert sich dort etwas, das die Pinbelegung betrifft, das Elektronik-Team informieren (als offenen Punkt in `STAND.md`).
+- Agenten: `gehaeuse-bauen` (über `/bauen`), `gehaeuse-pruefer` (unabhängige Prüfung vor dem Commit einer Modelländerung, nur lesend), `doku` (Bericht/Statusberichte in `doku/`). Für Kleinigkeiten keinen Agenten starten.
 - Neue Entscheidungen in `entscheidungen.md` anhängen, `STAND.md` überschreiben (offene Punkte nur dort).
 
 ## FreeCAD ausführen

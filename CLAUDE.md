@@ -10,7 +10,8 @@ Modulare Wiegematte 150 × 150 mm: 9 × PN532 (NFC) erkennen Gewürzbehälter, z
 | `gehaeuse/` | FreeCAD-Modell, Prüfberichte, Druckdateien, FEM, Verdrahtungsplan. Eigene Regeln in `gehaeuse/CLAUDE.md` | Gehäuse |
 | `elektronik/` | Schaltung, Pinbelegung, Stromversorgung | Elektronik |
 | `software/` | Firmware ESP32-C6 | Software |
-| `doku/` | Statusberichte, Projektbericht | alle |
+| `schnittstelle/` | `gehaeuse_elektronik.json`: Lage der Boards, Pinleisten, Kabelwege (wird vom Gehäuse-Build erzeugt, nicht von Hand ändern) | Lage/Kabelwege: Gehäuse, Pinbelegung: Elektronik |
+| `doku/` | Statusberichte, Projektbericht, `vorlagen/` | alle |
 | `referenz/` | Datenblätter, Herstellerzeichnungen, Fremdmodelle | alle, **nur lesen** |
 | `archiv/` | veraltete erste Ideen (Roadmap 18.10.) | ignorieren |
 

@@ -9,6 +9,7 @@ Modulare Wiegematte im Format 150 × 150 mm. Sie erkennt Gewürzbehälter per NF
 | `gehaeuse/` | Gehäuse und Konstruktion: parametrisches FreeCAD-Modell, Prüfberichte, Druckdateien, FEM, Verdrahtungsplan | Gehäuse |
 | `elektronik/` | Schaltung, Pinbelegung, Messungen | Elektronik |
 | `software/` | Firmware ESP32-C6, Entwicklungsumgebung | Software |
+| `schnittstelle/` | Schnittstelle Gehäuse ↔ Elektronik (`gehaeuse_elektronik.json`, vom Gehäuse-Build erzeugt) | Gehäuse (Lage, Kabelwege) / Elektronik (Pinbelegung) |
 | `doku/` | Statusberichte, Projektbericht, Bestellung/Stückliste | alle |
 | `referenz/` | Datenblätter, Herstellerzeichnungen, Fremdmodelle (nur lesen) | alle |
 | `archiv/` | veraltete erste Ideen (Roadmap 18.10.) | – |

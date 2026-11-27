@@ -12,6 +12,7 @@ PROJ = os.environ.get("MATTE_PROJ") or (os.getcwd() if os.path.isdir(os.path.joi
 GEH = os.path.join(PROJ, "gehaeuse")
 outdir_modell = os.path.join(GEH, "modell")
 outdir_bericht = os.path.join(GEH, "pruefberichte")
+outdir_schnittstelle = os.path.join(PROJ, "schnittstelle")   # Schnittstelle Gehaeuse <-> Elektronik (fuer alle Teams)
 
 # Variante: "einteilig" = Oberteil aus einem Stueck (M4-Koepfe am Freiende sichtbar im Gridfinity-Steg)
 #           "deckel"    = Traeger (an Zellen geschraubt) + aufgesetzter Gridfinity-Deckel, Schrauben verdeckt
@@ -1036,6 +1037,51 @@ for o in _bd: _boards.addObject(o)
 doc.recompute()
 if App.GuiUp:
     Gui.ActiveDocument.ActiveView.viewIsometric(); Gui.SendMsgToActiveView("ViewFit")
+# ---------------- Schnittstelle Gehaeuse <-> Elektronik (schnittstelle/gehaeuse_elektronik.json) ----------------
+# Nur Ausgabe, aendert das Modell nicht. Lage/Kabelwege = Gehaeuse (aus diesem Modell), Pinbelegung = Elektronik.
+def _r(v_): return round(v_, 2)
+def _bb(o_):
+    b_ = o_.Shape.BoundBox
+    return dict(x=[_r(b_.XMin), _r(b_.XMax)], y=[_r(b_.YMin), _r(b_.YMax)], z=[_r(b_.ZMin), _r(b_.ZMax)])
+def _bb_alle(nm_):   # Huelle Platine + Anbauteile (Stiftleisten, Pins, Bestueckung, Jumper ...) = Bauraum
+    bs_ = [o_.Shape.BoundBox for k_, o_ in _ref.items() if k_ == nm_ or k_.startswith(nm_ + "_")]
+    if not bs_: return None
+    return dict(x=[_r(min(q.XMin for q in bs_)), _r(max(q.XMax for q in bs_))], y=[_r(min(q.YMin for q in bs_)), _r(max(q.YMax for q in bs_))],
+                z=[_r(min(q.ZMin for q in bs_)), _r(max(q.ZMax for q in bs_))])
+_ref = {o.Name: o for o in doc.Objects if o.Name.startswith("REF_") and hasattr(o, "Shape") and not o.Shape.isNull() and not o.Name.startswith("REF_Litze")}
+_spi_cut = P['PN_SPI_CUT'].split(",")
+_sch = dict(
+    stand=__import__("time").strftime("%Y-%m-%d %H:%M"),
+    erzeugt_von="gehaeuse/skripte/build_prototyp_v2.py (Masse: gehaeuse/skripte/params.py) - nicht von Hand aendern, wird bei jedem Build neu geschrieben",
+    zustaendigkeit={"Lage, Ausrichtung, Bauhoehen, Kabelwege und -laengen, Steckverbinder-Lage": "Gehaeuse (gehaeuse/)",
+                    "Pinbelegung, Netze, GPIOs, I2C-Adressen, TCA-Kanaele, Stromversorgung": "Elektronik (elektronik/VERDRAHTUNG_UND_STROMVERSORGUNG.md)"},
+    koordinaten="mm; huelle_platine = nur Leiterplatte, bauraum = mit Stiftleisten/Pins/Bestueckung; Ursprung vordere linke untere Ecke des Moduls (150 x 150), x nach rechts, y nach hinten (USB-C vorne bei y=0), z nach oben (Boden z=0)",
+    hoehen=dict(boden=_r(FLOOR), platte_unterseite=_r(Z_UP), trennebene_traeger_deckel=_r(Z_SPLIT), oberkante=_r(Z_TOP),
+                hinweis="Boards 'unten' stehen fest im Unterteil, 'platte' haengen unter dem Traeger und werden mitgewogen; ueber den Waegespalt nur die Schlaufe"),
+    boards=[dict(name=n_, typ=t_, mitte=[_r(x_), _r(y_)], drehung_grad=r_, montage=m_,
+                 pinleisten="Pins nach unten (Stiftleisten zum Boden, Kabel werden an die Pins geloetet)" if t_ != "VERTEILER" else "Streifenraster, Kupferseite unten",
+                 huelle_platine=_bb(_ref["REF_" + n_]) if "REF_" + n_ in _ref else None, bauraum=_bb_alle("REF_" + n_)) for (n_, t_, x_, y_, r_, m_) in boards]
+           + [dict(name="Power_Hub", typ="Streifenraster 6x12", montage="unten", pinleisten="Bestueckung unten, Kupfer oben (Adern oben angeloetet), JP_NFC nach unten im Bodenfenster",
+                   huelle_platine=_bb(_ref["REF_Hub"]) if "REF_Hub" in _ref else None, bauraum=_bb_alle("REF_Hub"))],
+    reader=[dict(name="PN532_%d%d" % k_, mitte=[_r(PNC(k_[0]-1, k_[1]-1)[0]), _r(PNC(k_[0]-1, k_[1]-1)[1])], montage="platte",
+                 lage="umgedreht: Antenne, Bestueckung und Stiftleisten nach unten",
+                 i2c_kante="+x" if PN_I2C_SIDE[k_] > 0 else "-x", i2c_pin_y=[_r(pn_hdr[k_]['y'] + (q_ - 1.5) * PITCH) for q_ in range(4)],
+                 i2c_pinspitze_x=_r(pn_hdr[k_]['tip']), spi_kante=("+y" if PN_I2C_SIDE[k_] > 0 else "-y"),
+                 spi_leiste="abgekniffen (nur Stummel)" if "%d%d" % k_ in _spi_cut else "vorhanden, unbeschaltet",
+                 huelle_platine=_bb(_ref["REF_PN532_%d%d" % k_]) if "REF_PN532_%d%d" % k_ in _ref else None, bauraum=_bb_alle("REF_PN532_%d%d" % k_)) for k_ in sorted(pn_hdr)],
+    waegezellen=[dict(name=n_[4:], huelle=_bb(o_)) for n_, o_ in sorted(_ref.items()) if _re.match(r"REF_Waegezelle_?\d+$", n_)],
+    steckverbinder=[dict(name="USB-C-Einbaubuchse Delock 87824", ort="Vorderwand", huelle=_bb(_ref["REF_USB_C_Buchse"]) if "REF_USB_C_Buchse" in _ref else None),
+                    dict(name="Delock-Stecker am ESP32", ort="steckt in der UART-Buchse des ESP32-C6 (mit Software abstimmen)"),
+                    dict(name="Modulverbinder", ort="rechte Wand, noch geschlossen", masse="PLATZHALTER CONN_W/CONN_H")],
+    leitungen=[dict(name=n_, adern=a_, laenge_modell_mm=_r(l_), bereich=b_) for (n_, a_, l_, b_) in wire_tab],
+    leitungen_hinweis="Platzhalter-Baender aus dem Modell; Laenge ohne Steigleitung (ca. 2 x 3 mm) und ohne Zugabe. Zellkabel Waegezelle -> HX711 nicht modelliert.",
+    bandverlaeufe_2d=WIRE_PATHS,
+)
+try:
+    os.makedirs(outdir_schnittstelle, exist_ok=True)
+    with open(os.path.join(outdir_schnittstelle, "gehaeuse_elektronik.json"), "w", encoding="utf-8") as f_: _json.dump(_sch, f_, indent=1, ensure_ascii=False)
+except Exception as e:
+    print("[Schnittstelle nicht geschrieben: %s]" % e)
 try:
     os.makedirs(outdir_modell, exist_ok=True); os.makedirs(outdir_bericht, exist_ok=True)
     doc.saveAs(os.path.join(outdir_modell, "Prototyp_15x15%s.FCStd" % SUFFIX))
