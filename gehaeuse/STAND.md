@@ -20,7 +20,7 @@ Stand: 2026-11-27. Einzige Stelle für offene Punkte des Gehäuses. Begründunge
 6. **Nachmessen/Testdruck:** Presssitz Deckelzapfen (`CRUSH_W`, `COVER_PIN_HOLE`), `STOP_GAP` 0,5 an der echten Zellendurchbiegung, `PN_T`, `ESP_ANT_T`.
 7. Knapp, aber im Soll: Strang Reihe 3 1,2 mm über der USB-Buchse des ESP32, Luft TCA–Unterteil 1,61 mm, Restwand Kopfsenkung Freiende 0,8 mm (Ausnahme).
 8. Gravur zeigt noch „R3“.
-9. **Arbeitsumgebung (Umbau 27.11.):** Hooks in Claude Code mit einer kleinen Teständerung auslösen lassen (Nutzer). FCStd einmal über die FreeCAD-Bridge mit Farben neu bauen, wenn sich das Modell ändert (headless fehlen die Farben). Optionaler Schnellmodus im Build-Skript offen (Nutzer fragt nach).
+9. **Arbeitsumgebung (Umbau 27.11.):** Hooks in Claude Code mit einer kleinen Teständerung auslösen lassen (Nutzer). FCStd einmal über die FreeCAD-Bridge mit Farben neu bauen, wenn sich das Modell ändert (headless fehlen die Farben).
 
 ## Nächster Schritt
 Gesamtteil drucken (Paket `druck/`), Reader und Zellen einbauen, Lesereichweite und Überlastanschlag am echten Teil prüfen.
