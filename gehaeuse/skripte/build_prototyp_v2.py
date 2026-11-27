@@ -658,7 +658,8 @@ L = []
 def line(s): L.append(s)
 line("PRUEFBERICHT  Variante %s  (Z_UP=%.2f, Gesamthoehe=%.2f mm)" % (VARIANT, Z_UP, Z_TOP))
 if VARIANT == "deckel":
-    line("Traeger/Deckel gueltig: %s/%s, Volumen %.0f/%.0f mm3, Ueberschneidung %.3f mm3 (Soll 0)" % (carrier.isValid(), cover.isValid(), carrier.Volume, cover.Volume, carrier.common(cover).Volume))
+    _v_cc = carrier.common(cover).Volume
+    line("Traeger/Deckel gueltig: %s/%s, Volumen %.0f/%.0f mm3, Ueberschneidung %.3f mm3 (Soll 0)" % (carrier.isValid(), cover.isValid(), carrier.Volume, cover.Volume, _v_cc))
     line("Trennebene z=%.2f: Traeger %.2f mm, Deckel %.2f mm (Boden %.2f); ueber den Readern: Deckelboden %.2f + Druckplatte %.2f mm" % (Z_SPLIT, Z_SPLIT - Z_UP, Z_TOP - Z_SPLIT, P['COVER_FLOOR'], P['COVER_FLOOR'], Z_SPLIT - (Z_PNB + P['BRD_T'] + P['PN_SEAT_CLR'])))
     if COVER_PINS:
         line("Passzapfen Deckel->Traeger: %d Stueck D%.1f x %.2f (= Druckplattenhoehe), Bohrung D%.1f tief %.2f mit %d Quetschrippen, Fase %.1f; Lage: %s" % (
@@ -671,7 +672,8 @@ if VARIANT == "deckel":
     line("Schraubenkoepfe Freiende vom Deckel verdeckt: %s (Kopfoberkante %.2f unter Trennebene)" % (hidden, Z_SPLIT - (Z_HEAD_SEAT + 4.0)))
 line("Formen gueltig: Unterteil=%s Oberteil%s=%s" % (lower.isValid(), "" if VARIANT == "einteilig" else " (Traeger+Deckel)", upper.isValid()))
 line("Volumen: Unterteil=%.0f mm3, Oberteil=%.0f mm3" % (lower.Volume, upper.Volume))
-line("Ueberschneidung Unter/Oberteil: %.3f mm3 (erwartet 0)" % lower.common(upper).Volume)
+_v_lu = lower.common(upper).Volume
+line("Ueberschneidung Unter/Oberteil: %.3f mm3 (erwartet 0)" % _v_lu)
 # ---------------- V2 LEITUNGEN (Platzhalter) ----------------
 # Buendel als Rohr (Durchmesser aus Kreispackung der Litzen), in Nuten und unter Spalte 3 / ueber den TCAs als flaches Band.
 # Abgang am Reader = Readermitte (PLATZHALTER, Pinseite offen). Strang = durchgeschleifte Versorgung (NP Adern), Daten = SDA+SCL je Reader.
@@ -975,6 +977,38 @@ line("Restwand Readertaschen untereinander/zur Aussenwand (inkl. Pin-Aussparunge
      [min(q_.BoundBox.XMin - OFF, q_.BoundBox.YMin - OFF, OFF + P['PLATE'] - q_.BoundBox.XMax, OFF + P['PLATE'] - q_.BoundBox.YMax) for q_ in pk_]))
 ph_ = [k for k, v, st, q in PARAMS if st == "PLATZHALTER"]
 line("--- offene PLATZHALTER (%d): %s" % (len(ph_), ", ".join(ph_)))
+# ---------------- Zusammenfassung oben im Pruefbericht ----------------
+# Harte Pruefungen + jeder Wert mit "(Soll x)", "(Soll >= x)", "(erwartet x)" oder "Dehnung x % (<= y %)" im Text.
+# Zeilen mit "<--" sind Hinweise (bekannt, kein Fehler). Die Details darunter bleiben unveraendert.
+import re as _re
+_TOL = 0.001
+_chk = [("Koerper gueltig (Unterteil, Oberteil)", lower.isValid() and upper.isValid()),
+        ("Ueberschneidung Unter-/Oberteil 0", _v_lu < _TOL),
+        ("Referenzteile ohne Kollision", bad == 0),
+        ("Bewegungscheck ohne Ueberschneidung", worst < _TOL),
+        ("Reader ohne Konflikt", not pn_bad_),
+        ("USB-Stecker ohne Ueberschneidung", v_pl <= 0.01)]
+if VARIANT == "deckel":
+    _chk.insert(1, ("Traeger/Deckel gueltig, Ueberschneidung 0", carrier.isValid() and cover.isValid() and _v_cc < _TOL))
+_rx_soll = _re.compile(r"(-?\d+\.\d+)\s*(?:mm3?\s*)?(?:radial\s*)?\((?:Soll|erwartet)\s*(>=|<=)?\s*(-?\d+(?:[.,]\d+)?)")
+_rx_dehn = _re.compile(r"Dehnung (-?\d+\.\d+) % \(<= (\d+(?:[.,]\d+)?) %\)")
+_n_soll = 0
+for _l in L:
+    for _m in _rx_soll.finditer(_l):
+        _n_soll += 1
+        _v, _op, _s = float(_m.group(1)), _m.group(2), float(_m.group(3).replace(",", "."))
+        _ok = _v >= _s - 0.005 if _op == ">=" else (_v <= _s + 0.005 if _op == "<=" else abs(_v - _s) <= 0.005)
+        if not _ok: _chk.append(("Sollwert: " + _l.strip()[:110], False))
+    for _m in _rx_dehn.finditer(_l):
+        _n_soll += 1
+        if float(_m.group(1)) > float(_m.group(2).replace(",", ".")) + 0.005: _chk.append(("Dehnung: " + _l.strip()[:110], False))
+_fehl = [n_ for n_, ok_ in _chk if not ok_]
+_hinw = [l_.strip() for l_ in L if "<--" in l_]
+_S = ["ZUSAMMENFASSUNG: %s  (%d Abweichungen; %d harte Pruefungen, %d Sollwerte geprueft; %d Hinweise; %d PLATZHALTER)" % (
+      "OK" if not _fehl else "FEHLER", len(_fehl), len([c_ for c_ in _chk if not c_[0].startswith(("Sollwert:", "Dehnung:"))]), _n_soll, len(_hinw), len(ph_))]
+_S += ["  FEHLER: " + n_ for n_ in _fehl] + ["  Hinweis: " + h_ for h_ in _hinw]
+_S.append("=" * 100)
+L[0:0] = _S
 report = "\n".join(L)
 td = doc.addObject("App::TextDocument", "Pruefbericht"); td.Text = report
 

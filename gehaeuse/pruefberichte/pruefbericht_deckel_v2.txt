@@ -1,3 +1,6 @@
+ZUSAMMENFASSUNG: OK  (0 Abweichungen; 7 harte Pruefungen, 34 Sollwerte geprueft; 1 Hinweise; 2 PLATZHALTER)
+  Hinweis: Zielpunkte ohne Platz fuer Passzapfen: (101|8) (101|142)  <-- pruefen
+====================================================================================================
 PRUEFBERICHT  Variante deckel  (Z_UP=20.10, Gesamthoehe=34.95 mm)
 Traeger/Deckel gueltig: True/True, Volumen 55124/63593 mm3, Ueberschneidung 0.000 mm3 (Soll 0)
 Trennebene z=29.60: Traeger 9.50 mm, Deckel 5.35 mm (Boden 0.60); ueber den Readern: Deckelboden 0.60 + Druckplatte 2.40 mm

@@ -6,7 +6,7 @@ Der Nutzer ist hier für **Gehäuse/Konstruktion** zuständig, nicht für Elektr
 1. `gehaeuse/STAND.md` – aktueller Stand, offene Punkte, nächster Schritt (eine Seite).
 2. `gehaeuse/skripte/params.py` – alle Maße mit Status und Quelle.
 
-Das Build-Skript `gehaeuse/skripte/build_prototyp_v2.py` (Geometrie und Prüfungen, ca. 1000 Zeilen) **nicht ganz lesen**, sondern gezielt per `grep` nach Parametername oder Bauteil. Begründungen früherer Entscheidungen: `gehaeuse/entscheidungen.md`. Alte Übergabe mit allen Details: `gehaeuse/archiv/UEBERGABE.md` (nur bei Bedarf).
+Das Build-Skript `gehaeuse/skripte/build_prototyp_v2.py` (Geometrie und Prüfungen, ca. 1000 Zeilen) **nicht ganz lesen**, sondern gezielt per `grep` nach Parametername oder Bauteil. Begründungen früherer Entscheidungen: `gehaeuse/entscheidungen.md`. Alte Übergabe mit allen Details: `gehaeuse/archiv/UEBERGABE.md` (Lesen per `.claude/settings.json` gesperrt wie das ganze Archiv; nur wenn der Nutzer es verlangt, dann liest er die Stelle vor oder gibt sie frei).
 
 ## Was gebaut wird
 Zweiteiliger 150×150-mm-Prototyp in PLA: Oberteil (Träger + Gridfinity-Deckel, 50-mm-Raster, 9 PN532-Taschen) auf zwei Wägezellen Adafruit 4541, Unterteil mit ESP32-C6, 2× SparkFun HX711, Power-Hub und USB-C-Einbaubuchse (Delock 87824); 2× TCA9548A und Lötverteiler hängen unter dem Träger. Später werden mehrere Module zusammengesteckt.
@@ -22,6 +22,7 @@ Zweiteiliger 150×150-mm-Prototyp in PLA: Oberteil (Träger + Gridfinity-Deckel,
 - Alle Boards haben **angelötete Header-Pins, die bleiben**. Kabel werden an die Pins gelötet, nichts wird ausgelötet. Rahmen und Taschen lassen die Pins frei. Einzige Ausnahme (Nutzer 27.11.): an Reader 22 und 23 wird die ungenutzte SPI-Leiste abgekniffen (`PN_SPI_CUT`).
 - **FDM-Druck in PLA:** Wand mindestens 1,2 mm, Löcher drucken ca. 0,1–0,2 mm kleiner, M3/M4 als Schneidschrauben direkt ins PLA, Passungen 0,3–0,5 mm, Überhänge vermeiden.
 - **Wägemechanik** nicht durch Kraftnebenschlüsse verfälschen: Luft um die Zelle, Kabel mit Schlaufe, Überlast- und Kippanschläge mit Spalt.
+- Rechte und Hooks stehen in `.claude/settings.json`: Schreiben gesperrt in `referenz/`, `archiv/`, `gehaeuse/archiv/`, `gehaeuse/modell/` (FCStd nur über das Skript); Lesen gesperrt in den Archiven, `*.FCBak`, FEM-Rohdaten. Hooks prüfen Skripte in `gehaeuse/skripte/` nach jedem Edit und blockieren den Abschluss, wenn der Prüfbericht älter als eine Modelländerung ist.
 - Neue Entscheidungen in `entscheidungen.md` anhängen, `STAND.md` überschreiben (offene Punkte nur dort).
 
 ## FreeCAD ausführen

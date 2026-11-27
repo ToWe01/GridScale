@@ -22,3 +22,6 @@ doku/bestellung/
 # Fremde Datenblaetter und Herstellerzeichnungen (Urheberrecht der Hersteller), Bezugsquellen in referenz/README.md
 referenz/externe_modelle/
 referenz/unterlagen/
+
+# Claude Code: lokale Einstellungen nur fuer diesen Mac (Pfade, Team-Schreibsperren)
+.claude/settings.local.json
