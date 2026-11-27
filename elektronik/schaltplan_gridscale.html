@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GridScale V2 &ndash; Schaltplan &amp; Durchsichtige Lage&uuml;bersicht (1-Kabel-USB-C)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b1120;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    .wire {
+      transition: opacity 0.18s ease, stroke-width 0.18s ease;
+    }
+    .node-card {
+      cursor: pointer;
+      transition: opacity 0.18s ease, filter 0.18s ease;
+    }
+    .node-card:hover {
+      filter: brightness(1.08);
+    }
+    .dimmed {
+      opacity: 0.13 !important;
+    }
+    .highlighted-wire {
+      stroke-width: 3.4 !important;
+    }
+    .tab-btn[aria-selected="true"] {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--primary);
+    }
+    .filter-btn[aria-pressed="true"] {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 m-0 font-sans">
+  <div class="max-w-[1480px] mx-auto space-y-4">
+
+    <!-- Header + Tabs -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-lg font-semibold tracking-tight">GridScale V2 (150 &times; 150 mm) &ndash; Schaltplan &amp; Oben/Unten-&Uuml;bersicht</h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+          Delock 87824 gek&uuml;rzt (<code>D+/D&minus;</code> + <code>5V</code> weiter an ESP32) &bull; <code>6&times;8</code> Power-Hub mit <code>JP_NFC</code>-Jumper (trennt 5V der 9&times; PN532 beim USB-Flashen) &bull; 9&times; PN532 (<code>SCL | SDA | VCC | GND</code>)
+        </p>
+      </div>
+      <div class="flex items-center gap-2" role="tablist">
+        <button id="tab-schematic" role="tab" aria-selected="true"
+          class="tab-btn px-3.5 py-2 rounded-lg border border-[var(--border)] text-xs font-medium transition-colors">
+          1. Elektrischer Schaltplan (Pin-zu-Pin)
+        </button>
+        <button id="tab-overlay" role="tab" aria-selected="false"
+          class="tab-btn px-3.5 py-2 rounded-lg border border-[var(--border)] text-xs font-medium transition-colors">
+          2. Durchsichtige Oben/Unten-Ansicht (150&times;150 mm)
+        </button>
+      </div>
+    </header>
+
+    <!-- TAB 1: ELECTRICAL SCHEMATIC -->
+    <section id="panel-schematic" class="space-y-3">
+      <!-- Net Filter Bar -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-xs font-medium text-[var(--muted-foreground)] mr-1">Netz hervorheben:</span>
+          <button data-net="all" aria-pressed="true" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium">Alle Netze</button>
+          <button data-net="5v" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#ef4444"></span>5V (USB + PN532)
+          </button>
+          <button data-net="usb" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#06b6d4"></span>USB D+/D&minus; (Flashen)
+          </button>
+          <button data-net="3v3" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#f97316"></span>3,3V (TCA + HX711)
+          </button>
+          <button data-net="gnd" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#64748b"></span>GND (Sternpunkt)
+          </button>
+          <button data-net="i2c" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#3b82f6"></span>I&sup2;C-Bus &amp; Kan&auml;le
+          </button>
+          <button data-net="scale" aria-pressed="false" class="filter-btn px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#10b981"></span>Waage (HX711 + Zellen)
+          </button>
+        </div>
+        <div class="text-xs text-[var(--muted-foreground)]">
+          Tipp: Auf beliebiges Bauteil klicken f&uuml;r Pin-Details
+        </div>
+      </div>
+
+      <!-- Schematic Canvas + Quick Inspector -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-3 items-start">
+        <div class="xl:col-span-9 bg-[var(--card)] border border-[var(--border)] rounded-xl p-2 overflow-x-auto">
+          <svg id="svg-schematic" viewBox="0 0 1440 835" class="w-full min-w-[1050px] h-auto select-none" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- Background Zones -->
+            <rect x="8" y="8" width="576" height="819" rx="12" fill="#3b82f6" fill-opacity="0.04" stroke="#64748b" stroke-opacity="0.3" stroke-width="1.2"/>
+            <text x="22" y="28" font-size="12" font-weight="700" fill="currentColor" opacity="0.75">UNTERTEIL (fest auf dem Tisch)</text>
+
+            <rect x="646" y="8" width="786" height="819" rx="12" fill="#10b981" fill-opacity="0.04" stroke="#64748b" stroke-opacity="0.3" stroke-width="1.2"/>
+            <text x="660" y="28" font-size="12" font-weight="700" fill="currentColor" opacity="0.75">TR&Auml;GERPLATTE (beweglich auf W&auml;gezellen)</text>
+
+            <!-- Waegespalt Divider -->
+            <line x1="612" y1="16" x2="612" y2="820" stroke="#a855f7" stroke-width="2" stroke-dasharray="7 5"/>
+            <rect x="570" y="222" width="84" height="86" rx="8" fill="var(--card)" stroke="#a855f7" stroke-width="1.4"/>
+            <text x="612" y="242" text-anchor="middle" font-size="10" font-weight="700" fill="#a855f7">W&Auml;GESPALT</text>
+            <text x="612" y="257" text-anchor="middle" font-size="9" fill="currentColor" opacity="0.85">5-adrige weiche</text>
+            <text x="612" y="270" text-anchor="middle" font-size="9" fill="currentColor" opacity="0.85">Silikon-Schlaufe</text>
+            <text x="612" y="284" text-anchor="middle" font-size="8.5" fill="currentColor" opacity="0.65">(locker als</text>
+            <text x="612" y="296" text-anchor="middle" font-size="8.5" fill="currentColor" opacity="0.65">S-Bogen legen)</text>
+
+            <!-- WIRES LAYER -->
+            <g id="sch-wires"></g>
+
+            <!-- ==================== COMPONENT BOXES ==================== -->
+            <g class="node-card" data-info="delock" data-nets="5v usb gnd">
+              <rect x="22" y="38" width="206" height="114" rx="8" fill="var(--background)" stroke="#ef4444" stroke-width="1.8"/>
+              <rect x="22" y="38" width="206" height="24" rx="8" fill="#ef4444" fill-opacity="0.16"/>
+              <text x="32" y="54" font-size="11" font-weight="700" fill="currentColor">Delock 87824 (gek&uuml;rzt ~25 cm)</text>
+              <text x="32" y="74" font-size="9" fill="currentColor" opacity="0.85">Au&szlig;en: 5V/3A-Netzteil ODER Laptop</text>
+              <text x="32" y="88" font-size="8.5" fill="currentColor" opacity="0.65">In Mitte gek&uuml;rzt, Enden behalten</text>
+              <text x="32" y="102" font-size="8.5" font-weight="600" fill="#06b6d4">D+/D&minus; kurz wieder verl&ouml;ten!</text>
+              <text x="32" y="136" font-size="8.5" fill="currentColor" opacity="0.65">Steckerende geht an ESP32 USB-C</text>
+
+              <circle cx="228" cy="68" r="4" fill="#ef4444"/>
+              <text x="220" y="71" text-anchor="end" font-size="8.5" font-weight="700" fill="#ef4444">VBUS (+5V)</text>
+              <circle cx="228" cy="92" r="4" fill="#06b6d4"/>
+              <text x="220" y="95" text-anchor="end" font-size="8.5" font-weight="700" fill="#0891b2">D+ / D&minus;</text>
+              <circle cx="228" cy="116" r="4" fill="#64748b"/>
+              <text x="220" y="119" text-anchor="end" font-size="8.5" font-weight="700" fill="currentColor">GND</text>
+            </g>
+
+            <g class="node-card" data-info="powerhub" data-nets="5v 3v3 gnd i2c">
+              <rect x="22" y="186" width="235" height="238" rx="8" fill="var(--background)" stroke="#f97316" stroke-width="1.8"/>
+              <rect x="22" y="186" width="235" height="24" rx="8" fill="#f97316" fill-opacity="0.16"/>
+              <text x="32" y="202" font-size="11" font-weight="700" fill="currentColor">Unterteil-Hub (6&times;8 Streifenraster)</text>
+
+              <g id="hub-strips"></g>
+
+              <rect x="208" y="230" width="28" height="44" rx="4" fill="#ef4444" fill-opacity="0.12" stroke="#ef4444" stroke-width="1.3"/>
+              <circle cx="222" cy="238" r="3.2" fill="#ef4444"/>
+              <circle cx="222" cy="266" r="3.2" fill="#ef4444"/>
+              <line x1="222" y1="238" x2="222" y2="266" stroke="#ef4444" stroke-width="2.6"/>
+              <text x="204" y="255" text-anchor="end" font-size="8.5" font-weight="700" fill="#ef4444">JP_NFC</text>
+
+              <rect x="30" y="394" width="219" height="24" rx="4" fill="#ef4444" fill-opacity="0.09" stroke="#ef4444" stroke-dasharray="3 2"/>
+              <text x="139" y="405" text-anchor="middle" font-size="8" font-weight="700" fill="#ef4444">JP_NFC: Steckt = Netzteil &bull; Ab = USB-Flashen!</text>
+              <text x="139" y="415" text-anchor="middle" font-size="7.5" fill="currentColor" opacity="0.7">(2 L&ouml;cher auf Str. 2+3 f&uuml;r opt. 470 &micro;F Elko frei)</text>
+            </g>
+
+            <g class="node-card" data-info="esp32" data-nets="5v usb 3v3 gnd i2c scale">
+              <rect x="312" y="194" width="218" height="274" rx="8" fill="var(--background)" stroke="#3b82f6" stroke-width="1.8"/>
+              <rect x="312" y="194" width="218" height="23" rx="8" fill="#3b82f6" fill-opacity="0.16"/>
+              <text x="421" y="210" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">ESP32-C6-DevKitC-1</text>
+
+              <circle cx="312" cy="224" r="4" fill="#06b6d4"/>
+              <text x="321" y="227" font-size="9.5" font-weight="700" fill="#0891b2">USB D+ / D&minus; (Flashen)</text>
+
+              <circle cx="312" cy="238" r="4" fill="#ef4444"/>
+              <text x="321" y="241" font-size="9.5" font-weight="700" fill="#ef4444">USB VBUS (+5V immer)</text>
+
+              <circle cx="312" cy="294" r="4" fill="#64748b"/>
+              <text x="321" y="297" font-size="9.5" font-weight="700" fill="currentColor">GND</text>
+
+              <circle cx="312" cy="322" r="4" fill="#f97316"/>
+              <text x="321" y="325" font-size="9.5" font-weight="700" fill="#f97316">3V3 (Ausgang)</text>
+
+              <circle cx="312" cy="350" r="4" fill="#3b82f6"/>
+              <text x="321" y="353" font-size="9.5" font-weight="700" fill="#3b82f6">GPIO 4 (SDA)</text>
+
+              <circle cx="312" cy="378" r="4" fill="#eab308"/>
+              <text x="321" y="381" font-size="9.5" font-weight="700" fill="#ca8a04">GPIO 5 (SCL)</text>
+
+              <line x1="320" y1="396" x2="522" y2="396" stroke="var(--border)" stroke-width="1"/>
+              <text x="421" y="409" text-anchor="middle" font-size="9" fill="currentColor" opacity="0.65">Waage (HX711 Digital-Pins)</text>
+
+              <circle cx="312" cy="424" r="4" fill="#10b981"/>
+              <text x="321" y="427" font-size="9.5" font-weight="700" fill="#10b981">GPIO 2 (HXA_DAT)</text>
+
+              <circle cx="312" cy="448" r="4" fill="#14b8a6"/>
+              <text x="321" y="451" font-size="9.5" font-weight="700" fill="#0d9488">GPIO 3 (HXA_CLK)</text>
+
+              <circle cx="530" cy="424" r="4" fill="#10b981"/>
+              <text x="521" y="427" text-anchor="end" font-size="9.5" font-weight="700" fill="#10b981">GPIO 6 (HXB_DAT)</text>
+
+              <circle cx="530" cy="448" r="4" fill="#14b8a6"/>
+              <text x="521" y="451" text-anchor="end" font-size="9.5" font-weight="700" fill="#0d9488">GPIO 7 (HXB_CLK)</text>
+
+              <text x="421" y="268" text-anchor="middle" font-size="8.5" fill="currentColor" opacity="0.65">Einziger USB-C Au&szlig;enanschluss:</text>
+              <text x="421" y="279" text-anchor="middle" font-size="8.5" fill="currentColor" opacity="0.65">Betrieb + Flashen &uuml;ber Delock!</text>
+            </g>
+
+            <g class="node-card" data-info="zelle1" data-nets="scale">
+              <rect x="22" y="510" width="188" height="132" rx="8" fill="var(--background)" stroke="#10b981" stroke-width="1.6"/>
+              <rect x="22" y="510" width="188" height="23" rx="8" fill="#10b981" fill-opacity="0.16"/>
+              <text x="32" y="525" font-size="11" font-weight="700" fill="currentColor">W&auml;gezelle 1 (5 kg)</text>
+              <text x="32" y="544" font-size="9" fill="currentColor" opacity="0.7">Adafruit 4541 (links fest)</text>
+              <circle cx="210" cy="560" r="3.5" fill="#ef4444"/><text x="200" y="563" text-anchor="end" font-size="9.5" font-weight="600" fill="#ef4444">ROT (E+)</text>
+              <circle cx="210" cy="582" r="3.5" fill="#64748b"/><text x="200" y="585" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">SCHWARZ (E&minus;)</text>
+              <circle cx="210" cy="604" r="3.5" fill="#94a3b8"/><text x="200" y="607" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">WEISS (A&minus;)</text>
+              <circle cx="210" cy="626" r="3.5" fill="#10b981"/><text x="200" y="629" text-anchor="end" font-size="9.5" font-weight="600" fill="#10b981">GR&Uuml;N (A+)</text>
+            </g>
+
+            <g class="node-card" data-info="hx711a" data-nets="3v3 gnd scale">
+              <rect x="312" y="510" width="218" height="132" rx="8" fill="var(--background)" stroke="#10b981" stroke-width="1.8"/>
+              <rect x="312" y="510" width="218" height="23" rx="8" fill="#10b981" fill-opacity="0.16"/>
+              <text x="322" y="525" font-size="11" font-weight="700" fill="currentColor">SparkFun HX711_A</text>
+              <circle cx="312" cy="560" r="3.5" fill="#ef4444"/><text x="320" y="563" font-size="9.5" fill="currentColor">E+</text>
+              <circle cx="312" cy="582" r="3.5" fill="#64748b"/><text x="320" y="585" font-size="9.5" fill="currentColor">E&minus;</text>
+              <circle cx="312" cy="604" r="3.5" fill="#94a3b8"/><text x="320" y="607" font-size="9.5" fill="currentColor">A&minus;</text>
+              <circle cx="312" cy="626" r="3.5" fill="#10b981"/><text x="320" y="629" font-size="9.5" fill="currentColor">A+</text>
+              <circle cx="530" cy="552" r="3.5" fill="#f97316"/><text x="522" y="555" text-anchor="end" font-size="9.5" font-weight="700" fill="#f97316">VCC + VDD (Br&uuml;cke!)</text>
+              <circle cx="530" cy="574" r="3.5" fill="#64748b"/><text x="522" y="577" text-anchor="end" font-size="9.5" font-weight="700" fill="currentColor">GND</text>
+              <circle cx="530" cy="600" r="3.5" fill="#10b981"/><text x="522" y="603" text-anchor="end" font-size="9.5" font-weight="700" fill="#10b981">DAT (&rarr; GPIO 2)</text>
+              <circle cx="530" cy="624" r="3.5" fill="#14b8a6"/><text x="522" y="627" text-anchor="end" font-size="9.5" font-weight="700" fill="#0d9488">CLK (&larr; GPIO 3)</text>
+            </g>
+
+            <g class="node-card" data-info="zelle2" data-nets="scale">
+              <rect x="22" y="672" width="188" height="132" rx="8" fill="var(--background)" stroke="#10b981" stroke-width="1.6"/>
+              <rect x="22" y="672" width="188" height="23" rx="8" fill="#10b981" fill-opacity="0.16"/>
+              <text x="32" y="687" font-size="11" font-weight="700" fill="currentColor">W&auml;gezelle 2 (5 kg)</text>
+              <text x="32" y="706" font-size="9" fill="currentColor" opacity="0.7">Adafruit 4541 (rechts fest)</text>
+              <circle cx="210" cy="722" r="3.5" fill="#ef4444"/><text x="200" y="725" text-anchor="end" font-size="9.5" font-weight="600" fill="#ef4444">ROT (E+)</text>
+              <circle cx="210" cy="744" r="3.5" fill="#64748b"/><text x="200" y="747" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">SCHWARZ (E&minus;)</text>
+              <circle cx="210" cy="766" r="3.5" fill="#94a3b8"/><text x="200" y="769" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">WEISS (A&minus;)</text>
+              <circle cx="210" cy="788" r="3.5" fill="#10b981"/><text x="200" y="791" text-anchor="end" font-size="9.5" font-weight="600" fill="#10b981">GR&Uuml;N (A+)</text>
+            </g>
+
+            <g class="node-card" data-info="hx711b" data-nets="3v3 gnd scale">
+              <rect x="312" y="672" width="218" height="132" rx="8" fill="var(--background)" stroke="#10b981" stroke-width="1.8"/>
+              <rect x="312" y="672" width="218" height="23" rx="8" fill="#10b981" fill-opacity="0.16"/>
+              <text x="322" y="687" font-size="11" font-weight="700" fill="currentColor">SparkFun HX711_B</text>
+              <circle cx="312" cy="722" r="3.5" fill="#ef4444"/><text x="320" y="725" font-size="9.5" fill="currentColor">E+</text>
+              <circle cx="312" cy="744" r="3.5" fill="#64748b"/><text x="320" y="747" font-size="9.5" fill="currentColor">E&minus;</text>
+              <circle cx="312" cy="766" r="3.5" fill="#94a3b8"/><text x="320" y="769" font-size="9.5" fill="currentColor">A&minus;</text>
+              <circle cx="312" cy="788" r="3.5" fill="#10b981"/><text x="320" y="791" font-size="9.5" fill="currentColor">A+</text>
+              <circle cx="530" cy="714" r="3.5" fill="#f97316"/><text x="522" y="717" text-anchor="end" font-size="9.5" font-weight="700" fill="#f97316">VCC + VDD (Br&uuml;cke!)</text>
+              <circle cx="530" cy="736" r="3.5" fill="#64748b"/><text x="522" y="739" text-anchor="end" font-size="9.5" font-weight="700" fill="currentColor">GND</text>
+              <circle cx="530" cy="762" r="3.5" fill="#10b981"/><text x="522" y="765" text-anchor="end" font-size="9.5" font-weight="700" fill="#10b981">DAT (&rarr; GPIO 6)</text>
+              <circle cx="530" cy="786" r="3.5" fill="#14b8a6"/><text x="522" y="789" text-anchor="end" font-size="9.5" font-weight="700" fill="#0d9488">CLK (&larr; GPIO 7)</text>
+            </g>
+
+            <g class="node-card" data-info="verteiler" data-nets="5v 3v3 gnd i2c">
+              <rect x="668" y="42" width="248" height="222" rx="8" fill="var(--background)" stroke="#d97706" stroke-width="1.8"/>
+              <rect x="668" y="42" width="248" height="24" rx="8" fill="#d97706" fill-opacity="0.16"/>
+              <text x="678" y="58" font-size="11.5" font-weight="700" fill="currentColor">L&ouml;tverteiler (6 Streifen &times; 8 L&ouml;cher)</text>
+
+              <g id="verteiler-strips"></g>
+              <text x="678" y="254" font-size="8.5" fill="currentColor" opacity="0.7">Optional: 2 L&ouml;cher auf Str. 1+2 f&uuml;r Elko freihalten</text>
+            </g>
+
+            <g class="node-card" data-info="tcaa" data-nets="3v3 gnd i2c">
+              <rect x="668" y="286" width="248" height="270" rx="8" fill="var(--background)" stroke="#3b82f6" stroke-width="1.8"/>
+              <rect x="668" y="286" width="248" height="24" rx="8" fill="#3b82f6" fill-opacity="0.16"/>
+              <text x="678" y="302" font-size="11.5" font-weight="700" fill="currentColor">TCA9548A_A (0x70)</text>
+              <text x="908" y="302" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor" opacity="0.75">A0/A1/A2 offen</text>
+
+              <circle cx="668" cy="332" r="3.5" fill="#f97316"/><text x="676" y="335" font-size="9.5" font-weight="700" fill="#f97316">VIN (3,3V)</text>
+              <circle cx="668" cy="356" r="3.5" fill="#64748b"/><text x="676" y="359" font-size="9.5" font-weight="700" fill="currentColor">GND</text>
+              <circle cx="668" cy="380" r="3.5" fill="#3b82f6"/><text x="676" y="383" font-size="9.5" font-weight="700" fill="#3b82f6">SDA</text>
+              <circle cx="668" cy="404" r="3.5" fill="#eab308"/><text x="676" y="407" font-size="9.5" font-weight="700" fill="#ca8a04">SCL</text>
+              <text x="676" y="438" font-size="9" fill="currentColor" opacity="0.7">Bus durchgeschleift</text>
+              <text x="676" y="450" font-size="9" fill="currentColor" opacity="0.7">an TCA_B &darr;</text>
+
+              <text x="906" y="325" text-anchor="end" font-size="8.5" fill="currentColor" opacity="0.65">JP3 rechts / JP1 links</text>
+              <circle cx="916" cy="346" r="3.5" fill="#3b82f6"/><text x="907" y="349" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH2 &rarr; Reader 11</text>
+              <circle cx="916" cy="378" r="3.5" fill="#3b82f6"/><text x="907" y="381" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH3 &rarr; Reader 21</text>
+              <circle cx="916" cy="414" r="3.5" fill="#3b82f6"/><text x="907" y="417" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH4 &rarr; Reader 12</text>
+              <circle cx="916" cy="448" r="3.5" fill="#3b82f6"/><text x="907" y="451" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH0 &rarr; Reader 22</text>
+              <circle cx="916" cy="484" r="3.5" fill="#3b82f6"/><text x="907" y="487" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH5 &rarr; Reader 13</text>
+              <circle cx="916" cy="518" r="3.5" fill="#3b82f6"/><text x="907" y="521" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH6 &rarr; Reader 23</text>
+              <text x="907" y="544" text-anchor="end" font-size="8.5" fill="currentColor" opacity="0.55">CH1, CH7 frei</text>
+            </g>
+
+            <g class="node-card" data-info="tcab" data-nets="3v3 gnd i2c">
+              <rect x="668" y="582" width="248" height="222" rx="8" fill="var(--background)" stroke="#8b5cf6" stroke-width="1.8"/>
+              <rect x="668" y="582" width="248" height="24" rx="8" fill="#8b5cf6" fill-opacity="0.16"/>
+              <text x="678" y="598" font-size="11.5" font-weight="700" fill="currentColor">TCA9548A_B (0x71)</text>
+
+              <rect x="676" y="614" width="138" height="22" rx="4" fill="#f97316" fill-opacity="0.16" stroke="#f97316" stroke-width="1"/>
+              <text x="745" y="628" text-anchor="middle" font-size="9" font-weight="700" fill="#f97316">L&ouml;tbr&uuml;cke: A0 &harr; VIN!</text>
+
+              <circle cx="668" cy="656" r="3.5" fill="#f97316"/><text x="676" y="659" font-size="9.5" font-weight="700" fill="#f97316">VIN (3,3V)</text>
+              <circle cx="668" cy="680" r="3.5" fill="#64748b"/><text x="676" y="683" font-size="9.5" font-weight="700" fill="currentColor">GND</text>
+              <circle cx="668" cy="704" r="3.5" fill="#3b82f6"/><text x="676" y="707" font-size="9.5" font-weight="700" fill="#3b82f6">SDA</text>
+              <circle cx="668" cy="728" r="3.5" fill="#eab308"/><text x="676" y="731" font-size="9.5" font-weight="700" fill="#ca8a04">SCL</text>
+
+              <circle cx="916" cy="654" r="3.5" fill="#8b5cf6"/><text x="907" y="657" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH2 &rarr; Reader 31</text>
+              <circle cx="916" cy="692" r="3.5" fill="#8b5cf6"/><text x="907" y="695" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH3 &rarr; Reader 32</text>
+              <circle cx="916" cy="730" r="3.5" fill="#8b5cf6"/><text x="907" y="733" text-anchor="end" font-size="9.5" font-weight="600" fill="currentColor">CH4 &rarr; Reader 33</text>
+              <text x="907" y="762" text-anchor="end" font-size="8.5" fill="currentColor" opacity="0.55">CH0, CH1, CH5&ndash;7 frei</text>
+            </g>
+
+            <g id="sch-pn532-grid"></g>
+
+          </svg>
+        </div>
+
+        <!-- Inspector & Legend Sidebar -->
+        <aside class="xl:col-span-3 space-y-3">
+          <div id="sch-inspector" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Bauteil-Inspektor</span>
+              <span id="insp-badge" class="text-xs px-2 py-0.5 rounded bg-[var(--secondary)] text-[var(--secondary-foreground)]">Klicke im Plan</span>
+            </div>
+            <h2 id="insp-title" class="text-base font-semibold">Power-Hub &amp; 1-Kabel-USB-C</h2>
+            <p id="insp-desc" class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              Klicke links auf ein beliebiges Bauteil (z. B. Delock, Unterteil-Hub, ESP32, L&ouml;tverteiler, TCA_A oder einen PN532), um alle Pin-Verbindungen zu sehen.
+            </p>
+            <div id="insp-pins" class="pt-2 border-t border-[var(--border)] space-y-1.5 text-xs"></div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">PN532-Leiste (Draufsicht)</h3>
+            <div class="flex items-center justify-between p-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] font-mono text-xs">
+              <span class="px-1.5 py-0.5 rounded bg-yellow-500/20 font-bold">SCL</span>
+              <span class="px-1.5 py-0.5 rounded bg-blue-500/20 font-bold">SDA</span>
+              <span class="px-1.5 py-0.5 rounded bg-red-500/20 font-bold">VCC (5V)</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-500/20 font-bold">GND</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              DIP-Schalter vor dem Einsetzen auf <strong>I&sup2;C</strong> (<code>SEL0=ON</code>, <code>SEL1=OFF</code>).
+              Achtung: Reader sitzen umgedreht im Tr&auml;ger; Spalte 2 &amp; 3 sind gegen&uuml;ber Spalte 1 um 180&deg; gedreht &rarr; Aufdruck beim L&ouml;ten direkt ablesen!
+            </p>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">1-Kabel-Betrieb &amp; Flashen</h3>
+            <ul class="text-xs space-y-1.5 text-[var(--muted-foreground)] list-disc pl-4">
+              <li><strong>Netzteil (Betrieb):</strong> <code>5 V / 3 A</code> USB-C an Delock, <strong><code>JP_NFC</code> gesteckt</strong> &rarr; ESP32 + 9&times; PN532 laufen.</li>
+              <li><strong>Laptop (Flashen):</strong> <strong><code>JP_NFC</code> abziehen</strong>, Laptop an dieselbe Delock-Buchse &rarr; nur ESP32 + Waage laufen sicher am USB-Port!</li>
+              <li><strong>Delock-Kabel k&uuml;rzen:</strong> <code>D+/D&minus;</code> (gr&uuml;n/wei&szlig;) kurz verl&ouml;ten &amp; isolieren.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: TRANSPARENT TOP/BOTTOM OVERLAY + Z-SECTION -->
+    <section id="panel-overlay" class="hidden space-y-3">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="text-xs flex items-center gap-2">
+            <span class="font-medium text-emerald-500">Obere Platte (Tr&auml;ger):</span>
+            <input id="slider-top" type="range" min="0" max="100" value="65" class="accent-[var(--primary)] w-28" />
+            <span id="val-top" class="font-mono tabular-nums w-9">65%</span>
+          </label>
+          <label class="text-xs flex items-center gap-2">
+            <span class="font-medium text-blue-500">Unterteil (fest):</span>
+            <input id="slider-bottom" type="range" min="0" max="100" value="100" class="accent-[var(--primary)] w-28" />
+            <span id="val-bottom" class="font-mono tabular-nums w-9">100%</span>
+          </label>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button id="preset-xray" class="px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium hover:bg-[var(--secondary)]">Beide (durchsichtig)</button>
+          <button id="preset-bottom" class="px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium hover:bg-[var(--secondary)]">Nur Unterteil</button>
+          <button id="preset-top" class="px-2.5 py-1.5 rounded-md border border-[var(--border)] text-xs font-medium hover:bg-[var(--secondary)]">Nur Oberteil</button>
+          <label class="ml-2 text-xs flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1.5 rounded-md border border-[var(--border)]">
+            <input id="toggle-wires" type="checkbox" checked class="accent-[var(--primary)]" />
+            <span>Kabelwege</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-3 items-start">
+        <div class="xl:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold">Ma&szlig;stabsgetreue Draufsicht (150 &times; 150 mm) &ndash; Blick von oben durch durchsichtigen Tr&auml;ger ins Unterteil</span>
+            <span class="text-xs text-[var(--muted-foreground)] font-mono">1 Einheit = 1 mm</span>
+          </div>
+          <svg id="svg-overlay" viewBox="-16 -16 184 184" class="w-full max-w-[740px] mx-auto h-auto select-none" xmlns="http://www.w3.org/2000/svg">
+            <g id="ov-grid" opacity="0.55"></g>
+
+            <!-- BOTTOM LAYER (UNTERTEIL, FIXED) -->
+            <g id="layer-bottom" style="opacity: 1;">
+              <rect x="0" y="0" width="150" height="150" rx="4" fill="#3b82f6" fill-opacity="0.06" stroke="#3b82f6" stroke-width="1"/>
+
+              <g class="node-card" data-info="zelle1">
+                <rect x="37.5" y="93.65" width="75" height="12.7" rx="1" fill="#64748b" fill-opacity="0.35" stroke="#475569" stroke-width="0.7"/>
+                <rect x="37.5" y="93.65" width="18" height="12.7" fill="#10b981" fill-opacity="0.28"/>
+                <text x="46.5" y="101.2" text-anchor="middle" font-size="3.1" font-weight="700" fill="currentColor">FEST</text>
+                <text x="75" y="101.2" text-anchor="middle" font-size="3.6" font-weight="700" fill="currentColor">W&auml;gezelle 1</text>
+                <text x="104" y="101.2" text-anchor="middle" font-size="3.1" font-weight="700" fill="#f97316">FREI</text>
+              </g>
+
+              <g class="node-card" data-info="zelle2">
+                <rect x="37.5" y="43.65" width="75" height="12.7" rx="1" fill="#64748b" fill-opacity="0.35" stroke="#475569" stroke-width="0.7"/>
+                <rect x="94.5" y="43.65" width="18" height="12.7" fill="#10b981" fill-opacity="0.28"/>
+                <text x="46" y="51.2" text-anchor="middle" font-size="3.1" font-weight="700" fill="#f97316">FREI</text>
+                <text x="75" y="51.2" text-anchor="middle" font-size="3.6" font-weight="700" fill="currentColor">W&auml;gezelle 2</text>
+                <text x="103.5" y="51.2" text-anchor="middle" font-size="3.1" font-weight="700" fill="currentColor">FEST</text>
+              </g>
+
+              <g class="node-card" data-info="esp32">
+                <rect x="7.55" y="18.0" width="6.35" height="18.0" rx="0.8" fill="#eab308" fill-opacity="0.35" stroke="#ca8a04" stroke-width="0.5"/>
+                <rect x="13.9" y="14.3" width="51.8" height="25.4" rx="1.2" fill="#1d4ed8" fill-opacity="0.28" stroke="#2563eb" stroke-width="0.8"/>
+                <rect x="61.5" y="23.0" width="5.2" height="8.0" rx="0.6" fill="#94a3b8" stroke="#475569" stroke-width="0.4"/>
+                <text x="39.8" y="26.5" text-anchor="middle" font-size="4.2" font-weight="700" fill="currentColor">ESP32-C6</text>
+                <text x="39.8" y="31.5" text-anchor="middle" font-size="2.8" fill="currentColor" opacity="0.8">(USB-C rechts)</text>
+                <text x="10.7" y="28" text-anchor="middle" font-size="2.4" fill="currentColor" transform="rotate(-90 10.7 28)">Ant.</text>
+              </g>
+
+              <g class="node-card" data-info="hx711a">
+                <rect x="8.76" y="114.57" width="30.48" height="22.86" rx="1" fill="#dc2626" fill-opacity="0.24" stroke="#dc2626" stroke-width="0.7"/>
+                <text x="24" y="125.5" text-anchor="middle" font-size="3.8" font-weight="700" fill="currentColor">HX711_A</text>
+                <text x="24" y="130.5" text-anchor="middle" font-size="2.7" fill="currentColor" opacity="0.8">(Zelle 1)</text>
+              </g>
+
+              <g class="node-card" data-info="hx711b">
+                <rect x="60.76" y="114.57" width="30.48" height="22.86" rx="1" fill="#dc2626" fill-opacity="0.24" stroke="#dc2626" stroke-width="0.7"/>
+                <text x="76" y="125.5" text-anchor="middle" font-size="3.8" font-weight="700" fill="currentColor">HX711_B</text>
+                <text x="76" y="130.5" text-anchor="middle" font-size="2.7" fill="currentColor" opacity="0.8">(Zelle 2)</text>
+              </g>
+
+              <g class="node-card" data-info="delock">
+                <rect x="103.5" y="118.05" width="36" height="31" rx="1.2" fill="#f97316" fill-opacity="0.25" stroke="#ea580c" stroke-width="0.8"/>
+                <text x="121.5" y="132" text-anchor="middle" font-size="3.6" font-weight="700" fill="currentColor">Delock USB-C</text>
+                <text x="121.5" y="137" text-anchor="middle" font-size="2.6" fill="#ea580c" font-weight="600">5V/3A + Flashen</text>
+                <text x="121.5" y="142" text-anchor="middle" font-size="2.4" fill="currentColor" opacity="0.75">(gek&uuml;rzt ~25cm)</text>
+              </g>
+
+              <g class="node-card" data-info="powerhub">
+                <rect x="118" y="58" width="24" height="38" rx="1.5" fill="#f97316" fill-opacity="0.22" stroke="#f97316" stroke-width="0.8" stroke-dasharray="2.5 1.2"/>
+                <text x="130" y="70" text-anchor="middle" font-size="3.1" font-weight="700" fill="#f97316">Power-Hub 6&times;8</text>
+                <text x="130" y="75.5" text-anchor="middle" font-size="2.6" fill="currentColor">5V / 3V3 / GND</text>
+                <text x="130" y="80" text-anchor="middle" font-size="2.5" fill="currentColor">SDA / SCL (Elko opt.)</text>
+                <rect x="121.5" y="83" width="17" height="5.5" rx="0.8" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="0.5"/>
+                <text x="130" y="86.9" text-anchor="middle" font-size="2.5" font-weight="700" fill="currentColor">JP_NFC</text>
+              </g>
+
+              <circle cx="20" cy="86" r="2.6" fill="#a855f7" fill-opacity="0.4" stroke="#a855f7" stroke-width="0.8"/>
+              <text x="15.5" y="82.5" text-anchor="end" font-size="2.7" font-weight="700" fill="#a855f7">Schlaufe</text>
+
+              <g id="ov-wires-bottom">
+                <polyline points="121.5,118 121.5,105 128,105 128,96" fill="none" stroke="#ef4444" stroke-width="1.2"/>
+                <polyline points="123,118 123,106.5 130,106.5 130,96" fill="none" stroke="#475569" stroke-width="1.0"/>
+                <polyline points="134,118 134,96" fill="none" stroke="#06b6d4" stroke-width="0.9"/>
+                <polyline points="134,58 134,27 66.7,27" fill="none" stroke="#06b6d4" stroke-width="1.1"/>
+                <polyline points="127,58 127,25 66.7,25" fill="none" stroke="#ef4444" stroke-width="1.1"/>
+                <polyline points="130,58 130,29 66.7,29" fill="none" stroke="#475569" stroke-width="0.9"/>
+                <polyline points="37.8,39.7 37.8,46.7 20,78 20,86" fill="none" stroke="#a855f7" stroke-width="1.3"/>
+                <polyline points="118,77 114,77 114,62 34,62 20,86" fill="none" stroke="#ef4444" stroke-width="0.9" stroke-dasharray="2 1"/>
+                <polyline points="92.5,126 92.5,110.5 40.5,110.5 40.5,126" fill="none" stroke="#10b981" stroke-width="1.0"/>
+                <polyline points="40.5,110.5 10,110.5 10,46 27.8,40.7" fill="none" stroke="#10b981" stroke-width="1.2"/>
+              </g>
+            </g>
+
+            <!-- TOP LAYER (TRAEGERPLATTE, MOVABLE) -->
+            <g id="layer-top" style="opacity: 0.65;">
+              <rect x="0.75" y="0.75" width="148.5" height="148.5" rx="3.5" fill="#10b981" fill-opacity="0.09" stroke="#10b981" stroke-width="1.1"/>
+              <line x1="50" y1="1" x2="50" y2="149" stroke="#10b981" stroke-width="0.4" stroke-dasharray="2 2"/>
+              <line x1="100" y1="1" x2="100" y2="149" stroke="#10b981" stroke-width="0.4" stroke-dasharray="2 2"/>
+              <line x1="1" y1="50" x2="149" y2="50" stroke="#10b981" stroke-width="0.4" stroke-dasharray="2 2"/>
+              <line x1="1" y1="100" x2="149" y2="100" stroke="#10b981" stroke-width="0.4" stroke-dasharray="2 2"/>
+
+              <g id="ov-pn532"></g>
+
+              <g class="node-card" data-info="verteiler">
+                <rect x="6.57" y="92.38" width="22.86" height="15.24" rx="1" fill="#d97706" fill-opacity="0.45" stroke="#b45309" stroke-width="0.8"/>
+                <text x="18" y="99.3" text-anchor="middle" font-size="3.4" font-weight="700" fill="currentColor">L&ouml;tverteiler</text>
+                <text x="18" y="103.8" text-anchor="middle" font-size="2.6" fill="currentColor">6&times;8 Streifen</text>
+              </g>
+
+              <g class="node-card" data-info="tcaa">
+                <rect x="41.16" y="59.76" width="17.78" height="30.48" rx="1" fill="#0ea5e9" fill-opacity="0.35" stroke="#0284c7" stroke-width="0.8"/>
+                <text x="50.05" y="73.5" text-anchor="middle" font-size="3.7" font-weight="700" fill="currentColor">TCA_A</text>
+                <text x="50.05" y="78.2" text-anchor="middle" font-size="2.9" font-weight="700" fill="currentColor">0x70</text>
+                <text x="42.5" y="64.5" font-size="2.2" fill="currentColor">JP1</text>
+                <text x="54.2" y="64.5" font-size="2.2" fill="currentColor">JP3</text>
+              </g>
+
+              <g class="node-card" data-info="tcab">
+                <rect x="92.26" y="59.76" width="17.78" height="30.48" rx="1" fill="#8b5cf6" fill-opacity="0.35" stroke="#7c3aed" stroke-width="0.8"/>
+                <text x="101.15" y="73.5" text-anchor="middle" font-size="3.7" font-weight="700" fill="currentColor">TCA_B</text>
+                <text x="101.15" y="78.2" text-anchor="middle" font-size="2.9" font-weight="700" fill="currentColor">0x71</text>
+                <text x="93.5" y="64.5" font-size="2.2" fill="currentColor">JP3</text>
+                <text x="105.2" y="64.5" font-size="2.2" fill="currentColor">JP1</text>
+              </g>
+
+              <g id="ov-wires-top">
+                <polyline points="20,86 20,94" fill="none" stroke="#a855f7" stroke-width="1.5"/>
+                <polyline points="25.43,106.62 25.43,117.4 105.23,117.4" fill="none" stroke="#ef4444" stroke-width="1.1"/>
+                <polyline points="25.43,93.38 25.43,67.4 105.23,67.4" fill="none" stroke="#ef4444" stroke-width="1.1"/>
+                <polyline points="25.43,67.4 25.43,17.4 105.23,17.4" fill="none" stroke="#ef4444" stroke-width="1.1"/>
+                <polyline points="27.93,93.38 27.93,75 41.36,75" fill="none" stroke="#a855f7" stroke-width="1.1"/>
+                <polyline points="58.74,72 92.46,72" fill="none" stroke="#a855f7" stroke-width="1.1"/>
+                <polyline points="55.33,132.6 35.3,132.6 35.3,83.3 41.36,83.3" fill="none" stroke="#0ea5e9" stroke-width="0.9"/>
+                <polyline points="44.77,77 44.77,83.3" fill="none" stroke="#0ea5e9" stroke-width="0.9"/>
+                <polyline points="55.33,77 55.33,82.6 58.74,82.6" fill="none" stroke="#0ea5e9" stroke-width="0.9"/>
+                <polyline points="55.33,32.6 35.3,32.6 35.3,62 41.36,62" fill="none" stroke="#0ea5e9" stroke-width="0.9"/>
+                <polyline points="105.23,132.6 116.3,132.6 116.3,82.6 109.84,82.6" fill="none" stroke="#8b5cf6" stroke-width="0.9"/>
+                <polyline points="105.23,77 105.23,82.6" fill="none" stroke="#8b5cf6" stroke-width="0.9"/>
+                <polyline points="105.23,17.4 116.3,17.4 116.3,67.4 109.84,67.4" fill="none" stroke="#8b5cf6" stroke-width="0.9"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Right column: Z-Stack Cross Section + Overlay Inspector -->
+        <div class="xl:col-span-5 space-y-3">
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 space-y-2">
+            <h2 class="text-sm font-semibold">Stockwerk-Aufbau (Seitenansicht Z = 0 &hellip; 35 mm)</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Zeigt, was <strong>oben mitwiegt</strong> und was <strong>unten feststeht</strong>:
+            </p>
+            <svg viewBox="0 0 540 280" class="w-full h-auto select-none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="36" y1="252" x2="36" y2="20" stroke="var(--muted-foreground)" stroke-width="1"/>
+              <text x="18" y="254" font-size="9" fill="currentColor" opacity="0.7">0 mm</text>
+              <text x="12" y="135" font-size="9" fill="currentColor" opacity="0.7">20 mm</text>
+              <text x="12" y="28" font-size="9" fill="currentColor" opacity="0.7">35 mm</text>
+
+              <rect x="52" y="22" width="468" height="34" rx="4" fill="#10b981" fill-opacity="0.18" stroke="#10b981" stroke-width="1.4"/>
+              <text x="64" y="43" font-size="11" font-weight="700" fill="currentColor">1. Gridfinity-Deckel (z = 29,6 &hellip; 34,95 mm)</text>
+              <text x="508" y="43" text-anchor="end" font-size="10" fill="currentColor" opacity="0.8">dr&uuml;ckt 9&times; PN532 fest</text>
+
+              <rect x="52" y="60" width="468" height="58" rx="4" fill="#10b981" fill-opacity="0.10" stroke="#10b981" stroke-width="1.4"/>
+              <text x="64" y="78" font-size="11" font-weight="700" fill="currentColor">2. Tr&auml;gerplatte (beweglich, z = 20,1 &hellip; 29,6 mm)</text>
+              <rect x="66" y="86" width="126" height="24" rx="3" fill="#ef4444" fill-opacity="0.22" stroke="#ef4444" stroke-width="1"/>
+              <text x="129" y="102" text-anchor="middle" font-size="9.5" font-weight="600" fill="currentColor">9&times; PN532 (Pins unten)</text>
+              <rect x="206" y="86" width="142" height="24" rx="3" fill="#0ea5e9" fill-opacity="0.22" stroke="#0284c7" stroke-width="1"/>
+              <text x="277" y="102" text-anchor="middle" font-size="9.5" font-weight="600" fill="currentColor">TCA_A + TCA_B h&auml;ngend</text>
+              <rect x="362" y="86" width="144" height="24" rx="3" fill="#d97706" fill-opacity="0.22" stroke="#d97706" stroke-width="1"/>
+              <text x="434" y="102" text-anchor="middle" font-size="9.5" font-weight="600" fill="currentColor">L&ouml;tverteiler (6&times;8)</text>
+
+              <rect x="52" y="124" width="468" height="50" rx="4" fill="#a855f7" fill-opacity="0.08" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4 3"/>
+              <rect x="190" y="132" width="150" height="34" rx="3" fill="#64748b" fill-opacity="0.28" stroke="#475569" stroke-width="1"/>
+              <text x="265" y="153" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">2&times; W&auml;gezelle (5 kg)</text>
+              <path d="M 105 174 C 85 162, 130 144, 110 118" fill="none" stroke="#a855f7" stroke-width="3"/>
+              <text x="64" y="144" font-size="9.5" font-weight="700" fill="#a855f7">5-adrige</text>
+              <text x="64" y="156" font-size="9.5" font-weight="700" fill="#a855f7">Schlaufe</text>
+              <text x="508" y="146" text-anchor="end" font-size="9.5" fill="currentColor" opacity="0.8">0,5 mm Kipp-Spalt</text>
+              <text x="508" y="159" text-anchor="end" font-size="9" fill="currentColor" opacity="0.65">Kein Kraftnebenschluss!</text>
+
+              <rect x="52" y="180" width="468" height="72" rx="4" fill="#3b82f6" fill-opacity="0.12" stroke="#3b82f6" stroke-width="1.4"/>
+              <text x="64" y="198" font-size="11" font-weight="700" fill="currentColor">3. Unterteil (fest, z = 0 &hellip; 20,1 mm)</text>
+              <rect x="64" y="208" width="102" height="32" rx="3" fill="#2563eb" fill-opacity="0.22" stroke="#2563eb" stroke-width="1"/>
+              <text x="115" y="228" text-anchor="middle" font-size="9.5" font-weight="600" fill="currentColor">ESP32-C6</text>
+
+              <rect x="174" y="208" width="104" height="32" rx="3" fill="#dc2626" fill-opacity="0.22" stroke="#dc2626" stroke-width="1"/>
+              <text x="226" y="228" text-anchor="middle" font-size="9.5" font-weight="600" fill="currentColor">2&times; HX711</text>
+
+              <rect x="286" y="208" width="108" height="32" rx="3" fill="#f97316" fill-opacity="0.22" stroke="#ea580c" stroke-width="1"/>
+              <text x="340" y="223" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor">Delock 87824</text>
+              <text x="340" y="234" text-anchor="middle" font-size="8.5" fill="currentColor">(gek&uuml;rzt + D+/D&minus;)</text>
+
+              <rect x="402" y="208" width="106" height="32" rx="3" fill="#f97316" fill-opacity="0.22" stroke="#f97316" stroke-width="1" stroke-dasharray="3 2"/>
+              <text x="455" y="223" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor">Power-Hub 6&times;8</text>
+              <text x="455" y="234" text-anchor="middle" font-size="8.5" fill="currentColor">+ JP_NFC (Elko opt.)</text>
+            </svg>
+          </div>
+
+          <div id="ov-inspector" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Klick-Details (Oben/Unten)</span>
+            <h3 id="ov-insp-title" class="text-sm font-semibold">1-Kabel-USB-C + Unterteil-Hub</h3>
+            <p id="ov-insp-desc" class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              Durch das K&uuml;rzen des 1-m-Delock-Kabels auf ~25 cm entf&auml;llt die rechte Wickelkammer. In den freien Platz (x = 118&ndash;142 mm) kommt das 6&times;8-Streifenraster mit Jumper <code>JP_NFC</code>; <code>D+/D&minus;</code> + <code>VBUS</code> laufen weiter an den ESP32-USB-C-Stecker.
+            </p>
+            <div id="ov-insp-pins" class="pt-2 border-t border-[var(--border)] space-y-1 text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const COMPONENT_INFO = {
+      delock: {
+        badge: 'Unterteil (fest)',
+        title: 'Delock 87824 USB-C Buchse (gekürzt ~25 cm)',
+        desc: 'Kabel in der Mitte kürzen, sodass Außenbuchse (vorne rechts) UND USB-C-Stecker (für ESP32) erhalten bleiben. Die 4 Adern werden am Unterteil-Hub angeschlossen; D+/D− kurz wieder verlöten und isolieren.',
+        pins: [
+          ['VBUS (+5V, rot)', '→ Hub Streifen 1 (VBUS_IN) → weiter an ESP32 USB-Stecker'],
+          ['D+ / D− (grün/weiß)', '→ direkt durchverbinden an ESP32 USB-Stecker (Flashen!)'],
+          ['GND (schwarz)', '→ Hub Streifen 3 (GND) → weiter an ESP32 USB-Stecker'],
+          ['Netzteil (Betrieb)', '5 V / 3 A USB-C Netzteil außen einstecken']
+        ]
+      },
+      powerhub: {
+        badge: 'Unterteil (fest)',
+        title: 'Unterteil-Power-Hub (6×8 Streifenraster + JP_NFC)',
+        desc: '6 durchgehende Kupferstreifen (keine Bahn trennen!). Sitzt rechts in der freien Kammer (x=118..142 mm). Der 2-Pin-Jumper JP_NFC trennt beim Flashen per Laptop die 9 PN532 komplett ab.',
+        pins: [
+          ['Str. 1: VBUS_IN', 'Delock +5V → ESP32 USB VBUS (immer) + JP_NFC Pin 1'],
+          ['Str. 2: 5V_NFC', 'JP_NFC Pin 2 → Schlaufe nach oben (+ 2 Löcher für opt. Elko)'],
+          ['Str. 3: GND', 'Sternpunkt: Delock, ESP32, HX711_A/B, Schlaufe (+ opt. Elko)'],
+          ['Str. 4: 3,3V', 'Von ESP32 3V3 → HX711_A, HX711_B, Schlaufe (TCA)'],
+          ['Str. 5 & 6: SDA / SCL', 'Von ESP32 GPIO 4 / GPIO 5 → Schlaufe nach oben']
+        ]
+      },
+      esp32: {
+        badge: 'Unterteil (fest)',
+        title: 'ESP32-C6-DevKitC-1',
+        desc: 'Sitzt hinten links (x=13,9..65,7, y=110,3..135,7 mm). Wird am eigenen USB-C-Port durch das gekürzte Delock-Kabel gespeist und geflasht. Beim Flashen JP_NFC abziehen!',
+        pins: [
+          ['USB-C (D+/D−, VBUS)', '← Vom gekürzten Delock-Kabel (Betrieb + Flashen)'],
+          ['3V3', '→ Hub Streifen 4 (speist HX711_A/B + TCA_A/B)'],
+          ['GND', '↔ Hub Streifen 3 (gemeinsame Masse)'],
+          ['GPIO 4 / GPIO 5', '→ Hub Streifen 5 & 6 (SDA / SCL zur Schlaufe)'],
+          ['GPIO 2 / GPIO 3', 'HX711_A DAT / CLK (Wägezelle 1)'],
+          ['GPIO 6 / GPIO 7', 'HX711_B DAT / CLK (Wägezelle 2)']
+        ]
+      },
+      hx711a: {
+        badge: 'Unterteil (fest)',
+        title: 'SparkFun HX711_A (Wägezelle 1)',
+        desc: 'Vorne links (x=8,76..39,24 mm). Läuft komplett auf 3,3V (VCC und VDD auf der Platine brücken!), damit der ESP32 keine 5V-Signale sieht.',
+        pins: [
+          ['VCC + VDD (gebrückt)', '← 3,3V vom Hub (Streifen 4)'],
+          ['GND', '← GND vom Hub (Streifen 3)'],
+          ['DAT / CLK', '→ ESP32 GPIO 2 / GPIO 3'],
+          ['E+ / E− / A− / A+', '← Zelle 1: ROT / SCHWARZ / WEISS / GRÜN']
+        ]
+      },
+      hx711b: {
+        badge: 'Unterteil (fest)',
+        title: 'SparkFun HX711_B (Wägezelle 2)',
+        desc: 'Vorne mitte (x=60,76..91,24 mm). Läuft ebenfalls auf 3,3V (VCC und VDD brücken).',
+        pins: [
+          ['VCC + VDD (gebrückt)', '← 3,3V vom Hub (Streifen 4)'],
+          ['GND', '← GND vom Hub (Streifen 3)'],
+          ['DAT / CLK', '→ ESP32 GPIO 6 / GPIO 7'],
+          ['E+ / E− / A− / A+', '← Zelle 2: ROT / SCHWARZ / WEISS / GRÜN']
+        ]
+      },
+      zelle1: {
+        badge: 'Wägezelle',
+        title: 'Wägezelle 1 (Adafruit 4541, 5 kg)',
+        desc: 'Links am Unterteil festgeschraubt (x=37,5..112,5, y=43,65..56,35 mm), rechts trägt das Freiende den Träger. Kabel am Festende in lockerer Schlaufe zu HX711_A.',
+        pins: [
+          ['ROT / SCHWARZ', 'E+ / E− (Erregung) an HX711_A'],
+          ['WEISS / GRÜN', 'A− / A+ (Messbrücke) an HX711_A']
+        ]
+      },
+      zelle2: {
+        badge: 'Wägezelle',
+        title: 'Wägezelle 2 (Adafruit 4541, 5 kg)',
+        desc: 'Gegenläufig montiert: rechts am Unterteil festgeschraubt, links trägt das Freiende den Träger (y=93,65..106,35 mm). Kabel am Festende zu HX711_B.',
+        pins: [
+          ['ROT / SCHWARZ', 'E+ / E− (Erregung) an HX711_B'],
+          ['WEISS / GRÜN', 'A− / A+ (Messbrücke) an HX711_B']
+        ]
+      },
+      verteiler: {
+        badge: 'Träger (beweglich)',
+        title: 'Lötverteiler (6 Streifen × 8 Löcher)',
+        desc: 'Hängt unter dem Träger links (x=6,57..29,43, y=42,38..57,62 mm). Empfängt die 5-adrige weiche Silikon-Schlaufe über den Wägespalt.',
+        pins: [
+          ['Streifen 1: 5V_NFC', 'Schlaufe, Reihe 1 (11), Reihe 2 (12), Reihe 3 (13)'],
+          ['Streifen 2: GND', 'Schlaufe, TCA_A, Reihe 1, Reihe 2, Reihe 3'],
+          ['Streifen 3: 3,3V', 'Schlaufe, TCA_A VIN'],
+          ['Streifen 4 & 5: SDA / SCL', 'Schlaufe, TCA_A SDA / SCL'],
+          ['Streifen 6: Reserve', 'Frei (z. B. 100 nF Kerko oder TCA RST)']
+        ]
+      },
+      tcaa: {
+        badge: 'Träger (beweglich)',
+        title: 'Adafruit TCA9548A_A (Adresse 0x70)',
+        desc: 'Unter Träger Mitte-links (x=41,16..58,94 mm), um 180° gedreht (JP1 links, JP3 rechts). A0/A1/A2 bleiben offen → Adresse 0x70.',
+        pins: [
+          ['VIN / GND / SDA / SCL', '3,3V-Bus vom Verteiler (durchgeschleift zu TCA_B)'],
+          ['CH0 (SD0/SC0, JP3)', '→ PN532_22 (Mitte)'],
+          ['CH2 (SD2/SC2, JP1)', '→ PN532_11 (Vorne Links)'],
+          ['CH3 (SD3/SC3, JP1)', '→ PN532_21 (Vorne Mitte)'],
+          ['CH4 (SD4/SC4, JP1)', '→ PN532_12 (Mitte Links)'],
+          ['CH5 / CH6 (JP1)', '→ PN532_13 (Hinten L) / PN532_23 (Hinten M)']
+        ]
+      },
+      tcab: {
+        badge: 'Träger (beweglich)',
+        title: 'Adafruit TCA9548A_B (Adresse 0x71)',
+        desc: 'Unter Träger Mitte-rechts (x=92,26..110,04 mm). Wichtig: Lötbrücke von A0 auf VIN setzen für Adresse 0x71!',
+        pins: [
+          ['A0 ↔ VIN', 'Lötbrücke setzen → Adresse 0x71'],
+          ['VIN / GND / SDA / SCL', '← Durchgeschleift von TCA_A'],
+          ['CH2 (SD2/SC2, JP1)', '→ PN532_31 (Vorne Rechts)'],
+          ['CH3 (SD3/SC3, JP1)', '→ PN532_32 (Mitte Rechts)'],
+          ['CH4 (SD4/SC4, JP1)', '→ PN532_33 (Hinten Rechts)']
+        ]
+      }
+    };
+
+    const PN532_LIST = [
+      { id:'11', row:0, col:0, pos:'Vorne Links',   tca:'TCA_A CH2', chain:'Reihe 1 (von Verteiler)', side:'+x', x:4.05,   yCad:6.3 },
+      { id:'21', row:0, col:1, pos:'Vorne Mitte',   tca:'TCA_A CH3', chain:'Reihe 1 (von 11 → 31)',   side:'-x', x:56.35,  yCad:6.3 },
+      { id:'31', row:0, col:2, pos:'Vorne Rechts',  tca:'TCA_B CH2', chain:'Reihe 1 (Ende nach 21)',  side:'-x', x:106.25, yCad:6.3 },
+      { id:'12', row:1, col:0, pos:'Mitte Links',   tca:'TCA_A CH4', chain:'Reihe 2 (von Verteiler)', side:'+x', x:4.05,   yCad:56.3 },
+      { id:'22', row:1, col:1, pos:'Zentrum',       tca:'TCA_A CH0', chain:'Reihe 2 (von 12 → 32)',   side:'-x', x:56.35,  yCad:56.3 },
+      { id:'32', row:1, col:2, pos:'Mitte Rechts',  tca:'TCA_B CH3', chain:'Reihe 2 (Ende nach 22)',  side:'-x', x:106.25, yCad:56.3 },
+      { id:'13', row:2, col:0, pos:'Hinten Links',  tca:'TCA_A CH5', chain:'Reihe 3 (von Verteiler)', side:'+x', x:4.05,   yCad:106.3 },
+      { id:'23', row:2, col:1, pos:'Hinten Mitte',  tca:'TCA_A CH6', chain:'Reihe 3 (von 13 → 33)',   side:'-x', x:56.35,  yCad:106.3 },
+      { id:'33', row:2, col:2, pos:'Hinten Rechts', tca:'TCA_B CH4', chain:'Reihe 3 (Ende nach 23)',  side:'-x', x:106.25, yCad:106.3 }
+    ];
+
+    PN532_LIST.forEach(r => {
+      COMPONENT_INFO['pn' + r.id] = {
+        badge: 'Träger (beweglich)',
+        title: `PN532_${r.id} (${r.pos}) – 0x24`,
+        desc: `Sitzt umgedreht im Träger (I²C-Pins auf Seite ${r.side}). DIP-Schalter auf I²C stellen (SEL0=ON, SEL1=OFF). Pinfolge lt. Board: SCL | SDA | VCC | GND.`,
+        pins: [
+          ['SCL & SDA', `→ Eigener Kanal an ${r.tca}`],
+          ['VCC (5V)', `5V_NFC (${r.chain})`],
+          ['GND', `GND (${r.chain})`],
+          ['Hinweis', 'Spalte 2 & 3 sind ggü. Spalte 1 um 180° gedreht – Aufdruck direkt prüfen!']
+        ]
+      };
+    });
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(svgNS, tag);
+      for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+
+    const hubStripsGroup = document.getElementById('hub-strips');
+    const hubMeta = [
+      { label: '1: VBUS_IN', color: '#ef4444', used: 3 },
+      { label: '2: 5V_NFC',  color: '#ef4444', used: 2 },
+      { label: '3: GND',     color: '#64748b', used: 6 },
+      { label: '4: 3,3V',    color: '#f97316', used: 4 },
+      { label: '5: SDA',     color: '#3b82f6', used: 2 },
+      { label: '6: SCL',     color: '#eab308', used: 2 }
+    ];
+    hubMeta.forEach((st, idx) => {
+      const y = 238 + idx * 28;
+      el('rect', { x: 30, y: y - 9, width: 170, height: 18, rx: 4, fill: st.color, 'fill-opacity': 0.14, stroke: st.color, 'stroke-width': 0.8 }, hubStripsGroup);
+      const txt = el('text', { x: 35, y: y + 3.2, 'font-size': 8.5, 'font-weight': 700, fill: 'currentColor' }, hubStripsGroup);
+      txt.textContent = st.label;
+      for (let h = 0; h < 6; h++) {
+        const hx = 108 + h * 15;
+        const filled = h < st.used;
+        el('circle', {
+          cx: hx, cy: y, r: 3.6,
+          fill: filled ? st.color : 'var(--background)',
+          stroke: st.color, 'stroke-width': 1.1
+        }, hubStripsGroup);
+      }
+      el('line', { x1: 200, y1: y, x2: 257, y2: y, stroke: st.color, 'stroke-width': 1.6 }, hubStripsGroup);
+    });
+
+    const stripsGroup = document.getElementById('verteiler-strips');
+    const stripMeta = [
+      { label: '1: 5V_NFC', color: '#ef4444', used: 4 },
+      { label: '2: GND',    color: '#64748b', used: 5 },
+      { label: '3: 3,3V',   color: '#f97316', used: 2 },
+      { label: '4: SDA',    color: '#3b82f6', used: 2 },
+      { label: '5: SCL',    color: '#eab308', used: 2 },
+      { label: '6: Reserve',color: '#94a3b8', used: 0 }
+    ];
+    stripMeta.forEach((st, idx) => {
+      const y = 84 + idx * 27;
+      el('rect', { x: 678, y: y - 9, width: 228, height: 18, rx: 4, fill: st.color, 'fill-opacity': 0.14, stroke: st.color, 'stroke-width': 0.8 }, stripsGroup);
+      const txt = el('text', { x: 684, y: y + 3.5, 'font-size': 9.5, 'font-weight': 700, fill: 'currentColor' }, stripsGroup);
+      txt.textContent = st.label;
+      for (let h = 0; h < 8; h++) {
+        const hx = 766 + h * 17;
+        const filled = h < st.used;
+        el('circle', {
+          cx: hx, cy: y, r: 4.2,
+          fill: filled ? st.color : 'var(--background)',
+          stroke: st.color, 'stroke-width': 1.2
+        }, stripsGroup);
+      }
+    });
+
+    const pnGrid = document.getElementById('sch-pn532-grid');
+    const pinTargets = {};
+    const rowCardY = [118, 378, 638];
+    const colCardX = [1010, 1152, 1294];
+
+    PN532_LIST.forEach(r => {
+      const x = colCardX[r.col];
+      const y = rowCardY[r.row];
+      const w = 124, h = 152;
+
+      const g = el('g', { class: 'node-card', 'data-info': 'pn' + r.id, 'data-nets': '5v gnd i2c' }, pnGrid);
+      el('rect', { x, y, width: w, height: h, rx: 8, fill: 'var(--background)', stroke: '#dc2626', 'stroke-width': 1.5 }, g);
+      el('rect', { x, y, width: w, height: 22, rx: 8, fill: '#dc2626', 'fill-opacity': 0.14 }, g);
+
+      const tTitle = el('text', { x: x + w / 2, y: y + 15, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 700, fill: 'currentColor' }, g);
+      tTitle.textContent = `PN532_${r.id}`;
+
+      const px = [x + 20, x + 48, x + 76, x + 104];
+      const pLabels = ['SCL', 'SDA', 'VCC', 'GND'];
+      const pColors = ['#eab308', '#3b82f6', '#ef4444', '#64748b'];
+
+      px.forEach((cx, i) => {
+        el('circle', { cx, cy: y, r: 3.8, fill: pColors[i] }, g);
+        const pt = el('text', { x: cx, y: y + 36, 'text-anchor': 'middle', 'font-size': 8.5, 'font-weight': 700, fill: pColors[i] === '#eab308' ? '#ca8a04' : pColors[i] }, g);
+        pt.textContent = pLabels[i];
+        el('line', { x1: cx, y1: y + 3, x2: cx, y2: y + 25, stroke: pColors[i], 'stroke-width': 1.2, opacity: 0.7 }, g);
+      });
+
+      pinTargets[r.id] = { sclX: px[0], sdaX: px[1], vccX: px[2], gndX: px[3], topY: y };
+
+      const tPos = el('text', { x: x + w / 2, y: y + 60, 'text-anchor': 'middle', 'font-size': 9.5, 'font-weight': 600, fill: 'currentColor', opacity: 0.85 }, g);
+      tPos.textContent = r.pos;
+
+      const tTca = el('text', { x: x + w / 2, y: y + 78, 'text-anchor': 'middle', 'font-size': 9.5, 'font-weight': 700, fill: r.tca.startsWith('TCA_A') ? '#3b82f6' : '#8b5cf6' }, g);
+      tTca.textContent = r.tca;
+
+      const tSide = el('text', { x: x + w / 2, y: y + 96, 'text-anchor': 'middle', 'font-size': 8.5, fill: 'currentColor', opacity: 0.65 }, g);
+      tSide.textContent = `I²C Seite: ${r.side} | 0x24`;
+
+      el('rect', { x: x + 12, y: y + 108, width: w - 24, height: 22, rx: 4, fill: 'var(--secondary)', 'fill-opacity': 0.5 }, g);
+      const tDip = el('text', { x: x + w / 2, y: y + 122, 'text-anchor': 'middle', 'font-size': 8.5, 'font-weight': 600, fill: 'currentColor' }, g);
+      tDip.textContent = 'DIP: SEL0=ON, SEL1=OFF';
+
+      const tNote = el('text', { x: x + w / 2, y: y + 143, 'text-anchor': 'middle', 'font-size': 8, fill: 'currentColor', opacity: 0.55 }, g);
+      tNote.textContent = r.col === 0 ? 'Rechts I²C-Stecker' : 'Links I²C-Stecker (180°)';
+    });
+
+    const wiresGroup = document.getElementById('sch-wires');
+    function drawWire(pts, color, net, opts = {}) {
+      const d = pts.map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`)).join(' ');
+      const path = el('path', {
+        d,
+        fill: 'none',
+        stroke: color,
+        'stroke-width': opts.width || 2.1,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+        class: `wire net-${net}`,
+        'data-net': net
+      }, wiresGroup);
+      if (opts.dash) path.setAttribute('stroke-dasharray', opts.dash);
+      if (opts.dotAt) {
+        opts.dotAt.forEach(([dx, dy]) => {
+          el('circle', { cx: dx, cy: dy, r: 3.3, fill: color, class: `wire net-${net}`, 'data-net': net }, wiresGroup);
+        });
+      }
+      if (opts.label) {
+        const lbl = el('text', {
+          x: opts.label.x, y: opts.label.y,
+          'font-size': 8.5, 'font-weight': 700,
+          fill: color === '#eab308' ? '#ca8a04' : color,
+          class: `wire net-${net}`, 'data-net': net
+        }, wiresGroup);
+        lbl.textContent = opts.label.text;
+      }
+    }
+
+    drawWire([[228, 68], [238, 68], [238, 162], [116, 162], [116, 238]], '#ef4444', '5v', { dotAt: [[116, 238]] });
+    drawWire([[228, 92], [248, 92], [248, 174], [302, 174], [302, 224], [312, 224]], '#06b6d4', 'usb');
+    drawWire([[228, 116], [243, 116], [243, 168], [131, 168], [131, 294]], '#64748b', 'gnd', { dotAt: [[131, 294]] });
+
+    drawWire([[257, 238], [312, 238]], '#ef4444', '5v');
+    drawWire([[257, 294], [312, 294]], '#64748b', 'gnd');
+    drawWire([[312, 322], [257, 322]], '#f97316', '3v3');
+    drawWire([[312, 350], [257, 350]], '#3b82f6', 'i2c');
+    drawWire([[312, 378], [257, 378]], '#eab308', 'i2c');
+
+    drawWire([[215, 322], [215, 476], [560, 476], [560, 552], [530, 552]], '#f97316', '3v3', { dotAt: [[215, 322], [560, 552]] });
+    drawWire([[560, 552], [560, 714], [530, 714]], '#f97316', '3v3');
+
+    drawWire([[202, 294], [202, 484], [552, 484], [552, 574], [530, 574]], '#64748b', 'gnd', { dotAt: [[202, 294], [552, 574]] });
+    drawWire([[552, 574], [552, 736], [530, 736]], '#64748b', 'gnd');
+
+    drawWire([[210, 560], [312, 560]], '#ef4444', 'scale');
+    drawWire([[210, 582], [312, 582]], '#64748b', 'scale');
+    drawWire([[210, 604], [312, 604]], '#94a3b8', 'scale');
+    drawWire([[210, 626], [312, 626]], '#10b981', 'scale');
+
+    drawWire([[210, 722], [312, 722]], '#ef4444', 'scale');
+    drawWire([[210, 744], [312, 744]], '#64748b', 'scale');
+    drawWire([[210, 766], [312, 766]], '#94a3b8', 'scale');
+    drawWire([[210, 788], [312, 788]], '#10b981', 'scale');
+
+    drawWire([[530, 600], [568, 600], [568, 493], [296, 493], [296, 424], [312, 424]], '#10b981', 'scale');
+    drawWire([[530, 624], [576, 624], [576, 502], [286, 502], [286, 448], [312, 448]], '#14b8a6', 'scale');
+
+    drawWire([[530, 762], [538, 762], [538, 424], [530, 424]], '#10b981', 'scale');
+    drawWire([[530, 786], [544, 786], [544, 448], [530, 448]], '#14b8a6', 'scale');
+
+    drawWire([[264, 266], [264, 84], [668, 84]], '#ef4444', '5v', {
+      dotAt: [[264, 266]],
+      label: { x: 588, y: 78, text: '5V_NFC' }
+    });
+    drawWire([[271, 294], [271, 111], [668, 111]], '#64748b', 'gnd', {
+      dotAt: [[271, 294]],
+      label: { x: 596, y: 105, text: 'GND' }
+    });
+    drawWire([[278, 322], [278, 138], [668, 138]], '#f97316', '3v3', {
+      dotAt: [[278, 322]],
+      label: { x: 596, y: 132, text: '3,3V' }
+    });
+    drawWire([[285, 350], [285, 165], [668, 165]], '#3b82f6', 'i2c', {
+      dotAt: [[285, 350]],
+      label: { x: 596, y: 159, text: 'SDA' }
+    });
+    drawWire([[292, 378], [292, 192], [668, 192]], '#eab308', 'i2c', {
+      dotAt: [[292, 378]],
+      label: { x: 596, y: 186, text: 'SCL' }
+    });
+
+    drawWire([[668, 138], [662, 138], [662, 332], [668, 332]], '#f97316', '3v3', { dotAt: [[662, 332]] });
+    drawWire([[662, 332], [662, 656], [668, 656]], '#f97316', '3v3');
+
+    drawWire([[668, 111], [658, 111], [658, 356], [668, 356]], '#64748b', 'gnd', { dotAt: [[658, 356]] });
+    drawWire([[658, 356], [658, 680], [668, 680]], '#64748b', 'gnd');
+
+    drawWire([[668, 165], [654, 165], [654, 380], [668, 380]], '#3b82f6', 'i2c', { dotAt: [[654, 380]] });
+    drawWire([[654, 380], [654, 704], [668, 704]], '#3b82f6', 'i2c');
+
+    drawWire([[668, 192], [650, 192], [650, 404], [668, 404]], '#eab308', 'i2c', { dotAt: [[650, 404]] });
+    drawWire([[650, 404], [650, 728], [668, 728]], '#eab308', 'i2c');
+
+    const rowPowerY5V  = [52, 312, 572];
+    const rowPowerYGND = [64, 324, 584];
+    const rowIds = [['11','21','31'], ['12','22','32'], ['13','23','33']];
+
+    rowIds.forEach((cols, rIdx) => {
+      const y5 = rowPowerY5V[rIdx];
+      const yg = rowPowerYGND[rIdx];
+      const tapX5 = 930 + rIdx * 6;
+      const tapXG = 948 + rIdx * 6;
+
+      drawWire([[916, 84], [tapX5, 84], [tapX5, y5], [pinTargets[cols[2]].vccX, y5]], '#ef4444', '5v', {
+        dotAt: [[pinTargets[cols[0]].vccX, y5], [pinTargets[cols[1]].vccX, y5]]
+      });
+      drawWire([[916, 111], [tapXG, 111], [tapXG, yg], [pinTargets[cols[2]].gndX, yg]], '#64748b', 'gnd', {
+        dotAt: [[pinTargets[cols[0]].gndX, yg], [pinTargets[cols[1]].gndX, yg]]
+      });
+
+      cols.forEach(rid => {
+        drawWire([[pinTargets[rid].vccX, y5], [pinTargets[rid].vccX, pinTargets[rid].topY]], '#ef4444', '5v');
+        drawWire([[pinTargets[rid].gndX, yg], [pinTargets[rid].gndX, pinTargets[rid].topY]], '#64748b', 'gnd');
+      });
+    });
+
+    const chRoutes = [
+      { fromY: 346, rid: '11', xBus: 966, ySda: 76,  yScl: 84,  col: '#3b82f6' },
+      { fromY: 378, rid: '21', xBus: 973, ySda: 92,  yScl: 100, col: '#3b82f6' },
+      { fromY: 654, rid: '31', xBus: 980, ySda: 106, yScl: 112, col: '#8b5cf6' },
+      { fromY: 414, rid: '12', xBus: 966, ySda: 336, yScl: 344, col: '#3b82f6' },
+      { fromY: 448, rid: '22', xBus: 973, ySda: 352, yScl: 360, col: '#3b82f6' },
+      { fromY: 692, rid: '32', xBus: 980, ySda: 366, yScl: 372, col: '#8b5cf6' },
+      { fromY: 484, rid: '13', xBus: 966, ySda: 596, yScl: 604, col: '#3b82f6' },
+      { fromY: 518, rid: '23', xBus: 973, ySda: 612, yScl: 620, col: '#3b82f6' },
+      { fromY: 730, rid: '33', xBus: 980, ySda: 626, yScl: 632, col: '#8b5cf6' }
+    ];
+
+    chRoutes.forEach(rt => {
+      const tgt = pinTargets[rt.rid];
+      drawWire([
+        [916, rt.fromY - 2],
+        [rt.xBus, rt.fromY - 2],
+        [rt.xBus, rt.ySda],
+        [tgt.sdaX, rt.ySda],
+        [tgt.sdaX, tgt.topY]
+      ], rt.col, 'i2c', { width: 1.6 });
+      drawWire([
+        [916, rt.fromY + 2],
+        [rt.xBus + 3, rt.fromY + 2],
+        [rt.xBus + 3, rt.yScl],
+        [tgt.sclX, rt.yScl],
+        [tgt.sclX, tgt.topY]
+      ], '#eab308', 'i2c', { width: 1.5 });
+    });
+
+    const ovGrid = document.getElementById('ov-grid');
+    [0, 50, 100, 150].forEach(mm => {
+      el('line', { x1: mm, y1: 0, x2: mm, y2: 150, stroke: 'var(--muted-foreground)', 'stroke-width': 0.25, 'stroke-dasharray': '1.5 1.5' }, ovGrid);
+      el('line', { x1: 0, y1: mm, x2: 150, y2: mm, stroke: 'var(--muted-foreground)', 'stroke-width': 0.25, 'stroke-dasharray': '1.5 1.5' }, ovGrid);
+      const tx = el('text', { x: mm, y: -4, 'text-anchor': 'middle', 'font-size': 4, fill: 'currentColor' }, ovGrid);
+      tx.textContent = mm;
+      const ty = el('text', { x: -4, y: 150 - mm + 1.5, 'text-anchor': 'end', 'font-size': 4, fill: 'currentColor' }, ovGrid);
+      ty.textContent = mm;
+    });
+    const tRear = el('text', { x: 75, y: -10, 'text-anchor': 'middle', 'font-size': 4.4, 'font-weight': 700, fill: 'currentColor' }, ovGrid);
+    tRear.textContent = 'HINTEN (ESP32-C6, y_cad = 150 mm)';
+    const tFront = el('text', { x: 75, y: 159, 'text-anchor': 'middle', 'font-size': 4.4, 'font-weight': 700, fill: 'currentColor' }, ovGrid);
+    tFront.textContent = 'VORNE (Delock USB-C, y_cad = 0 mm)';
+
+    const ovPn = document.getElementById('ov-pn532');
+    PN532_LIST.forEach(r => {
+      const yTop = 150 - (r.yCad + 37.4);
+      const g = el('g', { class: 'node-card', 'data-info': 'pn' + r.id }, ovPn);
+      el('rect', { x: r.x, y: yTop, width: 39.7, height: 37.4, rx: 1.5, fill: '#ef4444', 'fill-opacity': 0.14, stroke: '#dc2626', 'stroke-width': 0.7 }, g);
+
+      const hx = r.side === '+x' ? r.x + 39.7 - 1.2 : r.x - 1.5;
+      el('rect', { x: hx, y: yTop + 12, width: 2.7, height: 13.4, rx: 0.4, fill: '#1e293b', stroke: '#f8fafc', 'stroke-width': 0.2 }, g);
+
+      const dotCols = ['#eab308', '#3b82f6', '#ef4444', '#64748b'];
+      for (let i = 0; i < 4; i++) {
+        el('circle', { cx: hx + 1.35, cy: yTop + 14.2 + i * 3, r: 0.9, fill: dotCols[i] }, g);
+      }
+
+      const t1 = el('text', { x: r.x + 19.85, y: yTop + 17.5, 'text-anchor': 'middle', 'font-size': 4.3, 'font-weight': 700, fill: 'currentColor' }, g);
+      t1.textContent = `PN532_${r.id}`;
+      const t2 = el('text', { x: r.x + 19.85, y: yTop + 22.8, 'text-anchor': 'middle', 'font-size': 2.9, 'font-weight': 600, fill: r.tca.startsWith('TCA_A') ? '#0284c7' : '#7c3aed' }, g);
+      t2.textContent = r.tca;
+    });
+
+    const tabSch = document.getElementById('tab-schematic');
+    const tabOv  = document.getElementById('tab-overlay');
+    const panSch = document.getElementById('panel-schematic');
+    const panOv  = document.getElementById('panel-overlay');
+
+    function setTab(which) {
+      const isSch = which === 'sch';
+      tabSch.setAttribute('aria-selected', isSch);
+      tabOv.setAttribute('aria-selected', !isSch);
+      panSch.classList.toggle('hidden', !isSch);
+      panOv.classList.toggle('hidden', isSch);
+    }
+    tabSch.addEventListener('click', () => setTab('sch'));
+    tabOv.addEventListener('click',  () => setTab('ov'));
+
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const net = btn.dataset.net;
+        filterBtns.forEach(b => b.setAttribute('aria-pressed', b === btn));
+        document.querySelectorAll('#svg-schematic .wire').forEach(w => {
+          const match = net === 'all' || w.dataset.net === net;
+          w.classList.toggle('dimmed', !match);
+          w.classList.toggle('highlighted-wire', net !== 'all' && match);
+        });
+        document.querySelectorAll('#svg-schematic .node-card').forEach(c => {
+          const nets = (c.dataset.nets || '').split(' ');
+          c.classList.toggle('dimmed', net !== 'all' && !nets.includes(net));
+        });
+      });
+    });
+
+    function updateInspector(key) {
+      const info = COMPONENT_INFO[key];
+      if (!info) return;
+      document.getElementById('insp-badge').textContent = info.badge;
+      document.getElementById('insp-title').textContent = info.title;
+      document.getElementById('insp-desc').textContent  = info.desc;
+      const pinsHtml = info.pins.map(([p, d]) =>
+        `<div class="flex justify-between gap-2 py-1 border-b border-[var(--border)] last:border-b-0">
+          <span class="font-mono font-semibold">${p}</span>
+          <span class="text-right text-[var(--muted-foreground)]">${d}</span>
+        </div>`
+      ).join('');
+      document.getElementById('insp-pins').innerHTML = pinsHtml;
+      document.getElementById('ov-insp-title').textContent = info.title;
+      document.getElementById('ov-insp-desc').textContent  = info.desc;
+      document.getElementById('ov-insp-pins').innerHTML = pinsHtml;
+    }
+
+    document.querySelectorAll('.node-card').forEach(card => {
+      card.addEventListener('click', () => updateInspector(card.dataset.info));
+    });
+    updateInspector('powerhub');
+
+    const sliderTop = document.getElementById('slider-top');
+    const sliderBot = document.getElementById('slider-bottom');
+    const valTop    = document.getElementById('val-top');
+    const valBot    = document.getElementById('val-bottom');
+    const layerTop  = document.getElementById('layer-top');
+    const layerBot  = document.getElementById('layer-bottom');
+
+    function applyOpacity() {
+      layerTop.style.opacity = sliderTop.value / 100;
+      layerBot.style.opacity = sliderBot.value / 100;
+      valTop.textContent = sliderTop.value + '%';
+      valBot.textContent = sliderBot.value + '%';
+      layerTop.style.pointerEvents = sliderTop.value < 10 ? 'none' : 'auto';
+      layerBot.style.pointerEvents = sliderBot.value < 10 ? 'none' : 'auto';
+    }
+    sliderTop.addEventListener('input', applyOpacity);
+    sliderBot.addEventListener('input', applyOpacity);
+
+    document.getElementById('preset-xray').addEventListener('click', () => { sliderTop.value = 65; sliderBot.value = 100; applyOpacity(); });
+    document.getElementById('preset-bottom').addEventListener('click', () => { sliderTop.value = 0; sliderBot.value = 100; applyOpacity(); });
+    document.getElementById('preset-top').addEventListener('click', () => { sliderTop.value = 100; sliderBot.value = 0; applyOpacity(); });
+
+    document.getElementById('toggle-wires').addEventListener('change', e => {
+      const show = e.target.checked;
+      document.getElementById('ov-wires-top').style.display = show ? '' : 'none';
+      document.getElementById('ov-wires-bottom').style.display = show ? '' : 'none';
+    });
+  </script>
+</body>
+</html>
